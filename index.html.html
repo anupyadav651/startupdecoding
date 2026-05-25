@@ -1055,11 +1055,6 @@
         <a href="#" class="see-all">See All →</a>
       </div>
       <div class="card-grid" id="liveNewsGrid">
-        <!-- Live news loads here -->
-        <div class="card" style="grid-column:1/-1;text-align:center;padding:40px;">
-          <div style="font-size:24px;margin-bottom:8px;">⏳</div>
-          <p style="color:#6b7280;font-size:14px;">Loading live news...</p>
-        </div>
       </div>
     </div>
 
@@ -1828,25 +1823,43 @@
 
   function showFallbackNews() {
     const fallback = [
-      {title:'India startup ecosystem raises $1.2B in Q1 2026', source:'Business Standard', color:'img-blue'},
-      {title:'RIL records historic $10.1B net profit for FY2025-26', source:'Economic Times', color:'img-teal'},
-      {title:'Indian MSMEs drive 70% of domestic production', source:'Livemint', color:'img-orange'},
-      {title:'DPIIT recognises 1,14,000+ startups across India', source:'Startup India', color:'img-purple'},
-      {title:'Bengaluru retains top spot in India startup rankings', source:'YourStory', color:'img-green'},
-      {title:'Govt launches Rs 945 Cr Startup India Seed Fund', source:'DPIIT', color:'img-red'}
+      { title: 'Zepto raises $665M in funding round, now valued at $3.6 billion', source: 'Economic Times', color: 'img-blue', url: 'https://economictimes.indiatimes.com' },
+      { title: 'Meesho turns profitable: clocks Rs 97 Cr PAT in FY24 on Rs 7,615 Cr revenue', source: 'YourStory', color: 'img-teal', url: 'https://yourstory.com' },
+      { title: 'CRED hits 12 million active users, plans aggressive expansion into lending', source: 'Inc42', color: 'img-orange', url: 'https://inc42.com' },
+      { title: 'PhonePe processes 6.5 billion transactions in March 2026, leads UPI market', source: 'Livemint', color: 'img-purple', url: 'https://livemint.com' },
+      { title: 'Ola Electric delivers 1 lakh scooters in single month, sets new record', source: 'Business Standard', color: 'img-green', url: 'https://business-standard.com' },
+      { title: 'India becomes 3rd largest startup ecosystem globally with 1.14 lakh startups', source: 'DPIIT', color: 'img-red', url: 'https://startupindia.gov.in' }
     ];
     const grid = document.getElementById('liveNewsGrid');
-    if (grid) grid.innerHTML = fallback.map(function(f) {
-      return '<div class="card"><div class="card-img-wrap"><div class="card-placeholder ' + f.color + '"></div>' +
-        '<span class="card-badge">Trending News</span></div>' +
-        '<div class="card-body"><h3>' + f.title + '</h3>' +
-        '<div class="card-meta"><span class="author">' + f.source + '</span><span class="dot">•</span><span>Today</span></div></div></div>';
-    }).join('');
+    if (grid) {
+      grid.innerHTML = fallback.map(function(f) {
+        return '<div class="card" onclick="window.open(\'' + f.url + '\',\'_blank\')" style="cursor:pointer;">' +
+          '<div class="card-img-wrap">' +
+            '<div class="card-placeholder ' + f.color + '"></div>' +
+            '<span class="card-badge">📈 Trending</span>' +
+          '</div>' +
+          '<div class="card-body">' +
+            '<h3>' + f.title + '</h3>' +
+            '<div class="card-meta">' +
+              '<span class="author">' + f.source + '</span>' +
+              '<span class="dot">•</span>' +
+              '<span>Today</span>' +
+            '</div>' +
+          '</div>' +
+        '</div>';
+      }).join('');
+    }
     const track = document.getElementById('tickerTrack');
-    if (track) { const items = fallback.map(function(f) { return '<span>' + f.title + '</span>'; }).join(''); track.innerHTML = items + items; }
+    if (track) {
+      const items = fallback.map(function(f) { return '<span>' + f.title + '</span>'; }).join('');
+      track.innerHTML = items + items;
+    }
   }
 
-  try { fetchLiveNews(); } catch(e) { showFallbackNews(); }
+  // Show fallback FIRST so page never looks empty
+  showFallbackNews();
+  // Then try live API in background
+  setTimeout(function() { try { fetchLiveNews(); } catch(e) {} }, 500);
   setInterval(function() { try { fetchLiveNews(); } catch(e) {} }, 30*60*1000);
 
   // ─── MOBILE ───
@@ -1933,7 +1946,7 @@
       result.innerHTML='Search is currently offline. Please try again later.';
     }
   }
-
+</script>
 
 </body>
 </html>
