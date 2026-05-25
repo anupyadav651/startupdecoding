@@ -242,7 +242,9 @@
           </div>
           <div class="f full"><label>Full Article Content *</label><textarea id="a-content" placeholder="Write your full article here..."></textarea></div>
           <div class="f full"><label>Short Summary (shown on homepage card)</label><input type="text" id="a-summary" placeholder="One line summary, max 120 characters"/></div>
-          <div class="f"><label>Image URL (optional)</label><input type="text" id="a-img" placeholder="https://..."/></div>
+          <div class="f"><label>Main Image URL (hero image)</label><input type="text" id="a-img" placeholder="https://... (main top image)"/></div>
+          <div class="f"><label>Image 2 URL (mid-article)</label><input type="text" id="a-img2" placeholder="https://... (optional)"/></div>
+          <div class="f"><label>Image 3 URL (near end)</label><input type="text" id="a-img3" placeholder="https://... (optional)"/></div>
           <div class="f"><label>Tags</label><input type="text" id="a-tags" placeholder="startup, funding, India"/></div>
         </div>
         <div class="btn-row" id="writeBtns"></div>
@@ -578,44 +580,71 @@ function showDenied() {
 }
 
 // ═══════════════════════════════════════════
-// ARTICLES
+// SUPABASE CONFIG
 // ═══════════════════════════════════════════
-function getArts() { return JSON.parse(localStorage.getItem('sd_articles')||'[]'); }
-function putArts(a) { localStorage.setItem('sd_articles', JSON.stringify(a)); }
+const SUPA_URL = 'https://yrjsjfzfyhygsgdazbeo.supabase.co';
+const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlyanNqZnpmeWh5Z3NnZGF6YmVvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3MjkwMTksImV4cCI6MjA5NTMwNTAxOX0.tC0h3KUAdVlij80ZV3nddL3B1U95hR9FobrwKJzKEmo';
 
-function saveArticle(status) {
+async function db(path, options={}) {
+  const res = await fetch(SUPA_URL + '/rest/v1/' + path, {
+    headers: {
+      'apikey': SUPA_KEY,
+      'Authorization': 'Bearer ' + SUPA_KEY,
+      'Content-Type': 'application/json',
+      'Prefer': options.prefer || 'return=representation'
+    },
+    ...options
+  });
+  const text = await res.text();
+  return text ? JSON.parse(text) : [];
+}
+
+// ═══════════════════════════════════════════
+// ARTICLES (Supabase)
+// ═══════════════════════════════════════════
+async function getArts() {
+  try { return await db('articles?order=created_at.desc'); }
+  catch(e) { return JSON.parse(localStorage.getItem('sd_articles')||'[]'); }
+}
+
+async function saveArticle(status) {
   const title = document.getElementById('a-title').value.trim();
   const author = document.getElementById('a-author').value.trim();
   const cat = document.getElementById('a-cat').value;
   const content = document.getElementById('a-content').value.trim();
   if (!title||!author||!cat||!content) { toast('⚠️ Fill Title, Author, Category & Content','#7f1d1d','#fca5a5'); return; }
-  const arts = getArts();
-  arts.unshift({
-    id: Date.now(),
-    title, author, category: cat,
-    content,
+  const article = {
+    title, author, category: cat, content,
     summary: document.getElementById('a-summary').value.trim(),
     image: document.getElementById('a-img').value.trim(),
+    image2: document.getElementById('a-img2').value.trim(),
+    image3: document.getElementById('a-img3').value.trim(),
     tags: document.getElementById('a-tags').value.trim(),
-    status,
-    submittedBy: currentUser.username,
+    status, submitted_by: currentUser.username,
     date: new Date().toLocaleDateString('en-IN',{day:'numeric',month:'long',year:'numeric'})
-  });
-  putArts(arts);
+  };
+  try {
+    await db('articles', { method:'POST', prefer:'return=minimal', body: JSON.stringify(article) });
+  } catch(e) {
+    const arts = JSON.parse(localStorage.getItem('sd_articles')||'[]');
+    arts.unshift({...article, id: Date.now()});
+    localStorage.setItem('sd_articles', JSON.stringify(arts));
+  }
   clearForm();
-  const msgs = { published:'✅ Article Published!', draft:'💾 Saved as Draft!', 'pending-approval':'📨 Submitted for Approval!' };
+  const msgs = { published:'✅ Published!', draft:'💾 Draft saved!', 'pending-approval':'📨 Submitted!' };
   toast(msgs[status]||'✅ Done!');
+  loadDashboard();
 }
 
 function clearForm() {
-  ['a-title','a-author','a-content','a-summary','a-img','a-tags'].forEach(id=>document.getElementById(id).value='');
+  ['a-title','a-author','a-content','a-summary','a-img','a-img2','a-img3','a-tags'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('a-cat').value='';
 }
 
-function loadArticles() {
-  const arts = getArts();
+async function loadArticles() {
+  const arts = await getArts();
   const role = currentUser.role;
-  const visible = role==='writer' ? arts.filter(a=>a.submittedBy===currentUser.username) : arts;
+  const visible = role==='writer' ? arts.filter(a=>a.submitted_by===currentUser.username) : arts;
   const el = document.getElementById('arts-list');
   if (!visible.length) { el.innerHTML='<div class="empty"><div class="em">📭</div><p>No articles yet.</p></div>'; return; }
   el.innerHTML = visible.map(a => {
@@ -638,16 +667,30 @@ function loadArticles() {
   }).join('');
 }
 
-function approveArt(id) { const a=getArts(); const x=a.find(x=>x.id===id); if(x)x.status='published'; putArts(a); loadArticles(); loadDashboard(); toast('✅ Approved & Published!'); }
-function toggleArt(id) { const a=getArts(); const x=a.find(x=>x.id===id); if(x)x.status=x.status==='published'?'draft':'published'; putArts(a); loadArticles(); toast('✅ Updated'); }
-function delArt(id) { if(!confirm('Delete this article?'))return; putArts(getArts().filter(a=>a.id!==id)); loadArticles(); loadDashboard(); toast('🗑️ Deleted'); }
+async function approveArt(id) {
+  try { await db('articles?id=eq.'+id, {method:'PATCH',prefer:'return=minimal',body:JSON.stringify({status:'published'})}); } catch(e){}
+  loadArticles(); loadDashboard(); toast('✅ Approved & Published!');
+}
+async function toggleArt(id) {
+  const arts = await getArts();
+  const a = arts.find(x=>String(x.id)===String(id));
+  const ns = a && a.status==='published' ? 'draft' : 'published';
+  try { await db('articles?id=eq.'+id, {method:'PATCH',prefer:'return=minimal',body:JSON.stringify({status:ns})}); } catch(e){}
+  loadArticles(); toast('✅ Updated');
+}
+async function delArt(id) {
+  if(!confirm('Delete?'))return;
+  try { await db('articles?id=eq.'+id, {method:'DELETE',prefer:'return=minimal'}); } catch(e){}
+  loadArticles(); loadDashboard(); toast('🗑️ Deleted');
+}
 
 // ═══════════════════════════════════════════
 // DASHBOARD
 // ═══════════════════════════════════════════
-function loadDashboard() {
-  const arts = getArts();
-  const reqs = JSON.parse(localStorage.getItem('sd_requests')||'[]');
+async function loadDashboard() {
+  const arts = await getArts();
+  let reqs = [];
+  try { reqs = await db('feature_requests?order=created_at.desc'); } catch(e) { reqs = JSON.parse(localStorage.getItem('sd_requests')||'[]'); }
   document.getElementById('s-total').textContent = arts.length;
   document.getElementById('s-pub').textContent = arts.filter(a=>a.status==='published').length;
   document.getElementById('s-pend').textContent = arts.filter(a=>a.status==='pending-approval').length;
@@ -666,8 +709,9 @@ function loadDashboard() {
 // ═══════════════════════════════════════════
 // REQUESTS
 // ═══════════════════════════════════════════
-function loadRequests() {
-  const reqs = JSON.parse(localStorage.getItem('sd_requests')||'[]');
+async function loadRequests() {
+  let reqs = [];
+  try { reqs = await db('feature_requests?order=created_at.desc'); } catch(e) { reqs = JSON.parse(localStorage.getItem('sd_requests')||'[]'); }
   const el = document.getElementById('reqs-list');
   if (!reqs.length) { el.innerHTML='<div class="empty"><div class="em">📭</div><p>No feature requests yet.</p></div>'; return; }
   el.innerHTML = reqs.map((r,i)=>`
@@ -686,7 +730,10 @@ function loadRequests() {
     </div>`).join('');
 }
 
-function updateReq(i,s){ const r=JSON.parse(localStorage.getItem('sd_requests')||'[]'); r[i].status=s; localStorage.setItem('sd_requests',JSON.stringify(r)); loadRequests(); toast(s==='approved'?'✅ Approved!':'❌ Rejected'); }
+async function updateReq(id,s){
+  try { await db('feature_requests?id=eq.'+id, {method:'PATCH',prefer:'return=minimal',body:JSON.stringify({status:s})}); } catch(e){}
+  loadRequests(); toast(s==='approved'?'✅ Approved!':'❌ Rejected');
+}
 
 // ═══════════════════════════════════════════
 // SEARCHES

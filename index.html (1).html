@@ -100,6 +100,9 @@
     /* Footer already dark — no changes needed */
     /* Gov scheme emoji cards */
     body.dark-mode .card-placeholder { opacity: 0.85; }
+    body.dark-mode #articleBox { background: #1e293b !important; }
+    body.dark-mode #articleBox h1 { color: #f1f5f9 !important; }
+    body.dark-mode #articleBox p { color: #cbd5e1 !important; }
 
     /* Toggle button */
     .theme-toggle {
@@ -297,9 +300,9 @@
       width: 64px;
       height: 54px;
       border-radius: 6px;
-      object-fit: cover;
-      background: linear-gradient(135deg, #1e4080, #0097a7);
+      overflow: hidden;
       flex-shrink: 0;
+      background: linear-gradient(135deg, #1e4080, #0097a7);
     }
     .side-story h4 {
       font-size: 12.5px;
@@ -986,27 +989,33 @@
   <div class="hero-left">
     <span class="hero-label">🔥 Featured Story</span>
     <h1>Decode India's Most Inspiring<br/>Startup Journeys</h1>
-    <p>From garage startups to unicorns — we decode the strategies, failures,<br/>and breakthroughs shaping India's entrepreneurial future.</p>
+    <p>From garage startups to unicorns — we decode the strategies, failures, and breakthroughs shaping India's entrepreneurial future.</p>
     <a href="#" class="hero-btn">Explore Stories →</a>
   </div>
   <div class="hero-side">
     <h3>⚡ Top Stories Today</h3>
     <div class="side-story">
-      <div class="side-img img-blue"></div>
+      <div class="side-img">
+        <img src="https://images.unsplash.com/photo-1593941707882-a5bba14938c7?w=128&h=108&fit=crop" style="width:100%;height:100%;object-fit:cover;border-radius:6px;"/>
+      </div>
       <div>
         <h4>Noida founder builds EV power bank startup 'Mobec Innovation'</h4>
         <span>🕐 25 MAY 2026</span>
       </div>
     </div>
     <div class="side-story">
-      <div class="side-img img-teal"></div>
+      <div class="side-img">
+        <img src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=128&h=108&fit=crop" style="width:100%;height:100%;object-fit:cover;border-radius:6px;"/>
+      </div>
       <div>
         <h4>RIL records historic $10.1B net profit for FY2025-26</h4>
         <span>🕐 25 MAY 2026</span>
       </div>
     </div>
     <div class="side-story">
-      <div class="side-img img-green"></div>
+      <div class="side-img">
+        <img src="https://images.unsplash.com/photo-1556761175-5973dc0f32e7?w=128&h=108&fit=crop" style="width:100%;height:100%;object-fit:cover;border-radius:6px;"/>
+      </div>
       <div>
         <h4>Mumbai man runs Safsafaiwala, a home cleaning business</h4>
         <span>🕐 25 MAY 2026</span>
@@ -1064,7 +1073,7 @@
       <div class="card-grid">
         <div class="card">
           <div class="card-img-wrap">
-            <div class="card-placeholder img-purple"></div>
+            <div class="img-placeholder" style="display:none"></div><img src="https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=400&h=220&fit=crop" style="width:100%;height:180px;object-fit:cover;" loading="lazy"/>
             <span class="card-badge">Startup News</span>
           </div>
           <div class="card-body">
@@ -1078,7 +1087,7 @@
         </div>
         <div class="card">
           <div class="card-img-wrap">
-            <div class="card-placeholder img-blue"></div>
+            <div class="img-placeholder" style="display:none"></div><img src="https://images.unsplash.com/photo-1574258495973-f010dfbb5371?w=400&h=220&fit=crop" style="width:100%;height:180px;object-fit:cover;" loading="lazy"/>
             <span class="card-badge">Startup News</span>
           </div>
           <div class="card-body">
@@ -1092,7 +1101,7 @@
         </div>
         <div class="card">
           <div class="card-img-wrap">
-            <div class="card-placeholder img-red"></div>
+            <div class="img-placeholder" style="display:none"></div><img src="https://images.unsplash.com/photo-1566576912321-d58ddd7a6088?w=400&h=220&fit=crop" style="width:100%;height:180px;object-fit:cover;" loading="lazy"/>
             <span class="card-badge">Startup News</span>
           </div>
           <div class="card-body">
@@ -1117,7 +1126,7 @@
       <div class="card-grid">
         <div class="card">
           <div class="card-img-wrap">
-            <div class="card-placeholder img-green"></div>
+            <div class="img-placeholder" style="display:none"></div><img src="https://images.unsplash.com/photo-1556761175-5973dc0f32e7?w=400&h=220&fit=crop" style="width:100%;height:180px;object-fit:cover;" loading="lazy"/>
             <span class="card-badge">Startup Stories</span>
           </div>
           <div class="card-body">
@@ -1131,7 +1140,7 @@
         </div>
         <div class="card">
           <div class="card-img-wrap">
-            <div class="card-placeholder img-blue"></div>
+            <div class="img-placeholder" style="display:none"></div><img src="https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=400&h=220&fit=crop" style="width:100%;height:180px;object-fit:cover;" loading="lazy"/>
             <span class="card-badge">Startup Stories</span>
           </div>
           <div class="card-body">
@@ -1145,7 +1154,7 @@
         </div>
         <div class="card">
           <div class="card-img-wrap">
-            <div class="card-placeholder img-teal"></div>
+            <div class="img-placeholder" style="display:none"></div><img src="https://images.unsplash.com/photo-1559136555-9303baea8ebd?w=400&h=220&fit=crop" style="width:100%;height:180px;object-fit:cover;" loading="lazy"/>
             <span class="card-badge">Startup Stories</span>
           </div>
           <div class="card-body">
@@ -1170,7 +1179,7 @@
       <div class="card-grid">
         <div class="card">
           <div class="card-img-wrap">
-            <div class="card-placeholder img-orange"></div>
+            <div class="img-placeholder" style="display:none"></div><img src="https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=400&h=220&fit=crop" style="width:100%;height:180px;object-fit:cover;" loading="lazy"/>
             <span class="card-badge">Young Entrepreneur</span>
           </div>
           <div class="card-body">
@@ -1184,7 +1193,7 @@
         </div>
         <div class="card">
           <div class="card-img-wrap">
-            <div class="card-placeholder img-purple"></div>
+            <div class="img-placeholder" style="display:none"></div><img src="https://images.unsplash.com/photo-1531482615713-2afd69097998?w=400&h=220&fit=crop" style="width:100%;height:180px;object-fit:cover;" loading="lazy"/>
             <span class="card-badge">Young Entrepreneur</span>
           </div>
           <div class="card-body">
@@ -1198,7 +1207,7 @@
         </div>
         <div class="card">
           <div class="card-img-wrap">
-            <div class="card-placeholder img-blue"></div>
+            <div class="img-placeholder" style="display:none"></div><img src="https://images.unsplash.com/photo-1552664730-d307ca884978?w=400&h=220&fit=crop" style="width:100%;height:180px;object-fit:cover;" loading="lazy"/>
             <span class="card-badge">Young Entrepreneur</span>
           </div>
           <div class="card-body">
@@ -1223,7 +1232,7 @@
       <div class="card-grid">
         <div class="card">
           <div class="card-img-wrap">
-            <div class="card-placeholder img-red"></div>
+            <div class="img-placeholder" style="display:none"></div><img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&h=220&fit=crop" style="width:100%;height:180px;object-fit:cover;" loading="lazy"/>
             <span class="card-badge">Her Story</span>
           </div>
           <div class="card-body">
@@ -1237,7 +1246,7 @@
         </div>
         <div class="card">
           <div class="card-img-wrap">
-            <div class="card-placeholder img-teal"></div>
+            <div class="img-placeholder" style="display:none"></div><img src="https://images.unsplash.com/photo-1594744803329-e58b31de8bf5?w=400&h=220&fit=crop" style="width:100%;height:180px;object-fit:cover;" loading="lazy"/>
             <span class="card-badge">Her Story</span>
           </div>
           <div class="card-body">
@@ -1251,7 +1260,7 @@
         </div>
         <div class="card">
           <div class="card-img-wrap">
-            <div class="card-placeholder img-green"></div>
+            <div class="img-placeholder" style="display:none"></div><img src="https://images.unsplash.com/photo-1580894732444-8ecded7900cd?w=400&h=220&fit=crop" style="width:100%;height:180px;object-fit:cover;" loading="lazy"/>
             <span class="card-badge">Her Story</span>
           </div>
           <div class="card-body">
@@ -1276,7 +1285,7 @@
       <div class="card-grid">
         <div class="card">
           <div class="card-img-wrap">
-            <div class="card-placeholder img-blue"></div>
+            <div class="img-placeholder" style="display:none"></div><img src="https://images.unsplash.com/photo-1593941707882-a5bba14938c7?w=400&h=220&fit=crop" style="width:100%;height:180px;object-fit:cover;" loading="lazy"/>
             <span class="card-badge">Tech & Innovation</span>
           </div>
           <div class="card-body">
@@ -1290,7 +1299,7 @@
         </div>
         <div class="card">
           <div class="card-img-wrap">
-            <div class="card-placeholder img-purple"></div>
+            <div class="img-placeholder" style="display:none"></div><img src="https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=400&h=220&fit=crop" style="width:100%;height:180px;object-fit:cover;" loading="lazy"/>
             <span class="card-badge">Tech & Innovation</span>
           </div>
           <div class="card-body">
@@ -1304,7 +1313,7 @@
         </div>
         <div class="card">
           <div class="card-img-wrap">
-            <div class="card-placeholder img-green"></div>
+            <div class="img-placeholder" style="display:none"></div><img src="https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&h=220&fit=crop" style="width:100%;height:180px;object-fit:cover;" loading="lazy"/>
             <span class="card-badge">Tech & Innovation</span>
           </div>
           <div class="card-body">
@@ -1562,6 +1571,14 @@
   </div>
 </footer>
 
+<!-- ARTICLE READER MODAL -->
+<div class="modal-overlay" id="articleModal" style="align-items:flex-start;overflow-y:auto;padding:20px;">
+  <div style="background:white;border-radius:16px;width:100%;max-width:780px;margin:auto;position:relative;padding:36px;box-shadow:0 25px 60px rgba(0,0,0,0.2);" id="articleBox">
+    <button onclick="closeArticle()" style="position:sticky;top:0;float:right;font-size:22px;cursor:pointer;color:#6b7280;border:none;background:none;z-index:10;margin-bottom:8px;">✕</button>
+    <div id="articleContent"></div>
+  </div>
+</div>
+
 <!-- FEATURE REQUEST MODAL -->
 <div class="modal-overlay" id="modal">
   <div class="modal">
@@ -1602,6 +1619,26 @@
 </div>
 
 <script>
+  // ─── SUPABASE CONFIG ───
+  const SUPA_URL = 'https://yrjsjfzfyhygsgdazbeo.supabase.co';
+  const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlyanNqZnpmeWh5Z3NnZGF6YmVvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3MjkwMTksImV4cCI6MjA5NTMwNTAxOX0.tC0h3KUAdVlij80ZV3nddL3B1U95hR9FobrwKJzKEmo';
+
+  async function supaFetch(path, options={}) {
+    const res = await fetch(SUPA_URL + '/rest/v1/' + path, {
+      headers: {
+        'apikey': SUPA_KEY,
+        'Authorization': 'Bearer ' + SUPA_KEY,
+        'Content-Type': 'application/json',
+        'Prefer': options.prefer || 'return=representation'
+      },
+      ...options
+    });
+    if (!res.ok) throw new Error('Supabase error: ' + res.status);
+    const text = await res.text();
+    return text ? JSON.parse(text) : [];
+  }
+
+  // ─── THEME ───
   function toggleTheme() {
     const isDark = document.body.classList.toggle('dark-mode');
     const btn = document.getElementById('themeBtn');
@@ -1615,242 +1652,288 @@
     if (btn) btn.textContent = '☀️ Light';
   }
 
-  // ─── LOAD ADMIN ARTICLES ON HOMEPAGE ───
-  function loadAdminArticles() {
-    const articles = JSON.parse(localStorage.getItem('sd_articles') || '[]')
-      .filter(a => a.status === 'published');
-    if (!articles.length) return;
-
-    // Group by category and inject at top of matching sections
-    const secMap = {
-      'Trending News': 'trending-news-section',
-      'Startup News': 'startup-news-section',
-      'Startup Stories': 'startup-stories-section',
-      'Young Entrepreneur': 'young-entrepreneur-section',
-      'Her Story': 'her-story-section',
-      'Tech & Innovation': 'tech-section',
-      'Gov Schemes': 'gov-schemes-section'
-    };
-
-    articles.forEach(a => {
-      const secId = secMap[a.category];
-      if (!secId) return;
-      const grid = document.querySelector('#' + secId + ' .card-grid');
-      if (!grid) return;
-      const card = document.createElement('div');
-      card.className = 'card';
-      card.style.border = '2px solid #00C2CB';
-      card.innerHTML = `
-        <div class="card-img-wrap">
-          ${a.image ? `<img src="${a.image}" style="width:100%;height:180px;object-fit:cover;" onerror="this.style.display='none'"/>` : `<div class="card-placeholder img-blue" style="display:flex;align-items:center;justify-content:center;"><span style="font-size:32px;">📰</span></div>`}
-          <span class="card-badge" style="background:#00C2CB;">${a.category}</span>
-        </div>
-        <div class="card-body">
-          <div style="font-size:10px;background:#e0f7fa;color:#0A2463;padding:2px 8px;border-radius:4px;display:inline-block;margin-bottom:6px;font-weight:700;">✨ NEW</div>
-          <h3>${a.title}</h3>
-          ${a.summary ? `<p style="font-size:12px;color:#6b7280;margin-bottom:8px;">${a.summary}</p>` : ''}
-          <div class="card-meta">
-            <span class="author">${a.author}</span>
-            <span class="dot">•</span>
-            <span>${a.date}</span>
-          </div>
-        </div>
-      `;
-      grid.prepend(card);
+  // ─── ARTICLE READER ───
+  function openArticle(id, articleData) {
+    const a = articleData;
+    if (!a) return;
+    const images = [a.image, a.image2, a.image3].filter(Boolean);
+    const date = a.date || 'Recently';
+    const paragraphs = (a.content || '').split('\n').filter(p => p.trim());
+    let contentHtml = '';
+    paragraphs.forEach(function(p, i) {
+      contentHtml += '<p style="margin-bottom:18px;line-height:1.85;font-size:16px;color:#374151;">' + p + '</p>';
+      if (i === 1 && images[1]) contentHtml += '<img src="' + images[1] + '" style="width:100%;border-radius:10px;margin:20px 0;max-height:400px;object-fit:cover;" loading="lazy"/>';
+      if (i === 3 && images[2]) contentHtml += '<img src="' + images[2] + '" style="width:100%;border-radius:10px;margin:20px 0;max-height:400px;object-fit:cover;" loading="lazy"/>';
     });
+
+    var heroImg = images[0]
+      ? '<img src="' + images[0] + '" style="width:100%;max-height:420px;object-fit:cover;border-radius:12px;margin-bottom:24px;" loading="lazy"/>'
+      : '<div style="width:100%;height:280px;background:linear-gradient(135deg,#0A2463,#00C2CB);border-radius:12px;margin-bottom:24px;display:flex;align-items:center;justify-content:center;font-size:48px;">📰</div>';
+
+    var tags = a.tags ? a.tags.split(',').map(function(t) {
+      return '<span style="background:#e0f7fa;color:#0A2463;font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;">' + t.trim() + '</span>';
+    }).join('') : '';
+
+    var summary = a.summary ? '<p style="font-size:17px;font-weight:500;color:#374151;line-height:1.7;margin-bottom:24px;padding:16px;background:#f0f9ff;border-left:4px solid #00C2CB;border-radius:0 8px 8px 0;">' + a.summary + '</p>' : '';
+
+    var readTime = Math.ceil((a.content || '').split(' ').length / 200);
+    var authorLetter = (a.author || 'A')[0];
+
+    document.getElementById('articleContent').innerHTML =
+      heroImg +
+      '<div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap;">' +
+        '<span style="background:#00C2CB;color:white;font-size:11px;font-weight:700;padding:4px 12px;border-radius:4px;text-transform:uppercase;">' + a.category + '</span>' + tags +
+      '</div>' +
+      '<h1 style="font-size:26px;font-weight:800;line-height:1.3;color:#111827;margin-bottom:16px;">' + a.title + '</h1>' +
+      '<div style="display:flex;align-items:center;gap:12px;padding:14px 0;border-top:1px solid #e5e7eb;border-bottom:1px solid #e5e7eb;margin-bottom:24px;">' +
+        '<div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#0A2463,#00C2CB);display:flex;align-items:center;justify-content:center;color:white;font-size:16px;font-weight:700;flex-shrink:0;">' + authorLetter + '</div>' +
+        '<div>' +
+          '<div style="font-size:14px;font-weight:700;color:#0A2463;">By ' + a.author + '</div>' +
+          '<div style="font-size:12px;color:#6b7280;">' + date + ' · ' + readTime + ' min read</div>' +
+        '</div>' +
+        '<div style="margin-left:auto;">' +
+          '<button onclick="shareArticle()" style="background:#0A2463;color:white;border:none;padding:7px 14px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;font-family:DM Sans,sans-serif;">🔗 Share</button>' +
+        '</div>' +
+      '</div>' +
+      summary +
+      '<div style="font-family:DM Sans,sans-serif;">' + contentHtml + '</div>';
+
+    document.getElementById('articleModal').classList.add('open');
+    document.body.style.overflow = 'hidden';
   }
 
-  window.addEventListener('load', loadAdminArticles);
+  function closeArticle() {
+    document.getElementById('articleModal').classList.remove('open');
+    document.body.style.overflow = '';
+  }
 
-  // ─── LIVE NEWS API ───
+  function shareArticle() {
+    if (navigator.share) {
+      navigator.share({ title: document.title, url: window.location.href });
+    } else {
+      navigator.clipboard.writeText(window.location.href);
+      alert('Link copied!');
+    }
+  }
+
+  // ─── LOAD ARTICLES FROM SUPABASE ───
+  var secMap = {
+    'Trending News': 'trending-news-section',
+    'Startup News': 'startup-news-section',
+    'Startup Stories': 'startup-stories-section',
+    'Young Entrepreneur': 'young-entrepreneur-section',
+    'Her Story': 'her-story-section',
+    'Tech & Innovation': 'tech-section',
+    'Gov Schemes': 'gov-schemes-section'
+  };
+
+  async function loadPublishedArticles() {
+    try {
+      const articles = await supaFetch('articles?status=eq.published&order=created_at.desc');
+      if (!articles.length) return;
+      articles.forEach(function(a) {
+        var secId = secMap[a.category];
+        if (!secId) return;
+        var grid = document.querySelector('#' + secId + ' .card-grid');
+        if (!grid) return;
+        var card = document.createElement('div');
+        card.className = 'card';
+        card.style.border = '2px solid #00C2CB';
+        card.style.cursor = 'pointer';
+        var imgHtml = a.image
+          ? '<img src="' + a.image + '" style="width:100%;height:180px;object-fit:cover;" onerror="this.style.display=\'none\'"/>'
+          : '<div class="card-placeholder img-blue" style="display:flex;align-items:center;justify-content:center;font-size:32px;">📰</div>';
+        card.innerHTML =
+          '<div class="card-img-wrap">' + imgHtml +
+            '<span class="card-badge" style="background:#00C2CB;">' + a.category + '</span>' +
+          '</div>' +
+          '<div class="card-body">' +
+            '<div style="font-size:10px;background:#e0f7fa;color:#0A2463;padding:2px 8px;border-radius:4px;display:inline-block;margin-bottom:6px;font-weight:700;">✨ NEW</div>' +
+            '<h3>' + a.title + '</h3>' +
+            (a.summary ? '<p style="font-size:12px;color:#6b7280;margin-bottom:8px;">' + a.summary + '</p>' : '') +
+            '<div class="card-meta">' +
+              '<span class="author">' + a.author + '</span>' +
+              '<span class="dot">•</span>' +
+              '<span>' + a.date + '</span>' +
+            '</div>' +
+          '</div>';
+        card.addEventListener('click', function() { openArticle(a.id, a); });
+        grid.prepend(card);
+      });
+    } catch(e) {
+      console.log('Supabase load skipped, using local:', e.message);
+      loadLocalArticles();
+    }
+  }
+
+  // Fallback to localStorage if Supabase fails
+  function loadLocalArticles() {
+    try {
+      var articles = JSON.parse(localStorage.getItem('sd_articles') || '[]').filter(function(a) { return a.status === 'published'; });
+      articles.forEach(function(a) {
+        var secId = secMap[a.category];
+        if (!secId) return;
+        var grid = document.querySelector('#' + secId + ' .card-grid');
+        if (!grid) return;
+        var card = document.createElement('div');
+        card.className = 'card';
+        card.style.cursor = 'pointer';
+        card.innerHTML = '<div class="card-body"><h3>' + a.title + '</h3><div class="card-meta"><span class="author">' + a.author + '</span></div></div>';
+        card.addEventListener('click', function() { openArticle(a.id, a); });
+        grid.prepend(card);
+      });
+    } catch(e) {}
+  }
+
+  window.addEventListener('load', loadPublishedArticles);
+
+  // ─── LIVE NEWS ───
   const NEWS_KEY = '3e93c107b168874bd4dba584f33a9dc1';
   const imgColors = ['img-blue','img-teal','img-orange','img-purple','img-red','img-green'];
 
   async function fetchLiveNews() {
     try {
-      const url = `https://gnews.io/api/v4/search?q=startup+india+business&lang=en&country=in&max=6&apikey=${NEWS_KEY}`;
+      const url = 'https://gnews.io/api/v4/search?q=startup+india+business&lang=en&country=in&max=6&apikey=' + NEWS_KEY;
       const res = await fetch(url);
       const data = await res.json();
       if (data.articles && data.articles.length > 0) {
         renderNewsCards(data.articles);
         updateTicker(data.articles);
-      } else {
-        showFallbackNews();
-      }
-    } catch(e) {
-      showFallbackNews();
-    }
+      } else { showFallbackNews(); }
+    } catch(e) { showFallbackNews(); }
   }
 
   function renderNewsCards(articles) {
     const grid = document.getElementById('liveNewsGrid');
-    grid.innerHTML = articles.slice(0, 6).map((a, i) => {
-      const date = new Date(a.publishedAt).toLocaleDateString('en-IN', {day:'numeric', month:'short', year:'numeric'});
+    if (!grid) return;
+    grid.innerHTML = articles.slice(0,6).map(function(a, i) {
+      const date = new Date(a.publishedAt).toLocaleDateString('en-IN', {day:'numeric',month:'short',year:'numeric'});
       const color = imgColors[i % imgColors.length];
-      const hasImg = a.image && a.image.startsWith('http');
-      return `
-        <div class="card" onclick="window.open('${a.url}','_blank')" style="cursor:pointer;">
-          <div class="card-img-wrap">
-            ${hasImg
-              ? `<img src="${a.image}" alt="${a.title}" style="width:100%;height:180px;object-fit:cover;" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"/>
-                 <div class="card-placeholder ${color}" style="display:none;"></div>`
-              : `<div class="card-placeholder ${color}"></div>`
-            }
-            <span class="card-badge" style="background:#ef4444;">● Live</span>
-          </div>
-          <div class="card-body">
-            <h3>${a.title}</h3>
-            <div class="card-meta">
-              <span class="author">${a.source?.name || 'News'}</span>
-              <span class="dot">•</span>
-              <span>${date}</span>
-            </div>
-          </div>
-        </div>`;
+      const imgHtml = (a.image && a.image.startsWith('http'))
+        ? '<img src="' + a.image + '" style="width:100%;height:180px;object-fit:cover;" onerror="this.style.display=\'none\'"/>'
+        : '<div class="card-placeholder ' + color + '"></div>';
+      return '<div class="card" onclick="window.open(\'' + a.url + '\',\'_blank\')" style="cursor:pointer;">' +
+        '<div class="card-img-wrap">' + imgHtml + '<span class="card-badge" style="background:#ef4444;">● Live</span></div>' +
+        '<div class="card-body"><h3>' + a.title + '</h3>' +
+        '<div class="card-meta"><span class="author">' + (a.source && a.source.name ? a.source.name : 'News') + '</span><span class="dot">•</span><span>' + date + '</span></div></div></div>';
     }).join('');
   }
 
   function updateTicker(articles) {
     const track = document.getElementById('tickerTrack');
-    const items = articles.map(a => `<span>${a.title}</span>`).join('');
-    track.innerHTML = items + items; // doubled for seamless loop
+    if (!track) return;
+    const items = articles.map(function(a) { return '<span>' + a.title + '</span>'; }).join('');
+    track.innerHTML = items + items;
   }
 
   function showFallbackNews() {
     const fallback = [
-      { title: 'India startup ecosystem raises $1.2B in Q1 2026', source: 'Business Standard', color: 'img-blue' },
-      { title: 'RIL records historic $10.1B net profit for FY2025-26', source: 'Economic Times', color: 'img-teal' },
-      { title: 'Indian MSMEs drive 70% of domestic production', source: 'Livemint', color: 'img-orange' },
-      { title: 'DPIIT recognises 1,14,000+ startups across India', source: 'Startup India', color: 'img-purple' },
-      { title: 'Bengaluru retains top spot in India startup rankings 2026', source: 'YourStory', color: 'img-green' },
-      { title: 'Govt launches ₹945 Cr Startup India Seed Fund Scheme', source: 'DPIIT', color: 'img-red' }
+      {title:'India startup ecosystem raises $1.2B in Q1 2026', source:'Business Standard', color:'img-blue'},
+      {title:'RIL records historic $10.1B net profit for FY2025-26', source:'Economic Times', color:'img-teal'},
+      {title:'Indian MSMEs drive 70% of domestic production', source:'Livemint', color:'img-orange'},
+      {title:'DPIIT recognises 1,14,000+ startups across India', source:'Startup India', color:'img-purple'},
+      {title:'Bengaluru retains top spot in India startup rankings', source:'YourStory', color:'img-green'},
+      {title:'Govt launches Rs 945 Cr Startup India Seed Fund', source:'DPIIT', color:'img-red'}
     ];
     const grid = document.getElementById('liveNewsGrid');
-    grid.innerHTML = fallback.map(f => `
-      <div class="card">
-        <div class="card-img-wrap">
-          <div class="card-placeholder ${f.color}"></div>
-          <span class="card-badge">Trending News</span>
-        </div>
-        <div class="card-body">
-          <h3>${f.title}</h3>
-          <div class="card-meta">
-            <span class="author">${f.source}</span>
-            <span class="dot">•</span>
-            <span>Today</span>
-          </div>
-        </div>
-      </div>`).join('');
-
-    // fallback ticker
+    if (grid) grid.innerHTML = fallback.map(function(f) {
+      return '<div class="card"><div class="card-img-wrap"><div class="card-placeholder ' + f.color + '"></div>' +
+        '<span class="card-badge">Trending News</span></div>' +
+        '<div class="card-body"><h3>' + f.title + '</h3>' +
+        '<div class="card-meta"><span class="author">' + f.source + '</span><span class="dot">•</span><span>Today</span></div></div></div>';
+    }).join('');
     const track = document.getElementById('tickerTrack');
-    const items = fallback.map(f => `<span>${f.title}</span>`).join('');
-    track.innerHTML = items + items;
+    if (track) { const items = fallback.map(function(f) { return '<span>' + f.title + '</span>'; }).join(''); track.innerHTML = items + items; }
   }
 
-  // Fetch news on load, refresh every 30 minutes
-  fetchLiveNews();
-  setInterval(fetchLiveNews, 30 * 60 * 1000);
+  try { fetchLiveNews(); } catch(e) { showFallbackNews(); }
+  setInterval(function() { try { fetchLiveNews(); } catch(e) {} }, 30*60*1000);
 
-  function toggleMobile() {
-    const menu = document.getElementById('mobileMenu');
-    menu.classList.toggle('open');
-  }
+  // ─── MOBILE ───
+  function toggleMobile() { document.getElementById('mobileMenu').classList.toggle('open'); }
 
-  function openModal() {
-    document.getElementById('modal').classList.add('open');
-    document.body.style.overflow = 'hidden';
-  }
-  function closeModal() {
-    document.getElementById('modal').classList.remove('open');
-    document.body.style.overflow = '';
-  }
+  // ─── MODALS ───
+  function openModal() { document.getElementById('modal').classList.add('open'); document.body.style.overflow='hidden'; }
+  function closeModal() { document.getElementById('modal').classList.remove('open'); document.body.style.overflow=''; }
   function submitForm() {
-    alert('✅ Thank you! Your request has been submitted. We\'ll contact you within 48 hours.');
+    var startup = document.querySelector('#modal input[placeholder*="startup"]') ? document.querySelector('#modal input[placeholder*="startup"]').value : '';
+    var name = document.querySelector('#modal input[placeholder*="Founder"]') ? document.querySelector('#modal input[placeholder*="Founder"]').value : '';
+    var email = document.querySelector('#modal input[type=email]') ? document.querySelector('#modal input[type=email]').value : '';
+    var category = document.querySelector('#modal select') ? document.querySelector('#modal select').value : '';
+    var about = document.querySelector('#modal textarea') ? document.querySelector('#modal textarea').value : '';
+    supaFetch('feature_requests', {
+      method: 'POST',
+      prefer: 'return=minimal',
+      body: JSON.stringify({startup:startup, name:name, email:email, category:category, about:about, status:'pending'})
+    }).catch(function(){});
+    alert('Thank you! Your request has been submitted. We will contact you within 48 hours.');
     closeModal();
   }
-  document.getElementById('modal').addEventListener('click', function(e) {
-    if (e.target === this) closeModal();
-  });
+  document.getElementById('modal').addEventListener('click', function(e) { if(e.target===this) closeModal(); });
 
   // ─── SEARCH ───
   function openSearch() {
     document.getElementById('searchModal').classList.add('open');
-    document.body.style.overflow = 'hidden';
+    document.body.style.overflow='hidden';
     document.getElementById('searchInput').focus();
     showPopularTags();
   }
   function closeSearch() {
     document.getElementById('searchModal').classList.remove('open');
-    document.body.style.overflow = '';
-    document.getElementById('searchResult').style.display = 'none';
-    document.getElementById('searchInput').value = '';
+    document.body.style.overflow='';
+    document.getElementById('searchResult').style.display='none';
+    document.getElementById('searchInput').value='';
   }
-  document.getElementById('searchModal').addEventListener('click', function(e) {
-    if (e.target === this) closeSearch();
-  });
+  document.getElementById('searchModal').addEventListener('click', function(e) { if(e.target===this) closeSearch(); });
 
-  // Save & show search queries (admin data tracking)
   function saveSearchQuery(query) {
-    let searches = JSON.parse(localStorage.getItem('sd_searches') || '[]');
-    const existing = searches.find(s => s.q.toLowerCase() === query.toLowerCase());
-    if (existing) {
-      existing.count++;
-    } else {
-      searches.push({ q: query, count: 1, date: new Date().toISOString() });
-    }
+    var searches = JSON.parse(localStorage.getItem('sd_searches')||'[]');
+    var existing = searches.find(function(s) { return s.q.toLowerCase()===query.toLowerCase(); });
+    if (existing) { existing.count++; } else { searches.push({q:query,count:1,date:new Date().toISOString()}); }
     localStorage.setItem('sd_searches', JSON.stringify(searches));
   }
 
   function showPopularTags() {
-    const searches = JSON.parse(localStorage.getItem('sd_searches') || '[]');
-    const top = searches.sort((a,b) => b.count - a.count).slice(0, 6);
-    const container = document.getElementById('popularTags');
-    if (top.length === 0) {
-      container.innerHTML = '<span style="font-size:12px;color:#9ca3af;">No searches yet — be the first!</span>';
-      return;
-    }
-    container.innerHTML = top.map(s =>
-      `<span onclick="document.getElementById('searchInput').value='${s.q}';doSearch()" 
-        style="background:#e0f7fa;color:#0A2463;padding:5px 12px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;">${s.q} (${s.count})</span>`
-    ).join('');
+    var searches = JSON.parse(localStorage.getItem('sd_searches')||'[]');
+    var top = searches.sort(function(a,b){return b.count-a.count;}).slice(0,6);
+    var container = document.getElementById('popularTags');
+    if (!top.length) { container.innerHTML='<span style="font-size:12px;color:#9ca3af;">No searches yet!</span>'; return; }
+    container.innerHTML = top.map(function(s) {
+      return '<span onclick="document.getElementById(\'searchInput\').value=\'' + s.q + '\';doSearch()" style="background:#e0f7fa;color:#0A2463;padding:5px 12px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;">' + s.q + ' (' + s.count + ')</span>';
+    }).join('');
   }
 
   async function doSearch() {
-    const query = document.getElementById('searchInput').value.trim();
+    var query = document.getElementById('searchInput').value.trim();
     if (!query) return;
-
     saveSearchQuery(query);
     showPopularTags();
-
-    const loader = document.getElementById('searchLoader');
-    const result = document.getElementById('searchResult');
-    loader.style.display = 'block';
-    result.style.display = 'none';
-
+    var loader = document.getElementById('searchLoader');
+    var result = document.getElementById('searchResult');
+    loader.style.display='block';
+    result.style.display='none';
     try {
-      const res = await fetch('https://api.anthropic.com/v1/messages', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      var res = await fetch('https://api.anthropic.com/v1/messages', {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
         body: JSON.stringify({
-          model: 'claude-sonnet-4-20250514',
-          max_tokens: 400,
-          system: 'You are a helpful assistant for Startup Decoding, an Indian startup news platform. Answer questions about startups, founders, business news, and entrepreneurship concisely in 3-5 sentences. Focus on Indian startups when relevant.',
-          messages: [{ role: 'user', content: query }]
+          model:'claude-sonnet-4-20250514', max_tokens:400,
+          system:'You are a helpful assistant for Startup Decoding, an Indian startup news platform. Answer questions about startups, founders, business news, and entrepreneurship concisely in 3-5 sentences.',
+          messages:[{role:'user',content:query}]
         })
       });
-      const data = await res.json();
-      const text = data.content?.[0]?.text || 'Sorry, could not get an answer right now.';
-      loader.style.display = 'none';
-      result.style.display = 'block';
-      result.innerHTML = `<strong style="color:#0A2463;">Answer:</strong><br/><br/>${text}`;
+      var data = await res.json();
+      var text = (data.content && data.content[0]) ? data.content[0].text : 'Sorry, no answer right now.';
+      loader.style.display='none';
+      result.style.display='block';
+      result.innerHTML = '<strong style="color:#0A2463;">Answer:</strong><br/><br/>' + text;
     } catch(e) {
-      loader.style.display = 'none';
-      result.style.display = 'block';
-      result.innerHTML = '⚠️ Search is currently offline. Please try again later.';
+      loader.style.display='none';
+      result.style.display='block';
+      result.innerHTML='Search is currently offline. Please try again later.';
     }
   }
-</script>
+
 
 </body>
 </html>
