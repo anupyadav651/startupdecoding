@@ -890,6 +890,10 @@
       .card-grid { grid-template-columns: 1fr; }
       .stat { min-width: 45%; }
     }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
   </style>
 </head>
 <body>
@@ -1014,19 +1018,8 @@
 <!-- TICKER -->
 <div class="ticker">
   <div class="ticker-label">⚡ LIVE</div>
-  <div class="ticker-track">
-    <span>Nykaa posts Rs 2,648 Cr Revenue in Q4 FY26</span>
-    <span>Lenskart Reports Rs 2,516 Cr Revenue</span>
-    <span>Delhivery Posts 30% Revenue Growth in Q4</span>
-    <span>ONGC drills India's deepest well at 1,000m in Ladakh</span>
-    <span>Indian MSMEs drive 70% of domestic production</span>
-    <span>Bangalore startup raises ₹50Cr in Series A</span>
-    <span>Nykaa posts Rs 2,648 Cr Revenue in Q4 FY26</span>
-    <span>Lenskart Reports Rs 2,516 Cr Revenue</span>
-    <span>Delhivery Posts 30% Revenue Growth in Q4</span>
-    <span>ONGC drills India's deepest well at 1,000m in Ladakh</span>
-    <span>Indian MSMEs drive 70% of domestic production</span>
-    <span>Bangalore startup raises ₹50Cr in Series A</span>
+  <div class="ticker-track" id="tickerTrack">
+    <span>Loading latest news...</span>
   </div>
 </div>
 
@@ -1048,52 +1041,15 @@
     <!-- TRENDING NEWS -->
     <div class="section" id="trending-news-section">
       <div class="sec-head">
-        <h2>📈 Trending News</h2>
+        <h2>📈 Trending News <span id="liveIndicator" style="display:inline-block;background:#ef4444;color:white;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;margin-left:8px;animation:pulse 2s infinite;">● LIVE</span></h2>
         <div class="line"></div>
         <a href="#" class="see-all">See All →</a>
       </div>
-      <div class="card-grid">
-        <div class="card">
-          <div class="card-img-wrap">
-            <div class="card-placeholder img-blue"></div>
-            <span class="card-badge">Trending News</span>
-          </div>
-          <div class="card-body">
-            <h3>ONGC drills India's deepest well at 1,000 metres depth in Ladakh for sustainable energy</h3>
-            <div class="card-meta">
-              <span class="author">Ishita Ganguly</span>
-              <span class="dot">•</span>
-              <span>May 25, 2026</span>
-            </div>
-          </div>
-        </div>
-        <div class="card">
-          <div class="card-img-wrap">
-            <div class="card-placeholder img-teal"></div>
-            <span class="card-badge">Trending News</span>
-          </div>
-          <div class="card-body">
-            <h3>RIL records historic $10.1B net profit for FY2025-26, highest ever posted by an Indian company</h3>
-            <div class="card-meta">
-              <span class="author">Ishita Ganguly</span>
-              <span class="dot">•</span>
-              <span>May 25, 2026</span>
-            </div>
-          </div>
-        </div>
-        <div class="card">
-          <div class="card-img-wrap">
-            <div class="card-placeholder img-orange"></div>
-            <span class="card-badge">Trending News</span>
-          </div>
-          <div class="card-body">
-            <h3>Indian MSMEs drive 70% of domestic production but continue to lack funding access</h3>
-            <div class="card-meta">
-              <span class="author">Devanshu Srivastava</span>
-              <span class="dot">•</span>
-              <span>May 24, 2026</span>
-            </div>
-          </div>
+      <div class="card-grid" id="liveNewsGrid">
+        <!-- Live news loads here -->
+        <div class="card" style="grid-column:1/-1;text-align:center;padding:40px;">
+          <div style="font-size:24px;margin-bottom:8px;">⏳</div>
+          <p style="color:#6b7280;font-size:14px;">Loading live news...</p>
         </div>
       </div>
     </div>
@@ -1705,6 +1661,96 @@
   }
 
   window.addEventListener('load', loadAdminArticles);
+
+  // ─── LIVE NEWS API ───
+  const NEWS_KEY = '3e93c107b168874bd4dba584f33a9dc1';
+  const imgColors = ['img-blue','img-teal','img-orange','img-purple','img-red','img-green'];
+
+  async function fetchLiveNews() {
+    try {
+      const url = `https://gnews.io/api/v4/search?q=startup+india+business&lang=en&country=in&max=6&apikey=${NEWS_KEY}`;
+      const res = await fetch(url);
+      const data = await res.json();
+      if (data.articles && data.articles.length > 0) {
+        renderNewsCards(data.articles);
+        updateTicker(data.articles);
+      } else {
+        showFallbackNews();
+      }
+    } catch(e) {
+      showFallbackNews();
+    }
+  }
+
+  function renderNewsCards(articles) {
+    const grid = document.getElementById('liveNewsGrid');
+    grid.innerHTML = articles.slice(0, 6).map((a, i) => {
+      const date = new Date(a.publishedAt).toLocaleDateString('en-IN', {day:'numeric', month:'short', year:'numeric'});
+      const color = imgColors[i % imgColors.length];
+      const hasImg = a.image && a.image.startsWith('http');
+      return `
+        <div class="card" onclick="window.open('${a.url}','_blank')" style="cursor:pointer;">
+          <div class="card-img-wrap">
+            ${hasImg
+              ? `<img src="${a.image}" alt="${a.title}" style="width:100%;height:180px;object-fit:cover;" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"/>
+                 <div class="card-placeholder ${color}" style="display:none;"></div>`
+              : `<div class="card-placeholder ${color}"></div>`
+            }
+            <span class="card-badge" style="background:#ef4444;">● Live</span>
+          </div>
+          <div class="card-body">
+            <h3>${a.title}</h3>
+            <div class="card-meta">
+              <span class="author">${a.source?.name || 'News'}</span>
+              <span class="dot">•</span>
+              <span>${date}</span>
+            </div>
+          </div>
+        </div>`;
+    }).join('');
+  }
+
+  function updateTicker(articles) {
+    const track = document.getElementById('tickerTrack');
+    const items = articles.map(a => `<span>${a.title}</span>`).join('');
+    track.innerHTML = items + items; // doubled for seamless loop
+  }
+
+  function showFallbackNews() {
+    const fallback = [
+      { title: 'India startup ecosystem raises $1.2B in Q1 2026', source: 'Business Standard', color: 'img-blue' },
+      { title: 'RIL records historic $10.1B net profit for FY2025-26', source: 'Economic Times', color: 'img-teal' },
+      { title: 'Indian MSMEs drive 70% of domestic production', source: 'Livemint', color: 'img-orange' },
+      { title: 'DPIIT recognises 1,14,000+ startups across India', source: 'Startup India', color: 'img-purple' },
+      { title: 'Bengaluru retains top spot in India startup rankings 2026', source: 'YourStory', color: 'img-green' },
+      { title: 'Govt launches ₹945 Cr Startup India Seed Fund Scheme', source: 'DPIIT', color: 'img-red' }
+    ];
+    const grid = document.getElementById('liveNewsGrid');
+    grid.innerHTML = fallback.map(f => `
+      <div class="card">
+        <div class="card-img-wrap">
+          <div class="card-placeholder ${f.color}"></div>
+          <span class="card-badge">Trending News</span>
+        </div>
+        <div class="card-body">
+          <h3>${f.title}</h3>
+          <div class="card-meta">
+            <span class="author">${f.source}</span>
+            <span class="dot">•</span>
+            <span>Today</span>
+          </div>
+        </div>
+      </div>`).join('');
+
+    // fallback ticker
+    const track = document.getElementById('tickerTrack');
+    const items = fallback.map(f => `<span>${f.title}</span>`).join('');
+    track.innerHTML = items + items;
+  }
+
+  // Fetch news on load, refresh every 30 minutes
+  fetchLiveNews();
+  setInterval(fetchLiveNews, 30 * 60 * 1000);
 
   function toggleMobile() {
     const menu = document.getElementById('mobileMenu');
