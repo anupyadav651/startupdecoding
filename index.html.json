@@ -1,14 +1,11 @@
 {
-  "rewrites": [
-    { "source": "/admin", "destination": "/admin.html" },
-    { "source": "/about", "destination": "/about.html" }
+  "version": 2,
+  "builds": [
+    { "src": "*.html", "use": "@vercel/static" }
   ],
-  "headers": [
-    {
-      "source": "/(.*)",
-      "headers": [
-        { "key": "X-Content-Type-Options", "value": "nosniff" }
-      ]
-    }
+  "routes": [
+    { "src": "/admin", "dest": "/admin.html" },
+    { "src": "/about", "dest": "/about.html" },
+    { "src": "/(.*)", "dest": "/$1" }
   ]
 }
