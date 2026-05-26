@@ -1788,7 +1788,11 @@
     } catch(e) {}
   }
 
-  window.addEventListener('load', loadPublishedArticles);
+  window.addEventListener('load', function() {
+    try { loadPublishedArticles(); } catch(e) { console.log('Articles:', e); }
+    try { showFallbackNews(); } catch(e) { console.log('News:', e); }
+    setTimeout(function() { try { fetchLiveNews(); } catch(e) {} }, 1000);
+  });
 
   // ─── LIVE NEWS ───
   const NEWS_KEY = '3e93c107b168874bd4dba584f33a9dc1';
@@ -1864,10 +1868,6 @@
     }
   }
 
-  // Show fallback FIRST so page never looks empty
-  showFallbackNews();
-  // Then try live API in background
-  setTimeout(function() { try { fetchLiveNews(); } catch(e) {} }, 500);
   setInterval(function() { try { fetchLiveNews(); } catch(e) {} }, 30*60*1000);
 
   // ─── MOBILE ───
@@ -1890,7 +1890,7 @@
     alert('Thank you! Your request has been submitted. We will contact you within 48 hours.');
     closeModal();
   }
-  document.getElementById('modal').addEventListener('click', function(e) { if(e.target===this) closeModal(); });
+  try { document.getElementById('modal').addEventListener('click', function(e) { if(e.target===this) closeModal(); }); } catch(e) {}
 
   // ─── SEARCH ───
   function openSearch() {
@@ -1905,7 +1905,7 @@
     document.getElementById('searchResult').style.display='none';
     document.getElementById('searchInput').value='';
   }
-  document.getElementById('searchModal').addEventListener('click', function(e) { if(e.target===this) closeSearch(); });
+  try { document.getElementById('searchModal').addEventListener('click', function(e) { if(e.target===this) closeSearch(); }); } catch(e) {}
 
   function saveSearchQuery(query) {
     var searches = JSON.parse(localStorage.getItem('sd_searches')||'[]');
