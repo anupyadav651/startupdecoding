@@ -950,6 +950,8 @@
     </li>
     <li><a href="#">Startups</a></li>
     <li><a href="#">Podcast</a></li>
+    <li><a href="about.html">About</a></li>
+    <li><a href="about.html#contact">Contact</a></li>
     <li><a href="#">Gov Schemes</a></li>
     <li><a href="#" onclick="openSearch(); return false;" style="font-size:18px;padding:22px 10px;">🔍</a></li>
     <li><a href="#" onclick="openModal(); return false;" class="nav-cta">Get Featured</a></li>
@@ -966,6 +968,8 @@
   <a href="#">📖 Stories</a>
   <a href="#">🚀 Startups</a>
   <a href="#">🎙️ Podcast</a>
+  <a href="about.html">ℹ️ About Us</a>
+  <a href="about.html#contact">📧 Contact</a>
   <a href="#">🏛️ Gov Schemes</a>
   <a href="#" onclick="openSearch();toggleMobile()">🔍 Search</a>
   <a href="#" onclick="openModal();toggleMobile()" class="m-cta">🚀 Get Featured</a>
@@ -1042,13 +1046,13 @@
 
 <!-- STATS BAR -->
 <div class="stats-bar">
-  <div class="stat"><strong>12K+</strong><span>Stories Published</span></div>
+  <div class="stat"><strong id="stat-stories">12K+</strong><span>Stories Published</span></div>
   <div class="stat-sep"></div>
-  <div class="stat"><strong>4.2M</strong><span>Monthly Readers</span></div>
+  <div class="stat"><strong id="stat-readers">4.2M</strong><span>Monthly Readers</span></div>
   <div class="stat-sep"></div>
-  <div class="stat"><strong>850+</strong><span>Startups Featured</span></div>
+  <div class="stat"><strong id="stat-startups">850+</strong><span>Startups Featured</span></div>
   <div class="stat-sep"></div>
-  <div class="stat"><strong>200+</strong><span>Cities Covered</span></div>
+  <div class="stat"><strong id="stat-cities">200+</strong><span>Cities Covered</span></div>
 </div>
 
 <!-- MAIN CONTENT -->
@@ -1538,8 +1542,8 @@
     <div class="footer-col">
       <h4>About</h4>
       <ul>
-        <li><a href="#">About Us</a></li>
-        <li><a href="#">Contact Us</a></li>
+        <li><a href="about.html">About Us</a></li>
+        <li><a href="about.html#contact">Contact Us</a></li>
         <li><a href="#">Join Our Team</a></li>
         <li><a href="#">Privacy Policy</a></li>
         <li><a href="#">Terms & Conditions</a></li>
@@ -1792,6 +1796,14 @@
     try { loadPublishedArticles(); } catch(e) { console.log('Articles:', e); }
     try { showFallbackNews(); } catch(e) { console.log('News:', e); }
     setTimeout(function() { try { fetchLiveNews(); } catch(e) {} }, 1000);
+    // Load site settings
+    try {
+      var s = JSON.parse(localStorage.getItem('sd_settings') || '{}');
+      if (s.stories) document.getElementById('stat-stories').textContent = s.stories;
+      if (s.readers) document.getElementById('stat-readers').textContent = s.readers;
+      if (s.startups) document.getElementById('stat-startups').textContent = s.startups;
+      if (s.cities) document.getElementById('stat-cities').textContent = s.cities;
+    } catch(e) {}
   });
 
   // ─── LIVE NEWS ───

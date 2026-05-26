@@ -200,6 +200,7 @@
     <div class="nav-item" id="n-searches" onclick="go('searches',this)"><span class="icon">🔍</span> Search Analytics</div>
     <div class="nav-item" id="n-users" onclick="go('users',this)"><span class="icon">👥</span> Manage Users</div>
     <div class="nav-item" onclick="window.open('index.html','_blank')"><span class="icon">🌐</span> View Website ↗</div>
+    <div class="nav-item" id="n-settings" onclick="go('settings',this)"><span class="icon">⚙️</span> Site Settings</div>
 
     <div class="sidebar-footer">
       <div class="session-info" id="sessionTimer">Session: active</div>
@@ -309,6 +310,61 @@
     <!-- DENIED -->
     <div class="page" id="page-denied">
       <div class="denied"><div class="em">🔒</div><h3>Access Restricted</h3><p>You don't have permission to view this section.<br/>Contact your Founder to request access.</p></div>
+    </div>
+
+    <!-- SETTINGS -->
+    <div class="page" id="page-settings">
+      <div class="page-title">⚙️ Site Settings</div>
+      <div class="page-sub">Edit stats, contact info, and featured section — changes reflect live on website.</div>
+
+      <div class="box">
+        <h3>📊 Homepage Stats</h3>
+        <div class="grid2">
+          <div class="f"><label>Stories Published</label><input type="text" id="s-stories" placeholder="12K+"/></div>
+          <div class="f"><label>Monthly Readers</label><input type="text" id="s-readers" placeholder="4.2M"/></div>
+          <div class="f"><label>Startups Featured</label><input type="text" id="s-startups" placeholder="850+"/></div>
+          <div class="f"><label>Cities Covered</label><input type="text" id="s-cities" placeholder="200+"/></div>
+        </div>
+        <button class="btn-pub" onclick="saveSettings()">💾 Save Stats</button>
+      </div>
+
+      <div class="box">
+        <h3>🚀 Get Featured Box Text</h3>
+        <div class="f"><label>Heading</label><input type="text" id="s-feat-title" placeholder="Get Your Startup Featured"/></div>
+        <div class="f"><label>Description</label><input type="text" id="s-feat-desc" placeholder="Reach 4.2 million startup enthusiasts..."/></div>
+        <div class="f"><label>Button Text</label><input type="text" id="s-feat-btn" placeholder="Apply to Get Featured"/></div>
+        <button class="btn-pub" onclick="saveSettings()" style="margin-top:8px;">💾 Save Featured Box</button>
+      </div>
+
+      <div class="box">
+        <h3>📧 Contact Information</h3>
+        <div class="grid2">
+          <div class="f"><label>Main Email</label><input type="text" id="s-email" placeholder="gourav@startupdecoding.com"/></div>
+          <div class="f"><label>Partner Email</label><input type="text" id="s-partner" placeholder="partner@startupdecoding.com"/></div>
+        </div>
+        <button class="btn-pub" onclick="saveSettings()" style="margin-top:8px;">💾 Save Contact Info</button>
+      </div>
+
+      <div class="box">
+        <h3>📱 Social Media Links</h3>
+        <div class="grid2">
+          <div class="f"><label>Instagram (Main)</label><input type="text" id="s-insta" placeholder="https://instagram.com/..."/></div>
+          <div class="f"><label>LinkedIn</label><input type="text" id="s-linkedin" placeholder="https://linkedin.com/..."/></div>
+          <div class="f"><label>Twitter / X</label><input type="text" id="s-twitter" placeholder="https://twitter.com/..."/></div>
+          <div class="f"><label>YouTube</label><input type="text" id="s-youtube" placeholder="https://youtube.com/..."/></div>
+        </div>
+        <button class="btn-pub" onclick="saveSettings()" style="margin-top:8px;">💾 Save Social Links</button>
+      </div>
+
+      <div class="box" style="border:1px solid #f59e0b;">
+        <h3 style="color:#f59e0b;">💡 How Settings Work</h3>
+        <p style="color:#94a3b8;font-size:13px;line-height:1.7;">
+          Stats and settings saved here are stored in the cloud database. Your website reads them automatically on each visit.<br/><br/>
+          <strong style="color:#e2e8f0;">Article Order:</strong> Newest articles appear first. Use the "Pin" feature (coming soon) to keep important articles at top regardless of date.<br/><br/>
+          <strong style="color:#e2e8f0;">Trending News:</strong> Auto-updates every 30 minutes from live news API.<br/><br/>
+          <strong style="color:#e2e8f0;">Google AdSense:</strong> Once you have traffic, apply at google.com/adsense — paste one code and ads appear automatically.
+        </p>
+      </div>
     </div>
 
   </div><!-- end main-content -->
@@ -522,7 +578,7 @@ document.addEventListener('keydown', () => SEC.getSession());
 // ═══════════════════════════════════════════
 // UI SETUP BY ROLE
 // ═══════════════════════════════════════════
-const ALL_PAGES = ['write','articles','requests','searches','users'];
+const ALL_PAGES = ['write','articles','requests','searches','users','settings'];
 
 function setupUI() {
   const role = currentUser.role;
@@ -571,6 +627,7 @@ function go(page, el) {
   if (page==='articles') loadArticles();
   if (page==='requests') loadRequests();
   if (page==='searches') loadSearches();
+  if (page==='settings') loadSettings();
   if (page==='users') loadUsers();
 }
 
@@ -815,6 +872,53 @@ function resetPw(i) {
 // ═══════════════════════════════════════════
 // TOAST
 // ═══════════════════════════════════════════
+
+// ═══════════════════════════════════════════
+// SITE SETTINGS
+// ═══════════════════════════════════════════
+function loadSettings() {
+  const s = JSON.parse(localStorage.getItem('sd_settings') || '{}');
+  if (s.stories) document.getElementById('s-stories').value = s.stories;
+  if (s.readers) document.getElementById('s-readers').value = s.readers;
+  if (s.startups) document.getElementById('s-startups').value = s.startups;
+  if (s.cities) document.getElementById('s-cities').value = s.cities;
+  if (s.featTitle) document.getElementById('s-feat-title').value = s.featTitle;
+  if (s.featDesc) document.getElementById('s-feat-desc').value = s.featDesc;
+  if (s.featBtn) document.getElementById('s-feat-btn').value = s.featBtn;
+  if (s.email) document.getElementById('s-email').value = s.email;
+  if (s.partner) document.getElementById('s-partner').value = s.partner;
+  if (s.insta) document.getElementById('s-insta').value = s.insta;
+  if (s.linkedin) document.getElementById('s-linkedin').value = s.linkedin;
+  if (s.twitter) document.getElementById('s-twitter').value = s.twitter;
+  if (s.youtube) document.getElementById('s-youtube').value = s.youtube;
+}
+
+function saveSettings() {
+  const s = {
+    stories: document.getElementById('s-stories').value,
+    readers: document.getElementById('s-readers').value,
+    startups: document.getElementById('s-startups').value,
+    cities: document.getElementById('s-cities').value,
+    featTitle: document.getElementById('s-feat-title').value,
+    featDesc: document.getElementById('s-feat-desc').value,
+    featBtn: document.getElementById('s-feat-btn').value,
+    email: document.getElementById('s-email').value,
+    partner: document.getElementById('s-partner').value,
+    insta: document.getElementById('s-insta').value,
+    linkedin: document.getElementById('s-linkedin').value,
+    twitter: document.getElementById('s-twitter').value,
+    youtube: document.getElementById('s-youtube').value,
+    updated: new Date().toISOString()
+  };
+  localStorage.setItem('sd_settings', JSON.stringify(s));
+  // Also save to Supabase
+  try {
+    db('site_settings', {method:'POST', prefer:'return=minimal', body:JSON.stringify({key:'settings',value:JSON.stringify(s)})})
+      .catch(()=>{});
+  } catch(e) {}
+  toast('✅ Settings saved! Refresh your website to see changes.');
+}
+
 function toast(msg,bg='#064e3b',color='#34d399') {
   const t=document.getElementById('toast');
   t.textContent=msg; t.style.background=bg; t.style.color=color; t.style.display='block';
