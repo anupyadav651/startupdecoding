@@ -3,7 +3,49 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Startup Decoding</title>
+  <title>Startup Decoding — Decode India's Startup Revolution | Startup News India</title>
+  <!-- SEO Meta Tags -->
+  <meta name="description" content="Startup Decoding — India's premier platform for startup news, founder stories, business insights and government schemes. Decode the strategies behind India's top startups."/>
+  <meta name="keywords" content="startup news India, startup stories, Indian startups, startup decoding, founder stories, business news India, startup funding, MSME, young entrepreneur, startup ecosystem India"/>
+  <meta name="author" content="Startup Decoding"/>
+  <meta name="robots" content="index, follow"/>
+  <link rel="canonical" href="https://startupdecoding.in/"/>
+
+  <!-- Open Graph (WhatsApp, Facebook preview) -->
+  <meta property="og:type" content="website"/>
+  <meta property="og:title" content="Startup Decoding — Decode India's Startup Revolution"/>
+  <meta property="og:description" content="India's premier platform for startup news, founder stories and business insights. 4.2M+ monthly readers."/>
+  <meta property="og:url" content="https://startupdecoding.in/"/>
+  <meta property="og:site_name" content="Startup Decoding"/>
+  <meta property="og:image" content="https://startupdecoding.in/og-image.png"/>
+  <meta property="og:locale" content="en_IN"/>
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image"/>
+  <meta name="twitter:title" content="Startup Decoding — Decode India's Startup Revolution"/>
+  <meta name="twitter:description" content="India's premier platform for startup news, founder stories and business insights."/>
+  <meta name="twitter:image" content="https://startupdecoding.in/og-image.png"/>
+  <meta name="twitter:site" content="@startupdecoding"/>
+
+  <!-- Schema.org Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "NewsMediaOrganization",
+    "name": "Startup Decoding",
+    "url": "https://startupdecoding.in",
+    "logo": "https://startupdecoding.in/logo.png",
+    "description": "India premier platform for startup news and founder stories",
+    "foundingDate": "2023",
+    "address": { "@type": "PostalAddress", "addressCountry": "IN" },
+    "sameAs": [
+      "https://instagram.com/startupdecoding",
+      "https://twitter.com/startupdecoding",
+      "https://linkedin.com/company/startupdecoding",
+      "https://youtube.com/@startupdecoding"
+    ]
+  }
+  </script>
   <!-- Google Analytics -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZDSH0FZJR3"></script>
   <script>
@@ -12,6 +54,9 @@
     gtag('js', new Date());
     gtag('config', 'G-ZDSH0FZJR3');
   </script>
+  <!-- EmailJS -->
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <script>emailjs.init("DNEBCWRUDX50gTMJW");</script>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
   <style>
     :root {
@@ -1594,19 +1639,19 @@
     <p>Tell us about your startup and we'll get back to you within 48 hours.</p>
     <div class="form-row">
       <label>Startup Name *</label>
-      <input type="text" placeholder="e.g. Safsafaiwala"/>
+      <input type="text" id="f-startup" placeholder="e.g. Safsafaiwala"/>
     </div>
     <div class="form-row">
       <label>Your Name *</label>
-      <input type="text" placeholder="Founder / Co-founder name"/>
+      <input type="text" id="f-name" placeholder="Founder / Co-founder name"/>
     </div>
     <div class="form-row">
       <label>Email Address *</label>
-      <input type="email" placeholder="you@yourstartup.com"/>
+      <input type="email" id="f-email" placeholder="you@yourstartup.com"/>
     </div>
     <div class="form-row">
       <label>Category</label>
-      <select>
+      <select id="f-category">
         <option>Startup News</option>
         <option>Startup Stories</option>
         <option>Young Entrepreneur</option>
@@ -1619,7 +1664,7 @@
     </div>
     <div class="form-row">
       <label>About Your Startup</label>
-      <textarea placeholder="Tell us your story in 2-3 lines..."></textarea>
+      <textarea id="f-about" placeholder="Tell us your story in 2-3 lines..."></textarea>
     </div>
     <button class="form-submit" onclick="submitForm()">Submit Request 🚀</button>
   </div>
@@ -1889,17 +1934,38 @@
   function openModal() { document.getElementById('modal').classList.add('open'); document.body.style.overflow='hidden'; }
   function closeModal() { document.getElementById('modal').classList.remove('open'); document.body.style.overflow=''; }
   function submitForm() {
-    var startup = document.querySelector('#modal input[placeholder*="startup"]') ? document.querySelector('#modal input[placeholder*="startup"]').value : '';
-    var name = document.querySelector('#modal input[placeholder*="Founder"]') ? document.querySelector('#modal input[placeholder*="Founder"]').value : '';
-    var email = document.querySelector('#modal input[type=email]') ? document.querySelector('#modal input[type=email]').value : '';
-    var category = document.querySelector('#modal select') ? document.querySelector('#modal select').value : '';
-    var about = document.querySelector('#modal textarea') ? document.querySelector('#modal textarea').value : '';
+    var startup = document.getElementById('f-startup') ? document.getElementById('f-startup').value.trim() : '';
+    var name = document.getElementById('f-name') ? document.getElementById('f-name').value.trim() : '';
+    var email = document.getElementById('f-email') ? document.getElementById('f-email').value.trim() : '';
+    var category = document.getElementById('f-category') ? document.getElementById('f-category').value : '';
+    var about = document.getElementById('f-about') ? document.getElementById('f-about').value.trim() : '';
+
+    if (!startup || !name || !email) {
+      alert('Please fill in Startup Name, Your Name and Email!');
+      return;
+    }
+
+    // Save to Supabase
     supaFetch('feature_requests', {
       method: 'POST',
       prefer: 'return=minimal',
       body: JSON.stringify({startup:startup, name:name, email:email, category:category, about:about, status:'pending'})
     }).catch(function(){});
-    alert('Thank you! Your request has been submitted. We will contact you within 48 hours.');
+
+    // Send email via EmailJS
+    emailjs.send('service_8g4olxi', 'template_qcjuo5p', {
+      startup_name: startup,
+      from_name: name,
+      from_email: email,
+      category: category,
+      message: about
+    }).then(function() {
+      console.log('Email sent!');
+    }).catch(function(err) {
+      console.log('Email error:', err);
+    });
+
+    alert('✅ Thank you! Your request has been submitted. We will contact you within 48 hours.');
     closeModal();
   }
   try { document.getElementById('modal').addEventListener('click', function(e) { if(e.target===this) closeModal(); }); } catch(e) {}
