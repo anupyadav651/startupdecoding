@@ -262,23 +262,23 @@
     <li>
       <a href="#">News ▾</a>
       <div class="dropdown-menu">
-        <a onclick="scrollTo('startup-news-section');return false;">Startup News</a>
-        <a onclick="scrollTo('trending-news-section');return false;">Trending News</a>
-        <a onclick="scrollTo('tech-section');return false;">Tech &amp; Innovation</a>
+        <a onclick="goTo('startup-news-section');return false;">Startup News</a>
+        <a onclick="goTo('trending-news-section');return false;">Trending News</a>
+        <a onclick="goTo('tech-section');return false;">Tech &amp; Innovation</a>
       </div>
     </li>
     <li>
       <a href="#">Stories ▾</a>
       <div class="dropdown-menu">
-        <a onclick="scrollTo('startup-stories-section');return false;">Startup Stories</a>
-        <a onclick="scrollTo('young-entrepreneur-section');return false;">Young Entrepreneur</a>
-        <a onclick="scrollTo('her-story-section');return false;">Her Story</a>
-        <a onclick="scrollTo('smb-section');return false;">SMB's</a>
-        <a onclick="scrollTo('farming-section');return false;">Farming</a>
+        <a onclick="goTo('startup-stories-section');return false;">Startup Stories</a>
+        <a onclick="goTo('young-entrepreneur-section');return false;">Young Entrepreneur</a>
+        <a onclick="goTo('her-story-section');return false;">Her Story</a>
+        <a onclick="goTo('smb-section');return false;">SMB's</a>
+        <a onclick="goTo('farming-section');return false;">Farming</a>
       </div>
     </li>
-    <li><a onclick="scrollTo('startup-news-section');return false;">Startups</a></li>
-    <li><a onclick="scrollTo('podcast-section');return false;">Podcast</a></li>
+    <li><a onclick="goTo('startup-news-section');return false;">Startups</a></li>
+    <li><a onclick="goTo('podcast-section');return false;">Podcast</a></li>
     <li><a onclick="openSearch();return false;" style="font-size:18px;padding:22px 10px;">🔍</a></li>
     <li><a onclick="openFeatured();return false;" class="nav-cta">Get Featured</a></li>
   </ul>
@@ -288,13 +288,13 @@
 <!-- MOBILE MENU -->
 <div class="mobile-menu" id="mobileMenu">
   <a href="index.html">🏠 Home</a>
-  <a onclick="scrollTo('startup-news-section');toggleMobile();">📰 Startup News</a>
-  <a onclick="scrollTo('startup-stories-section');toggleMobile();">📖 Startup Stories</a>
-  <a onclick="scrollTo('young-entrepreneur-section');toggleMobile();">⚡ Young Entrepreneur</a>
-  <a onclick="scrollTo('her-story-section');toggleMobile();">👩 Her Story</a>
-  <a onclick="scrollTo('tech-section');toggleMobile();">💡 Tech &amp; Innovation</a>
-  <a onclick="scrollTo('gov-schemes-section');toggleMobile();">🏛️ Gov Schemes</a>
-  <a onclick="scrollTo('trending-news-section');toggleMobile();">📈 Trending News</a>
+  <a onclick="goTo('startup-news-section');toggleMobile();">📰 Startup News</a>
+  <a onclick="goTo('startup-stories-section');toggleMobile();">📖 Startup Stories</a>
+  <a onclick="goTo('young-entrepreneur-section');toggleMobile();">⚡ Young Entrepreneur</a>
+  <a onclick="goTo('her-story-section');toggleMobile();">👩 Her Story</a>
+  <a onclick="goTo('tech-section');toggleMobile();">💡 Tech &amp; Innovation</a>
+  <a onclick="goTo('gov-schemes-section');toggleMobile();">🏛️ Gov Schemes</a>
+  <a onclick="goTo('trending-news-section');toggleMobile();">📈 Trending News</a>
   <a href="about.html">ℹ️ About Us</a>
   <a href="about.html#contact">📧 Contact</a>
   <a onclick="openSearch();toggleMobile();">🔍 Search</a>
@@ -357,20 +357,20 @@
     <h1>Decode India's Most Inspiring<br/>Startup Journeys</h1>
     <p>From garage startups to unicorns — we decode the strategies, failures, and breakthroughs shaping India's entrepreneurial future.</p>
     <!-- FIX: Explore Stories now scrolls to startup-stories-section -->
-    <button class="hero-btn" onclick="scrollTo('startup-stories-section')">Explore Stories →</button>
+    <button class="hero-btn" onclick="goTo('startup-stories-section')">Explore Stories →</button>
   </div>
   <div class="hero-side">
     <h3>⚡ Top Stories Today</h3>
     <div id="topStoriesContainer">
-      <div class="side-story" onclick="scrollTo('tech-section')">
+      <div class="side-story" onclick="goTo('tech-section')">
         <div class="side-img"><img src="https://images.unsplash.com/photo-1593941707882-a5bba14938c7?w=128&h=108&fit=crop" style="width:100%;height:100%;object-fit:cover;border-radius:6px;"/></div>
         <div><h4>Noida founder builds EV power bank startup 'Mobec Innovation'</h4><span>🕐 25 MAY 2026</span></div>
       </div>
-      <div class="side-story" onclick="scrollTo('startup-news-section')">
+      <div class="side-story" onclick="goTo('startup-news-section')">
         <div class="side-img"><img src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=128&h=108&fit=crop" style="width:100%;height:100%;object-fit:cover;border-radius:6px;"/></div>
         <div><h4>RIL records historic $10.1B net profit for FY2025-26</h4><span>🕐 25 MAY 2026</span></div>
       </div>
-      <div class="side-story" onclick="scrollTo('startup-stories-section')">
+      <div class="side-story" onclick="goTo('startup-stories-section')">
         <div class="side-img"><img src="https://images.unsplash.com/photo-1556761175-5973dc0f32e7?w=128&h=108&fit=crop" style="width:100%;height:100%;object-fit:cover;border-radius:6px;"/></div>
         <div><h4>Mumbai man runs Safsafaiwala, a home cleaning business</h4><span>🕐 25 MAY 2026</span></div>
       </div>
@@ -504,11 +504,11 @@
   <aside class="sidebar">
     <div class="sidebar-box">
       <div class="sidebar-box-head">🔥 Most Read Today</div>
-      <div class="trending-item" onclick="scrollTo('young-entrepreneur-section')"><span class="t-num">01</span><div class="t-content"><h4>Gujarat boy made ₹7.4Cr building SOS tech startup</h4><span>Young Entrepreneur • May 24</span></div></div>
-      <div class="trending-item" onclick="scrollTo('startup-news-section')"><span class="t-num">02</span><div class="t-content"><h4>RIL records historic $10.1B net profit for FY2025-26</h4><span>Trending • May 25</span></div></div>
-      <div class="trending-item" onclick="scrollTo('her-story-section')"><span class="t-num">03</span><div class="t-content"><h4>Bangalore earrings sold out after PM Modi's viral gift</h4><span>Her Story • May 25</span></div></div>
-      <div class="trending-item" onclick="scrollTo('young-entrepreneur-section')"><span class="t-num">04</span><div class="t-content"><h4>Engineering duo builds world's first AI meeting agent</h4><span>Young Entrepreneur • May 5</span></div></div>
-      <div class="trending-item" onclick="scrollTo('startup-stories-section')"><span class="t-num">05</span><div class="t-content"><h4>UPSC aspirant now runs Safsafaiwala home cleaning biz</h4><span>Startup Stories • May 25</span></div></div>
+      <div class="trending-item" onclick="goTo('young-entrepreneur-section')"><span class="t-num">01</span><div class="t-content"><h4>Gujarat boy made ₹7.4Cr building SOS tech startup</h4><span>Young Entrepreneur • May 24</span></div></div>
+      <div class="trending-item" onclick="goTo('startup-news-section')"><span class="t-num">02</span><div class="t-content"><h4>RIL records historic $10.1B net profit for FY2025-26</h4><span>Trending • May 25</span></div></div>
+      <div class="trending-item" onclick="goTo('her-story-section')"><span class="t-num">03</span><div class="t-content"><h4>Bangalore earrings sold out after PM Modi's viral gift</h4><span>Her Story • May 25</span></div></div>
+      <div class="trending-item" onclick="goTo('young-entrepreneur-section')"><span class="t-num">04</span><div class="t-content"><h4>Engineering duo builds world's first AI meeting agent</h4><span>Young Entrepreneur • May 5</span></div></div>
+      <div class="trending-item" onclick="goTo('startup-stories-section')"><span class="t-num">05</span><div class="t-content"><h4>UPSC aspirant now runs Safsafaiwala home cleaning biz</h4><span>Startup Stories • May 25</span></div></div>
     </div>
     <div class="newsletter">
       <h3>Stay in the Loop</h3>
@@ -562,13 +562,13 @@
     <div class="footer-col">
       <h4>Categories</h4>
       <ul>
-        <li><a onclick="scrollTo('startup-news-section')">Startup News</a></li>
-        <li><a onclick="scrollTo('startup-stories-section')">Startup Stories</a></li>
-        <li><a onclick="scrollTo('young-entrepreneur-section')">Young Entrepreneur</a></li>
-        <li><a onclick="scrollTo('her-story-section')">Her Story</a></li>
-        <li><a onclick="scrollTo('tech-section')">Tech &amp; Innovation</a></li>
-        <li><a onclick="scrollTo('gov-schemes-section')">Gov Schemes</a></li>
-        <li><a onclick="scrollTo('trending-news-section')">Trending News</a></li>
+        <li><a onclick="goTo('startup-news-section')">Startup News</a></li>
+        <li><a onclick="goTo('startup-stories-section')">Startup Stories</a></li>
+        <li><a onclick="goTo('young-entrepreneur-section')">Young Entrepreneur</a></li>
+        <li><a onclick="goTo('her-story-section')">Her Story</a></li>
+        <li><a onclick="goTo('tech-section')">Tech &amp; Innovation</a></li>
+        <li><a onclick="goTo('gov-schemes-section')">Gov Schemes</a></li>
+        <li><a onclick="goTo('trending-news-section')">Trending News</a></li>
       </ul>
     </div>
   </div>
@@ -634,7 +634,7 @@
   if(localStorage.getItem('sd_theme')==='dark'){document.body.classList.add('dark-mode');var tb=document.getElementById('themeBtn');if(tb)tb.textContent='☀️ Light';}
 
   // SCROLL TO SECTION
-  function scrollTo(id){
+  function goTo(id){
     var el=document.getElementById(id);
     if(el)el.scrollIntoView({behavior:'smooth',block:'start'});
   }
