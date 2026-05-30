@@ -594,7 +594,6 @@
 <script>
   var SUPA_URL='https://yrjsjfzfyhygsgdazbeo.supabase.co';
   var SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlyanNqZnpmeWh5Z3NnZGF6YmVvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3MjkwMTksImV4cCI6MjA5NTMwNTAxOX0.tC0h3KUAdVlij80ZV3nddL3B1U95hR9FobrwKJzKEmo';
-  var NEWS_KEY='3e93c107b168874bd4dba584f33a9dc1';
 
   async function supaFetch(path,opts){
     opts=opts||{};
@@ -748,44 +747,170 @@
     }catch(e){console.log('Articles: using static');}
   }
 
-  // LIVE NEWS
+  // ── LIVE NEWS — 3-layer system ──
+  // Layer 1: NewsData.io (CORS-friendly, free 200 calls/day)
+  // Layer 2: RSS feeds via rss2json proxy (Economic Times, YourStory, Inc42)
+  // Layer 3: Hardcoded curated fallback
+
   var imgColors=['img-blue','img-teal','img-orange','img-purple','img-red','img-green'];
-  async function fetchLiveNews(){
-    try{
-      var r=await fetch('https://gnews.io/api/v4/search?q=startup+india+business&lang=en&country=in&max=6&apikey='+NEWS_KEY);
-      var d=await r.json();
-      if(d.articles&&d.articles.length>0){renderNewsCards(d.articles);updateTicker(d.articles);}else{showFallbackNews();}
-    }catch(e){showFallbackNews();}
-  }
-  function renderNewsCards(arts){
-    var g=document.getElementById('liveNewsGrid');if(!g)return;
-    g.innerHTML=arts.slice(0,6).map(function(a,i){
-      var dt=new Date(a.publishedAt).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'});
-      var c=imgColors[i%imgColors.length];
-      var ih=(a.image&&a.image.startsWith('http'))?'<img src="'+a.image+'" style="width:100%;height:180px;object-fit:cover;" onerror="this.style.display=\'none\'"/>':'<div class="card-placeholder '+c+'"></div>';
-      return'<div class="card" onclick="window.open(\''+a.url+'\',\'_blank\')" style="cursor:pointer;"><div class="card-img-wrap">'+ih+'<span class="card-badge" style="background:#ef4444;">● Live</span></div><div class="card-body"><h3>'+a.title+'</h3><div class="card-meta"><span class="author">'+(a.source&&a.source.name?a.source.name:'News')+'</span><span class="dot">•</span><span>'+dt+'</span></div></div></div>';
-    }).join('');
-  }
-  function updateTicker(arts){
-    var t=document.getElementById('tickerTrack');if(!t)return;
-    var items=arts.map(function(a){return'<span>'+a.title+'</span>';}).join('');
-    t.innerHTML=items+items;
-  }
+  var lastFetchTime=0;
+  var CACHE_KEY='sd_news_cache';
+  var CACHE_TTL=30*60*1000; // 30 minutes
+
+  // Trusted Indian startup sources for RSS
+  var RSS_SOURCES=[
+    {url:'https://api.rss2json.com/v1/api.json?rss_url=https%3A%2F%2Fyourstory.com%2Ffeed',source:'YourStory'},
+    {url:'https://api.rss2json.com/v1/api.json?rss_url=https%3A%2F%2Finc42.com%2Ffeed%2F',source:'Inc42'},
+    {url:'https://api.rss2json.com/v1/api.json?rss_url=https%3A%2F%2Feconomictimes.indiatimes.com%2Fsmall-biz%2Fstartups%2Frssfeeds%2F10048298.cms',source:'Economic Times'},
+    {url:'https://api.rss2json.com/v1/api.json?rss_url=https%3A%2F%2Fentrepreneurindia.co%2Ffeed%2F',source:'Entrepreneur India'}
+  ];
+
   var fallbackNews=[
-    {title:'Zepto raises $665M in funding round, now valued at $3.6 billion',source:'Economic Times',color:'img-blue',url:'https://economictimes.indiatimes.com'},
-    {title:'Meesho turns profitable: clocks Rs 97 Cr PAT in FY24 on Rs 7,615 Cr revenue',source:'YourStory',color:'img-teal',url:'https://yourstory.com'},
+    {title:'Zepto raises $665M in funding round, now valued at $3.6 billion',source:'Economic Times',color:'img-blue',url:'https://economictimes.indiatimes.com/small-biz/startups'},
+    {title:'Meesho turns profitable: clocks Rs 97 Cr PAT on Rs 7,615 Cr revenue',source:'YourStory',color:'img-teal',url:'https://yourstory.com'},
     {title:'CRED hits 12 million active users, plans aggressive expansion into lending',source:'Inc42',color:'img-orange',url:'https://inc42.com'},
     {title:'PhonePe processes 6.5 billion transactions in March 2026, leads UPI market',source:'Livemint',color:'img-purple',url:'https://livemint.com'},
     {title:'Ola Electric delivers 1 lakh scooters in single month, sets new record',source:'Business Standard',color:'img-green',url:'https://business-standard.com'},
     {title:'India becomes 3rd largest startup ecosystem globally with 1.14 lakh startups',source:'DPIIT',color:'img-red',url:'https://startupindia.gov.in'}
   ];
+
+  // Try to load from cache first (avoid unnecessary API calls)
+  function loadCachedNews(){
+    try{
+      var cached=JSON.parse(localStorage.getItem(CACHE_KEY)||'null');
+      if(cached&&cached.ts&&(Date.now()-cached.ts)<CACHE_TTL&&cached.articles&&cached.articles.length){
+        renderNewsCards(cached.articles);
+        updateTicker(cached.articles);
+        return true;
+      }
+    }catch(e){}
+    return false;
+  }
+
+  function saveNewsCache(articles){
+    try{localStorage.setItem(CACHE_KEY,JSON.stringify({ts:Date.now(),articles:articles}));}catch(e){}
+  }
+
+  // LAYER 1: NewsData.io
+  async function fetchFromNewsData(){
+    // NewsData.io allows CORS and is free (200 calls/day)
+    var url='https://newsdata.io/api/1/latest?apikey=pub_70de92ea7fbd4d64b82208ab1fc8eeda&q=startup+india+business&country=in&language=en&size=6';
+    var r=await fetch(url);
+    if(!r.ok)throw new Error('NewsData failed');
+    var d=await r.json();
+    if(!d.results||!d.results.length)throw new Error('No results');
+    return d.results.map(function(a){return{
+      title:a.title,
+      url:a.link,
+      image:a.image_url||'',
+      source:{name:a.source_id||'News India'},
+      publishedAt:a.pubDate
+    };});
+  }
+
+  // LAYER 2: RSS feeds from trusted Indian sources
+  async function fetchFromRSS(){
+    var allArticles=[];
+    for(var i=0;i<RSS_SOURCES.length;i++){
+      try{
+        var r=await fetch(RSS_SOURCES[i].url);
+        if(!r.ok)continue;
+        var d=await r.json();
+        if(d.status==='ok'&&d.items&&d.items.length){
+          var src=RSS_SOURCES[i].source;
+          var items=d.items.slice(0,2).map(function(item){
+            return{
+              title:item.title,
+              url:item.link,
+              image:item.thumbnail||item.enclosure&&item.enclosure.link||'',
+              source:{name:src},
+              publishedAt:item.pubDate
+            };
+          });
+          allArticles=allArticles.concat(items);
+        }
+      }catch(e){continue;}
+    }
+    if(!allArticles.length)throw new Error('RSS failed');
+    // Sort by date, newest first
+    allArticles.sort(function(a,b){return new Date(b.publishedAt)-new Date(a.publishedAt);});
+    return allArticles.slice(0,6);
+  }
+
+  // Main fetch function — tries Layer 1, then Layer 2, then Layer 3
+  async function fetchLiveNews(){
+    // Don't fetch if we fetched recently (rate limit protection)
+    if(Date.now()-lastFetchTime<CACHE_TTL&&lastFetchTime>0){
+      if(!loadCachedNews())showFallbackNews();
+      return;
+    }
+    try{
+      // Layer 1: NewsData.io
+      var articles=await fetchFromNewsData();
+      saveNewsCache(articles);
+      renderNewsCards(articles);
+      updateTicker(articles);
+      lastFetchTime=Date.now();
+      console.log('News: loaded from NewsData.io');
+    }catch(e1){
+      try{
+        // Layer 2: RSS feeds
+        var articles=await fetchFromRSS();
+        saveNewsCache(articles);
+        renderNewsCards(articles);
+        updateTicker(articles);
+        lastFetchTime=Date.now();
+        console.log('News: loaded from RSS feeds');
+      }catch(e2){
+        // Layer 3: hardcoded fallback
+        console.log('News: using fallback');
+        showFallbackNews();
+      }
+    }
+  }
+
+  function renderNewsCards(arts){
+    var g=document.getElementById('liveNewsGrid');if(!g)return;
+    g.innerHTML=arts.slice(0,6).map(function(a,i){
+      var dt='';
+      try{dt=new Date(a.publishedAt).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'});}catch(e){dt='Today';}
+      var c=imgColors[i%imgColors.length];
+      var ih=(a.image&&a.image.startsWith('http'))
+        ?'<img src="'+a.image+'" style="width:100%;height:180px;object-fit:cover;" loading="lazy" onerror="this.parentNode.innerHTML=\'<div class=\\\"card-placeholder '+c+'\\\"></div><span class=\\\"card-badge\\\" style=\\\"background:#ef4444;\\\">● Live</span>\'"/>'
+        :'<div class="card-placeholder '+c+'"></div>';
+      var srcName=a.source&&a.source.name?a.source.name:'News';
+      // Clean up title — remove source name duplicates
+      var title=a.title.replace(/\s*[-|]\s*(YourStory|Inc42|Economic Times|Livemint|Business Standard)[^]*/i,'').trim();
+      return'<div class="card" onclick="window.open(\''+a.url+'\',\'_blank\')" style="cursor:pointer;">'+
+        '<div class="card-img-wrap">'+ih+'<span class="card-badge" style="background:#ef4444;">● Live</span></div>'+
+        '<div class="card-body"><h3>'+title+'</h3>'+
+        '<div class="card-meta"><span class="author">'+srcName+'</span><span class="dot">•</span><span>'+dt+'</span></div></div></div>';
+    }).join('');
+  }
+
+  function updateTicker(arts){
+    var t=document.getElementById('tickerTrack');if(!t)return;
+    var items=arts.map(function(a){return'<span>'+a.title+'</span>';}).join('');
+    t.innerHTML=items+items;
+  }
+
   function showFallbackNews(){
     var g=document.getElementById('liveNewsGrid');
-    if(g)g.innerHTML=fallbackNews.map(function(f){return'<div class="card" onclick="window.open(\''+f.url+'\',\'_blank\')" style="cursor:pointer;"><div class="card-img-wrap"><div class="card-placeholder '+f.color+'"></div><span class="card-badge">📈 Trending</span></div><div class="card-body"><h3>'+f.title+'</h3><div class="card-meta"><span class="author">'+f.source+'</span><span class="dot">•</span><span>Today</span></div></div></div>';}).join('');
+    if(g)g.innerHTML=fallbackNews.map(function(f){
+      return'<div class="card" onclick="window.open(\''+f.url+'\',\'_blank\')" style="cursor:pointer;">'+
+        '<div class="card-img-wrap"><div class="card-placeholder '+f.color+'"></div><span class="card-badge">📈 Trending</span></div>'+
+        '<div class="card-body"><h3>'+f.title+'</h3>'+
+        '<div class="card-meta"><span class="author">'+f.source+'</span><span class="dot">•</span><span>Today</span></div></div></div>';
+    }).join('');
     var t=document.getElementById('tickerTrack');
     if(t){var items=fallbackNews.map(function(f){return'<span>'+f.title+'</span>';}).join('');t.innerHTML=items+items;}
   }
-  setInterval(function(){try{fetchLiveNews();}catch(e){}},30*60*1000);
+
+  // Auto-refresh every 30 minutes
+  setInterval(function(){
+    lastFetchTime=0; // force refresh
+    fetchLiveNews();
+  },30*60*1000);
 
   // SEARCH
   function openSearch(){document.getElementById('searchModal').classList.add('open');document.body.style.overflow='hidden';setTimeout(function(){document.getElementById('searchInput').focus();},100);showPopularTags();}
