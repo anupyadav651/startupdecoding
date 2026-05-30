@@ -1,0 +1,1026 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin — Startup Decoding</title>
+  <meta name="robots" content="noindex,nofollow"/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{font-family:'DM Sans',sans-serif;background:#0f172a;color:#f1f5f9;min-height:100vh;}
+    .login-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#0A2463 0%,#0f172a 100%);}
+    .login-box{background:#1e293b;border-radius:16px;padding:44px 40px;width:100%;max-width:400px;border:1px solid #334155;box-shadow:0 25px 60px rgba(0,0,0,0.5);}
+    .login-logo{text-align:center;margin-bottom:32px;}
+    .login-logo .s1{color:white;font-size:22px;font-weight:600;}
+    .login-logo .s2{color:#00C2CB;font-size:22px;font-weight:700;}
+    .login-logo p{color:#475569;font-size:12px;margin-top:6px;letter-spacing:1px;text-transform:uppercase;}
+    .field-label{display:block;font-size:11px;font-weight:700;color:#64748b;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.8px;}
+    .field-input{width:100%;padding:12px 16px;background:#0f172a;border:1.5px solid #334155;border-radius:8px;color:#f1f5f9;font-size:14px;font-family:'DM Sans',sans-serif;outline:none;margin-bottom:16px;transition:border-color .2s;}
+    .field-input:focus{border-color:#00C2CB;}
+    .login-btn{width:100%;background:#00C2CB;color:white;border:none;padding:13px;border-radius:8px;font-weight:700;font-size:15px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:background .2s;margin-top:4px;}
+    .login-btn:hover{background:#0A2463;}
+    .login-btn:disabled{background:#334155;cursor:not-allowed;}
+    .login-error{color:#ef4444;font-size:13px;text-align:center;margin-top:12px;display:none;background:#450a0a;padding:10px;border-radius:6px;}
+    .lockout-msg{color:#f59e0b;font-size:13px;text-align:center;margin-top:12px;display:none;background:#451a03;padding:10px;border-radius:6px;}
+    .admin-wrap{display:none;}
+    .admin-layout{display:flex;min-height:100vh;}
+    .sidebar{width:240px;background:#1e293b;border-right:1px solid #334155;padding:24px 0 80px;flex-shrink:0;position:fixed;height:100vh;overflow-y:auto;}
+    .sidebar-logo{padding:0 20px 20px;border-bottom:1px solid #334155;margin-bottom:8px;}
+    .sidebar-logo .s1{color:white;font-size:16px;font-weight:600;}
+    .sidebar-logo .s2{color:#00C2CB;font-size:16px;font-weight:700;}
+    .sidebar-logo small{color:#475569;font-size:10px;display:block;margin-top:3px;}
+    .user-badge{margin:12px 16px;background:#0f172a;border:1px solid #334155;border-radius:8px;padding:10px 14px;}
+    .user-badge .uname{font-size:13px;font-weight:700;color:#f1f5f9;}
+    .user-badge .urole{font-size:11px;margin-top:3px;font-weight:600;}
+    .role-founder{color:#f59e0b;}.role-editor{color:#60a5fa;}.role-writer{color:#34d399;}
+    .nav-section{font-size:10px;font-weight:700;color:#334155;letter-spacing:1px;text-transform:uppercase;padding:12px 20px 6px;}
+    .nav-item{display:flex;align-items:center;gap:10px;padding:10px 20px;color:#94a3b8;font-size:14px;font-weight:500;cursor:pointer;transition:all .2s;border-left:3px solid transparent;}
+    .nav-item:hover{background:#0f172a;color:#f1f5f9;}
+    .nav-item.active{background:#0f172a;color:#00C2CB;border-left-color:#00C2CB;}
+    .nav-item .icon{width:20px;text-align:center;}
+    .sidebar-footer{position:absolute;bottom:0;width:240px;padding:16px 20px;border-top:1px solid #334155;background:#1e293b;}
+    .session-info{font-size:11px;color:#475569;margin-bottom:10px;}
+    .logout-btn{width:100%;background:#0f172a;color:#ef4444;border:1px solid #334155;padding:9px;border-radius:7px;font-size:13px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s;}
+    .logout-btn:hover{background:#ef4444;color:white;}
+    .main-content{margin-left:240px;flex:1;padding:32px;min-height:100vh;}
+    .page{display:none;}.page.active{display:block;}
+    .page-title{font-size:22px;font-weight:700;color:#f1f5f9;margin-bottom:4px;}
+    .page-sub{color:#64748b;font-size:14px;margin-bottom:28px;}
+    .stat-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:28px;}
+    .stat-card{background:#1e293b;border:1px solid #334155;border-radius:12px;padding:20px;}
+    .stat-card .lbl{font-size:11px;color:#64748b;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;}
+    .stat-card .val{font-size:28px;font-weight:800;color:#00C2CB;}
+    .stat-card .sub{font-size:11px;color:#475569;margin-top:4px;}
+    .box{background:#1e293b;border:1px solid #334155;border-radius:12px;padding:24px;margin-bottom:20px;}
+    .box h3{font-size:14px;font-weight:700;color:#f1f5f9;margin-bottom:18px;padding-bottom:12px;border-bottom:1px solid #334155;}
+    .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+    .f{margin-bottom:14px;}
+    .f.full{grid-column:1/-1;}
+    .f label{display:block;font-size:11px;font-weight:700;color:#64748b;margin-bottom:5px;text-transform:uppercase;letter-spacing:0.5px;}
+    .f input,.f select,.f textarea{width:100%;padding:10px 14px;background:#0f172a;border:1.5px solid #334155;border-radius:8px;color:#f1f5f9;font-size:14px;font-family:'DM Sans',sans-serif;outline:none;transition:border-color .2s;}
+    .f input:focus,.f select:focus,.f textarea:focus{border-color:#00C2CB;}
+    .f textarea{height:180px;resize:vertical;line-height:1.7;}
+    .f select option{background:#1e293b;}
+    .btn-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px;}
+    .btn-pub{background:#00C2CB;color:white;border:none;padding:11px 26px;border-radius:8px;font-weight:700;font-size:14px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:background .2s;}
+    .btn-pub:hover{background:#0A2463;}
+    .btn-sec{background:transparent;color:#94a3b8;border:1.5px solid #334155;padding:11px 20px;border-radius:8px;font-weight:600;font-size:14px;cursor:pointer;font-family:'DM Sans',sans-serif;}
+    .btn-sec:hover{border-color:#94a3b8;color:#f1f5f9;}
+    .btn-danger{background:transparent;color:#ef4444;border:1.5px solid #334155;padding:11px 16px;border-radius:8px;font-weight:600;font-size:14px;cursor:pointer;font-family:'DM Sans',sans-serif;}
+    .tbl{background:#1e293b;border:1px solid #334155;border-radius:12px;overflow:hidden;}
+    .tbl-head{display:grid;grid-template-columns:2.5fr 1fr 1fr 1fr 150px;gap:10px;padding:12px 18px;background:#0f172a;font-size:10px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:0.5px;border-bottom:1px solid #334155;}
+    .tbl-row{display:grid;grid-template-columns:2.5fr 1fr 1fr 1fr 150px;gap:10px;padding:14px 18px;border-bottom:1px solid #1e3a5f22;align-items:center;}
+    .tbl-row:hover{background:#0f172a;}
+    .tbl-row:last-child{border:none;}
+    .art-t{font-size:13px;font-weight:600;color:#e2e8f0;line-height:1.4;}
+    .cat-tag{display:inline-block;background:#0f172a;color:#00C2CB;font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;text-transform:uppercase;}
+    .date-txt{font-size:12px;color:#475569;}
+    .badge{display:inline-block;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:700;}
+    .b-pub{background:#064e3b;color:#34d399;}
+    .b-draft{background:#1c1917;color:#9ca3af;}
+    .b-pend{background:#451a03;color:#fb923c;}
+    .act-btns{display:flex;gap:6px;flex-wrap:wrap;}
+    .btn-xs{padding:4px 9px;border-radius:5px;font-size:11px;font-weight:600;cursor:pointer;border:none;font-family:'DM Sans',sans-serif;}
+    .bx-approve{background:#064e3b;color:#34d399;}
+    .bx-toggle{background:#1e3a5f;color:#60a5fa;}
+    .bx-del{background:#450a0a;color:#f87171;}
+    .bx-edit{background:#1e3a5f;color:#fbbf24;}
+    .bx-pin{background:#4c1d95;color:#c4b5fd;}
+    .req-card{background:#1e293b;border:1px solid #334155;border-radius:10px;padding:16px 18px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:flex-start;gap:16px;}
+    .req-info h4{font-size:14px;font-weight:700;color:#f1f5f9;margin-bottom:4px;}
+    .req-info p{font-size:12px;color:#94a3b8;line-height:1.6;}
+    .req-meta{font-size:11px;color:#475569;margin-top:5px;}
+    .req-acts{display:flex;flex-direction:column;gap:8px;flex-shrink:0;}
+    .btn-app{background:#064e3b;color:#34d399;border:none;padding:7px 14px;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;}
+    .btn-rej{background:#450a0a;color:#f87171;border:none;padding:7px 14px;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;}
+    .user-row{background:#1e293b;border:1px solid #334155;border-radius:10px;padding:16px 18px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;}
+    .user-row h4{font-size:14px;font-weight:700;color:#f1f5f9;}
+    .user-row p{font-size:12px;color:#64748b;margin-top:2px;}
+    .role-pill{padding:3px 12px;border-radius:20px;font-size:11px;font-weight:700;}
+    .rp-founder{background:#451a03;color:#f59e0b;}
+    .rp-editor{background:#1e3a5f;color:#60a5fa;}
+    .rp-writer{background:#064e3b;color:#34d399;}
+    .access-checks{display:flex;flex-wrap:wrap;gap:10px;margin-top:6px;}
+    .ck-item{display:flex;align-items:center;gap:6px;background:#0f172a;border:1px solid #334155;border-radius:6px;padding:6px 12px;cursor:pointer;}
+    .ck-item input{accent-color:#00C2CB;width:14px;height:14px;}
+    .ck-item label{font-size:12px;font-weight:600;color:#94a3b8;cursor:pointer;}
+    .s-tag{display:inline-flex;align-items:center;gap:8px;background:#1e293b;border:1px solid #334155;border-radius:8px;padding:9px 14px;margin:5px;}
+    .s-tag .q{font-size:13px;color:#e2e8f0;}
+    .s-tag .ct{background:#00C2CB;color:white;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;}
+    .empty{text-align:center;padding:48px;color:#475569;}
+    .empty .em{font-size:36px;margin-bottom:12px;}
+    .toast{position:fixed;bottom:24px;right:24px;padding:13px 20px;border-radius:10px;font-size:14px;font-weight:600;display:none;z-index:9999;box-shadow:0 8px 24px rgba(0,0,0,0.4);}
+    .denied{text-align:center;padding:60px 40px;}
+    .denied .em{font-size:48px;margin-bottom:16px;}
+    .denied h3{color:#ef4444;font-size:20px;margin-bottom:8px;}
+    .denied p{color:#64748b;font-size:14px;}
+    /* TOP STORIES PICKER */
+    .story-picker{background:#0f172a;border:1px solid #334155;border-radius:10px;padding:0;overflow:hidden;margin-bottom:12px;}
+    .story-picker-item{display:flex;align-items:center;gap:14px;padding:13px 16px;border-bottom:1px solid #1e3a5f33;cursor:pointer;transition:background .2s;}
+    .story-picker-item:last-child{border:none;}
+    .story-picker-item:hover{background:#1e293b;}
+    .story-picker-item input[type=checkbox]{accent-color:#00C2CB;width:16px;height:16px;flex-shrink:0;}
+    .story-picker-item .sp-title{font-size:13px;color:#e2e8f0;flex:1;}
+    .story-picker-item .sp-cat{font-size:10px;color:#00C2CB;background:#0A2463;padding:2px 8px;border-radius:4px;}
+    /* DATA TAB */
+    .data-tabs{display:flex;gap:4px;margin-bottom:20px;background:#0f172a;border:1px solid #334155;border-radius:10px;padding:4px;width:fit-content;}
+    .data-tab{padding:8px 20px;border-radius:7px;font-size:13px;font-weight:600;cursor:pointer;border:none;background:none;color:#64748b;font-family:'DM Sans',sans-serif;transition:all .2s;}
+    .data-tab.active{background:#0A2463;color:#00C2CB;}
+    .data-table-wrap{background:#0f172a;border-radius:10px;overflow:hidden;border:1px solid #334155;}
+    table{width:100%;border-collapse:collapse;}
+    thead tr{background:#1e293b;}
+    th{padding:11px 14px;text-align:left;font-size:10px;font-weight:700;color:#475569;letter-spacing:0.8px;text-transform:uppercase;border-bottom:1px solid #334155;}
+    td{padding:12px 14px;font-size:12px;color:#cbd5e1;border-bottom:1px solid #1e293b;vertical-align:top;}
+    tr:last-child td{border:none;}
+    tr:hover td{background:rgba(0,194,203,0.04);}
+    .search-filter{padding:8px 14px;border-radius:8px;border:1px solid #334155;background:#0f172a;color:#e2e8f0;font-size:13px;font-family:'DM Sans',sans-serif;outline:none;width:240px;margin-bottom:14px;}
+    .search-filter:focus{border-color:#00C2CB;}
+    .export-btn-sm{background:#00C2CB;color:#0A2463;border:none;padding:7px 16px;border-radius:7px;font-weight:700;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;}
+    .status-pend{background:rgba(234,179,8,0.15);color:#eab308;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:700;}
+    .status-app{background:rgba(34,197,94,0.15);color:#22c55e;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:700;}
+    .status-rej{background:rgba(239,68,68,0.15);color:#ef4444;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:700;}
+    /* ABOUT EDIT */
+    .about-edit-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+    .team-preview{background:#0f172a;border:1px solid #334155;border-radius:10px;padding:16px;text-align:center;}
+    .team-av{width:56px;height:56px;border-radius:50%;margin:0 auto 10px;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800;color:white;}
+    @media(max-width:768px){
+      .sidebar{width:200px;}
+      .main-content{margin-left:200px;padding:20px;}
+      .stat-cards{grid-template-columns:1fr 1fr;}
+      .grid2,.about-edit-grid{grid-template-columns:1fr;}
+      .tbl-head,.tbl-row{grid-template-columns:1fr 1fr 100px;}
+    }
+  </style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div class="login-screen" id="loginScreen">
+  <div class="login-box">
+    <div class="login-logo">
+      <div><span class="s1">startup</span><span class="s2">decoding</span></div>
+      <p>🔐 Secure Admin Access</p>
+    </div>
+    <label class="field-label">Username</label>
+    <input class="field-input" type="text" id="lu" autocomplete="off" placeholder="Enter username" onkeydown="if(event.key==='Enter')doLogin()"/>
+    <label class="field-label">Password</label>
+    <input class="field-input" type="password" id="lp" autocomplete="new-password" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"/>
+    <div id="capRow" style="display:none;margin-bottom:16px;">
+      <label class="field-label" id="capQ"></label>
+      <input class="field-input" type="text" id="capA" placeholder="Your answer" style="margin-bottom:0;"/>
+    </div>
+    <button class="login-btn" id="loginBtn" onclick="doLogin()">Login →</button>
+    <div class="login-error" id="loginError"></div>
+    <div class="lockout-msg" id="lockoutMsg"></div>
+    <p style="color:#1e3a5f;font-size:11px;text-align:center;margin-top:16px;">🔒 Secured · Session expires after 30 min inactivity</p>
+  </div>
+</div>
+
+<!-- ADMIN -->
+<div class="admin-wrap" id="adminWrap">
+<div class="admin-layout">
+  <div class="sidebar">
+    <div class="sidebar-logo">
+      <div><span class="s1">startup</span><span class="s2">decoding</span></div>
+      <small>Admin Panel</small>
+    </div>
+    <div class="user-badge">
+      <div class="uname" id="sbName">—</div>
+      <div class="urole" id="sbRole">—</div>
+    </div>
+    <div class="nav-section">Menu</div>
+    <div class="nav-item active" id="n-dashboard" onclick="go('dashboard',this)"><span class="icon">📊</span> Dashboard</div>
+    <div class="nav-item" id="n-write" onclick="go('write',this)"><span class="icon">✍️</span> Write Article</div>
+    <div class="nav-item" id="n-articles" onclick="go('articles',this)"><span class="icon">📋</span> All Articles</div>
+    <div class="nav-item" id="n-topstories" onclick="go('topstories',this)"><span class="icon">⚡</span> Top Stories</div>
+    <div class="nav-item" id="n-requests" onclick="go('requests',this)"><span class="icon">🚀</span> Feature Requests</div>
+    <div class="nav-item" id="n-searches" onclick="go('searches',this)"><span class="icon">🔍</span> Search Analytics</div>
+    <div class="nav-item" id="n-users" onclick="go('users',this)"><span class="icon">👥</span> Manage Users</div>
+    <div class="nav-item" id="n-data" onclick="go('data',this)"><span class="icon">📊</span> Data & Subscribers</div>
+    <div class="nav-item" id="n-about" onclick="go('about',this)"><span class="icon">📝</span> Edit About Us</div>
+    <div class="nav-item" onclick="window.open('index.html','_blank')"><span class="icon">🌐</span> View Website ↗</div>
+    <div class="nav-item" id="n-settings" onclick="go('settings',this)"><span class="icon">⚙️</span> Site Settings</div>
+    <div class="sidebar-footer">
+      <div class="session-info" id="sessionTimer">Session: active</div>
+      <button class="logout-btn" onclick="logout()">🚪 Logout</button>
+    </div>
+  </div>
+
+  <div class="main-content">
+
+    <!-- DASHBOARD -->
+    <div class="page active" id="page-dashboard">
+      <div class="page-title">📊 Dashboard</div>
+      <div class="page-sub" id="dashWelcome">Welcome back!</div>
+      <div class="stat-cards">
+        <div class="stat-card"><div class="lbl">Total Articles</div><div class="val" id="s-total">0</div><div class="sub">All time</div></div>
+        <div class="stat-card"><div class="lbl">Published</div><div class="val" id="s-pub">0</div><div class="sub">Live on website</div></div>
+        <div class="stat-card"><div class="lbl">Pending Approval</div><div class="val" id="s-pend">0</div><div class="sub">Need review</div></div>
+        <div class="stat-card"><div class="lbl">Feature Requests</div><div class="val" id="s-req">0</div><div class="sub">New submissions</div></div>
+      </div>
+      <div class="box"><h3>📰 Recent Articles</h3><div id="d-recent"></div></div>
+    </div>
+
+    <!-- WRITE -->
+    <div class="page" id="page-write">
+      <div class="page-title">✍️ Write Article</div>
+      <div class="page-sub" id="writeSub">Write and publish content.</div>
+      <div class="box">
+        <h3 id="writeFormTitle">Article Details</h3>
+        <input type="hidden" id="editing-id" value=""/>
+        <div class="grid2">
+          <div class="f full"><label>Title *</label><input type="text" id="a-title" placeholder="Inspiring article headline..."/></div>
+          <div class="f"><label>Author Name *</label><input type="text" id="a-author" placeholder="Your name"/></div>
+          <div class="f"><label>Category *</label>
+            <select id="a-cat">
+              <option value="">Select category...</option>
+              <option>Trending News</option><option>Startup News</option><option>Startup Stories</option>
+              <option>Young Entrepreneur</option><option>Her Story</option><option>SMB's</option>
+              <option>Tech & Innovation</option><option>Farming</option><option>Gov Schemes</option><option>Podcast</option>
+            </select>
+          </div>
+          <div class="f full"><label>Full Article Content *</label><textarea id="a-content" placeholder="Write your full article here..."></textarea></div>
+          <div class="f full"><label>Short Summary (shown on homepage card)</label><input type="text" id="a-summary" placeholder="One line summary, max 120 characters"/></div>
+          <div class="f"><label>Main Image URL</label><input type="text" id="a-img" placeholder="https://..."/></div>
+          <div class="f"><label>Image 2 URL (mid-article)</label><input type="text" id="a-img2" placeholder="https://... (optional)"/></div>
+          <div class="f"><label>Image 3 URL (near end)</label><input type="text" id="a-img3" placeholder="https://... (optional)"/></div>
+          <div class="f"><label>Tags</label><input type="text" id="a-tags" placeholder="startup, funding, India"/></div>
+        </div>
+        <div class="btn-row" id="writeBtns"></div>
+      </div>
+    </div>
+
+    <!-- ALL ARTICLES -->
+    <div class="page" id="page-articles">
+      <div class="page-title">📋 All Articles</div>
+      <div class="page-sub">Manage all published and draft content. Click Edit to reopen any draft.</div>
+      <div class="tbl">
+        <div class="tbl-head"><span>Title</span><span>Category</span><span>Author</span><span>Status</span><span>Actions</span></div>
+        <div id="arts-list"></div>
+      </div>
+    </div>
+
+    <!-- TOP STORIES PICKER -->
+    <div class="page" id="page-topstories">
+      <div class="page-title">⚡ Top Stories Today</div>
+      <div class="page-sub">Choose up to 3 articles to pin in the hero section on homepage. If none selected, latest 3 published articles show automatically.</div>
+      <div class="box">
+        <h3>📌 Select Stories to Pin (max 3)</h3>
+        <p style="font-size:13px;color:#64748b;margin-bottom:16px;">Tick the articles you want in "Top Stories Today" on the homepage hero section.</p>
+        <div id="story-picker-list"><div class="empty"><div class="em">⏳</div><p>Loading articles...</p></div></div>
+        <div class="btn-row" style="margin-top:16px;">
+          <button class="btn-pub" onclick="saveTopStories()">💾 Save Top Stories</button>
+          <button class="btn-sec" onclick="clearTopStories()">✕ Clear — Use Latest Auto</button>
+        </div>
+        <div style="margin-top:16px;padding:12px 16px;background:#0f172a;border-radius:8px;border:1px solid #334155;">
+          <p style="font-size:12px;color:#475569;">ℹ️ <strong style="color:#94a3b8;">Currently pinned:</strong> <span id="pinned-count">Loading...</span></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- REQUESTS -->
+    <div class="page" id="page-requests">
+      <div class="page-title">🚀 Feature Requests</div>
+      <div class="page-sub">Startups requesting to be featured. Approve = status changes to approved (no email sent).</div>
+      <div id="reqs-list"></div>
+    </div>
+
+    <!-- SEARCHES -->
+    <div class="page" id="page-searches">
+      <div class="page-title">🔍 Search Analytics</div>
+      <div class="page-sub">Topics your visitors search — use this to plan content strategy.</div>
+      <div class="box"><h3>🔥 Top Searches</h3><div id="search-list"></div></div>
+    </div>
+
+    <!-- USERS -->
+    <div class="page" id="page-users">
+      <div class="page-title">👥 Manage Team</div>
+      <div class="page-sub">Add team members and set exactly what they can access.</div>
+      <div id="users-list" style="margin-bottom:20px;"></div>
+      <div class="box">
+        <h3>➕ Add Team Member</h3>
+        <div class="grid2">
+          <div class="f"><label>Full Name</label><input type="text" id="n-name" placeholder="e.g. Priya Sharma"/></div>
+          <div class="f"><label>Username</label><input type="text" id="n-user" placeholder="e.g. priya" autocomplete="off"/></div>
+          <div class="f"><label>Password (min 8 chars)</label><input type="password" id="n-pass" autocomplete="new-password" placeholder="Strong password"/></div>
+          <div class="f"><label>Role</label>
+            <select id="n-role">
+              <option value="editor">✏️ Editor — Can publish directly</option>
+              <option value="writer">📝 Writer — Submits for approval</option>
+            </select>
+          </div>
+          <div class="f full">
+            <label>Access Areas</label>
+            <div class="access-checks" id="accessChecks">
+              <div class="ck-item"><input type="checkbox" id="ac-write" checked/><label for="ac-write">✍️ Write</label></div>
+              <div class="ck-item"><input type="checkbox" id="ac-articles" checked/><label for="ac-articles">📋 Articles</label></div>
+              <div class="ck-item"><input type="checkbox" id="ac-requests"/><label for="ac-requests">🚀 Requests</label></div>
+              <div class="ck-item"><input type="checkbox" id="ac-searches"/><label for="ac-searches">🔍 Analytics</label></div>
+            </div>
+          </div>
+        </div>
+        <button class="btn-pub" onclick="addUser()">➕ Add Team Member</button>
+      </div>
+    </div>
+
+    <!-- DATA & SUBSCRIBERS (Founder only) -->
+    <div class="page" id="page-data">
+      <div class="page-title">📊 Data & Subscribers</div>
+      <div class="page-sub">All Get Featured requests and newsletter subscribers in one place.</div>
+      <div class="stat-cards" style="grid-template-columns:repeat(3,1fr);">
+        <div class="stat-card"><div class="lbl">Featured Requests</div><div class="val" id="d-feat-count">—</div><div class="sub">Total submissions</div></div>
+        <div class="stat-card"><div class="lbl">Pending Review</div><div class="val" id="d-pend-count" style="color:#eab308;">—</div><div class="sub">Awaiting action</div></div>
+        <div class="stat-card"><div class="lbl">Subscribers</div><div class="val" id="d-sub-count">—</div><div class="sub">Newsletter + signups</div></div>
+      </div>
+      <div class="data-tabs">
+        <button class="data-tab active" onclick="switchDataTab('featured',this)">🚀 Get Featured</button>
+        <button class="data-tab" onclick="switchDataTab('subscribers',this)">📧 Subscribers</button>
+      </div>
+      <div id="data-featured">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+          <input type="text" class="search-filter" placeholder="Search startup, name, email..." oninput="filterDataTable('featured',this.value)"/>
+          <button class="export-btn-sm" onclick="exportCSV('featured')">⬇ Export CSV</button>
+        </div>
+        <div class="data-table-wrap" id="featured-table"><div class="empty"><div class="em">⏳</div><p>Loading...</p></div></div>
+      </div>
+      <div id="data-subscribers" style="display:none;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+          <input type="text" class="search-filter" placeholder="Search email..." oninput="filterDataTable('subscribers',this.value)"/>
+          <button class="export-btn-sm" onclick="exportCSV('subscribers')">⬇ Export CSV</button>
+        </div>
+        <div class="data-table-wrap" id="subscribers-table"><div class="empty"><div class="em">⏳</div><p>Loading...</p></div></div>
+      </div>
+    </div>
+
+    <!-- EDIT ABOUT US (Founder only) -->
+    <div class="page" id="page-about">
+      <div class="page-title">📝 Edit About Us Page</div>
+      <div class="page-sub">Update the About Us page content, team profiles, and contact info.</div>
+
+      <div class="box">
+        <h3>🏆 Homepage Stats (About page hero)</h3>
+        <div class="grid2">
+          <div class="f"><label>Stories Published</label><input type="text" id="ab-stories" placeholder="12K+"/></div>
+          <div class="f"><label>Monthly Readers</label><input type="text" id="ab-readers" placeholder="4.2M"/></div>
+          <div class="f"><label>Startups Featured</label><input type="text" id="ab-startups" placeholder="850+"/></div>
+          <div class="f"><label>Cities Covered</label><input type="text" id="ab-cities" placeholder="200+"/></div>
+        </div>
+      </div>
+
+      <div class="box">
+        <h3>📖 Mission Text</h3>
+        <div class="f full"><label>Mission Paragraph</label><textarea id="ab-mission" style="height:120px;" placeholder="Your mission statement..."></textarea></div>
+      </div>
+
+      <div class="box">
+        <h3>👥 Co-Founder Profiles</h3>
+        <div class="grid2">
+          <div>
+            <div class="team-preview" style="margin-bottom:12px;">
+              <div class="team-av" style="background:linear-gradient(135deg,#0A2463,#00C2CB);">G</div>
+              <strong style="color:#f1f5f9;">Co-Founder 1</strong>
+            </div>
+            <div class="f"><label>Name</label><input type="text" id="cf1-name" value="Gourav Yadav"/></div>
+            <div class="f"><label>Role/Title</label><input type="text" id="cf1-role" value="Co-Founder & CEO"/></div>
+            <div class="f"><label>Bio</label><textarea id="cf1-bio" style="height:80px;" placeholder="Short bio...">Visionary entrepreneur and growth strategist driving Startup Decoding's mission to decode India's startup ecosystem.</textarea></div>
+          </div>
+          <div>
+            <div class="team-preview" style="margin-bottom:12px;">
+              <div class="team-av" style="background:linear-gradient(135deg,#7c3aed,#06b6d4);">A</div>
+              <strong style="color:#f1f5f9;">Co-Founder 2</strong>
+            </div>
+            <div class="f"><label>Name</label><input type="text" id="cf2-name" value="Anup Yadav"/></div>
+            <div class="f"><label>Role/Title</label><input type="text" id="cf2-role" value="Co-Founder & Editor-in-Chief"/></div>
+            <div class="f"><label>Bio</label><textarea id="cf2-bio" style="height:80px;" placeholder="Short bio...">Medical student turned media entrepreneur. Passionate about making complex startup stories accessible to everyone in India.</textarea></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="box">
+        <h3>📧 Contact Details</h3>
+        <div class="grid2">
+          <div class="f"><label>Main Email</label><input type="text" id="ab-email" placeholder="gourav@startupdecoding.com"/></div>
+          <div class="f"><label>Partner Email</label><input type="text" id="ab-partner" placeholder="partner@startupdecoding.com"/></div>
+        </div>
+      </div>
+
+      <button class="btn-pub" onclick="saveAboutSettings()">💾 Save All About Page Changes</button>
+      <p style="font-size:12px;color:#475569;margin-top:10px;">Note: These are saved to your database. The about.html page will auto-read them on next visit.</p>
+    </div>
+
+    <!-- DENIED -->
+    <div class="page" id="page-denied">
+      <div class="denied"><div class="em">🔒</div><h3>Access Restricted</h3><p>You don't have permission to view this section.<br/>Contact your Founder to request access.</p></div>
+    </div>
+
+    <!-- SETTINGS -->
+    <div class="page" id="page-settings">
+      <div class="page-title">⚙️ Site Settings</div>
+      <div class="page-sub">Edit stats, contact info and featured section — changes reflect live on website.</div>
+      <div class="box">
+        <h3>📊 Homepage Stats</h3>
+        <div class="grid2">
+          <div class="f"><label>Stories Published</label><input type="text" id="s-stories" placeholder="12K+"/></div>
+          <div class="f"><label>Monthly Readers</label><input type="text" id="s-readers" placeholder="4.2M"/></div>
+          <div class="f"><label>Startups Featured</label><input type="text" id="s-startups" placeholder="850+"/></div>
+          <div class="f"><label>Cities Covered</label><input type="text" id="s-cities" placeholder="200+"/></div>
+        </div>
+        <button class="btn-pub" onclick="saveSettings()">💾 Save Stats</button>
+      </div>
+      <div class="box">
+        <h3>🚀 Get Featured Box Text</h3>
+        <div class="f"><label>Heading</label><input type="text" id="s-feat-title" placeholder="Get Your Startup Featured"/></div>
+        <div class="f"><label>Description</label><input type="text" id="s-feat-desc" placeholder="Reach 4.2 million startup enthusiasts..."/></div>
+        <div class="f"><label>Button Text</label><input type="text" id="s-feat-btn" placeholder="Apply to Get Featured"/></div>
+        <button class="btn-pub" onclick="saveSettings()" style="margin-top:8px;">💾 Save Featured Box</button>
+      </div>
+      <div class="box">
+        <h3>📧 Contact Information</h3>
+        <div class="grid2">
+          <div class="f"><label>Main Email</label><input type="text" id="s-email" placeholder="gourav@startupdecoding.com"/></div>
+          <div class="f"><label>Partner Email</label><input type="text" id="s-partner" placeholder="partner@startupdecoding.com"/></div>
+        </div>
+        <button class="btn-pub" onclick="saveSettings()" style="margin-top:8px;">💾 Save Contact Info</button>
+      </div>
+      <div class="box">
+        <h3>📱 Social Media Links</h3>
+        <div class="grid2">
+          <div class="f"><label>Instagram</label><input type="text" id="s-insta" placeholder="https://instagram.com/..."/></div>
+          <div class="f"><label>LinkedIn</label><input type="text" id="s-linkedin" placeholder="https://linkedin.com/..."/></div>
+          <div class="f"><label>Twitter / X</label><input type="text" id="s-twitter" placeholder="https://twitter.com/..."/></div>
+          <div class="f"><label>YouTube</label><input type="text" id="s-youtube" placeholder="https://youtube.com/..."/></div>
+        </div>
+        <button class="btn-pub" onclick="saveSettings()" style="margin-top:8px;">💾 Save Social Links</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══════════════ SECURITY ═══════════════
+const SEC={
+  MAX_ATTEMPTS:5,LOCKOUT_MS:15*60*1000,SESSION_TIMEOUT:30*60*1000,
+  hash(s){let h=0x811c9dc5;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=(h*0x01000193)>>>0;}return h.toString(16);},
+  genToken(){const a=new Uint8Array(32);crypto.getRandomValues(a);return Array.from(a,b=>b.toString(16).padStart(2,'0')).join('');},
+  getAttempts(){return JSON.parse(sessionStorage.getItem('_sd_atm')||'{"count":0,"ts":0}');},
+  recordAttempt(){const a=this.getAttempts();a.count++;a.ts=Date.now();sessionStorage.setItem('_sd_atm',JSON.stringify(a));return a.count;},
+  resetAttempts(){sessionStorage.removeItem('_sd_atm');},
+  isLockedOut(){const a=this.getAttempts();if(a.count>=this.MAX_ATTEMPTS){const e=Date.now()-a.ts;if(e<this.LOCKOUT_MS)return Math.ceil((this.LOCKOUT_MS-e)/60000);this.resetAttempts();}return false;},
+  saveSession(u){const t=this.genToken();const s={token:t,username:u.username,role:u.role,name:u.name,access:u.access,ts:Date.now()};sessionStorage.setItem('_sd_sess',JSON.stringify(s));return s;},
+  getSession(){const s=JSON.parse(sessionStorage.getItem('_sd_sess')||'null');if(!s)return null;if(Date.now()-s.ts>this.SESSION_TIMEOUT){this.clearSession();return null;}s.ts=Date.now();sessionStorage.setItem('_sd_sess',JSON.stringify(s));return s;},
+  clearSession(){sessionStorage.removeItem('_sd_sess');}
+};
+
+let capAnswer=null;
+function genCaptcha(){const a=Math.floor(Math.random()*9)+1,b=Math.floor(Math.random()*9)+1;capAnswer=a+b;document.getElementById('capQ').textContent=`Security: What is ${a} + ${b}?`;document.getElementById('capRow').style.display='block';document.getElementById('capA').value='';}
+function checkShowCaptcha(){const a=SEC.getAttempts();if(a.count>=2&&document.getElementById('capRow').style.display==='none')genCaptcha();}
+
+function getUsers(){
+  const s=localStorage.getItem('_sd_users');
+  if(s)return JSON.parse(s);
+  const d=[{name:'Founder',username:'founder',passwordHash:SEC.hash('decoding@2026'),role:'founder',access:['dashboard','write','articles','topstories','requests','searches','users','data','about','settings']}];
+  localStorage.setItem('_sd_users',JSON.stringify(d));return d;
+}
+function saveUsers(u){localStorage.setItem('_sd_users',JSON.stringify(u));}
+
+let currentUser=null;
+
+function doLogin(){
+  const errEl=document.getElementById('loginError'),lockEl=document.getElementById('lockoutMsg');
+  errEl.style.display='none';lockEl.style.display='none';
+  const locked=SEC.isLockedOut();
+  if(locked){lockEl.textContent=`🔒 Too many attempts. Try again in ${locked} minute(s).`;lockEl.style.display='block';document.getElementById('loginBtn').disabled=true;setTimeout(()=>{document.getElementById('loginBtn').disabled=false;lockEl.style.display='none';},locked*60000);return;}
+  const u=document.getElementById('lu').value.trim(),p=document.getElementById('lp').value;
+  if(!u||!p){errEl.textContent='Please enter username and password.';errEl.style.display='block';return;}
+  if(document.getElementById('capRow').style.display!=='none'){const ans=parseInt(document.getElementById('capA').value);if(ans!==capAnswer){errEl.textContent='❌ Wrong security answer.';errEl.style.display='block';genCaptcha();return;}}
+  const users=getUsers(),match=users.find(x=>x.username===u&&x.passwordHash===SEC.hash(p));
+  if(match){
+    SEC.resetAttempts();currentUser=match;SEC.saveSession(match);
+    document.getElementById('loginScreen').style.display='none';
+    document.getElementById('adminWrap').style.display='block';
+    document.getElementById('lu').value='';document.getElementById('lp').value='';
+    setupUI();loadDashboard();startSessionTimer();
+  } else {
+    const attempts=SEC.recordAttempt(),remaining=SEC.MAX_ATTEMPTS-attempts;
+    errEl.textContent=`❌ Invalid credentials. ${remaining>0?remaining+' attempt(s) remaining.':'Account locked for 15 minutes.'}`;
+    errEl.style.display='block';document.getElementById('lp').value='';checkShowCaptcha();
+    if(attempts>=SEC.MAX_ATTEMPTS){document.getElementById('loginBtn').disabled=true;setTimeout(()=>{document.getElementById('loginBtn').disabled=false;SEC.resetAttempts();},SEC.LOCKOUT_MS);}
+  }
+}
+
+function logout(){SEC.clearSession();currentUser=null;document.getElementById('adminWrap').style.display='none';document.getElementById('loginScreen').style.display='flex';}
+
+let sessionInterval;
+function startSessionTimer(){
+  clearInterval(sessionInterval);
+  sessionInterval=setInterval(()=>{
+    const s=SEC.getSession();
+    if(!s){toast('⏰ Session expired. Please login again.','#7f1d1d','#fca5a5');logout();return;}
+    const mins=Math.floor((SEC.SESSION_TIMEOUT-(Date.now()-s.ts))/60000);
+    document.getElementById('sessionTimer').textContent=`Session: ${mins}m remaining`;
+  },30000);
+}
+document.addEventListener('mousemove',()=>SEC.getSession());
+document.addEventListener('keydown',()=>SEC.getSession());
+
+// ═══════════════ UI SETUP ═══════════════
+const ALL_PAGES=['write','articles','topstories','requests','searches','users','data','about','settings'];
+
+function setupUI(){
+  const role=currentUser.role,access=currentUser.access||[];
+  document.getElementById('sbName').textContent='👤 '+currentUser.name;
+  const rLabels={founder:'👑 Founder — Full Access',editor:'✏️ Editor',writer:'📝 Writer'};
+  const rClasses={founder:'role-founder',editor:'role-editor',writer:'role-writer'};
+  const rd=document.getElementById('sbRole');
+  rd.textContent=rLabels[role]||role;rd.className='urole '+(rClasses[role]||'');
+  ALL_PAGES.forEach(pg=>{
+    const nav=document.getElementById('n-'+pg);if(!nav)return;
+    // data and about are founder-only
+    const founderOnly=['data','about','users'];
+    if(founderOnly.includes(pg)){nav.style.display=role==='founder'?'flex':'none';}
+    else{nav.style.display=(role==='founder'||access.includes(pg))?'flex':'none';}
+  });
+  // Write buttons
+  const btns=document.getElementById('writeBtns');
+  if(role==='writer'){
+    document.getElementById('writeSub').textContent='Write articles and submit for approval.';
+    btns.innerHTML=`<button class="btn-pub" style="background:#f59e0b;" onclick="saveArticle('pending-approval')">📨 Submit for Approval</button>
+      <button class="btn-sec" onclick="saveArticle('draft')">💾 Save Draft</button>
+      <button class="btn-danger" onclick="clearForm()">🗑️ Clear</button>`;
+  } else {
+    document.getElementById('writeSub').textContent='Write and publish articles directly to the website.';
+    btns.innerHTML=`<button class="btn-pub" onclick="saveArticle('published')">🚀 Publish Now</button>
+      <button class="btn-sec" onclick="saveArticle('draft')">💾 Save Draft</button>
+      <button class="btn-danger" onclick="clearForm()">🗑️ Clear</button>`;
+  }
+}
+
+function go(page,el){
+  const role=currentUser?.role,access=currentUser?.access||[];
+  const founderOnly=['data','about','users'];
+  const allowed=role==='founder'||(!founderOnly.includes(page)&&(access.includes(page)||page==='dashboard'));
+  if(!allowed){showDenied();return;}
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('page-'+page).classList.add('active');
+  if(el)el.classList.add('active');
+  if(page==='dashboard')loadDashboard();
+  if(page==='articles')loadArticles();
+  if(page==='topstories')loadTopStoriesPicker();
+  if(page==='requests')loadRequests();
+  if(page==='searches')loadSearches();
+  if(page==='settings')loadSettings();
+  if(page==='users')loadUsers();
+  if(page==='data')loadDataPage();
+  if(page==='about')loadAboutSettings();
+}
+function showDenied(){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById('page-denied').classList.add('active');}
+
+// ═══════════════ SUPABASE ═══════════════
+const SUPA_URL='https://yrjsjfzfyhygsgdazbeo.supabase.co';
+const SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlyanNqZnpmeWh5Z3NnZGF6YmVvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3MjkwMTksImV4cCI6MjA5NTMwNTAxOX0.tC0h3KUAdVlij80ZV3nddL3B1U95hR9FobrwKJzKEmo';
+
+async function db(path,opts={}){
+  const res=await fetch(SUPA_URL+'/rest/v1/'+path,{
+    headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY,'Content-Type':'application/json','Prefer':opts.prefer||'return=representation'},
+    ...opts
+  });
+  const text=await res.text();return text?JSON.parse(text):[];
+}
+
+// ═══════════════ ARTICLES ═══════════════
+async function getArts(){
+  try{return await db('articles?order=created_at.desc');}
+  catch(e){return JSON.parse(localStorage.getItem('sd_articles')||'[]');}
+}
+
+// FIX: editingId tracks which article we're editing
+let editingId=null;
+
+async function saveArticle(status){
+  const title=document.getElementById('a-title').value.trim();
+  const author=document.getElementById('a-author').value.trim();
+  const cat=document.getElementById('a-cat').value;
+  const content=document.getElementById('a-content').value.trim();
+  if(!title||!author||!cat||!content){toast('⚠️ Fill Title, Author, Category & Content','#7f1d1d','#fca5a5');return;}
+  const article={
+    title,author,category:cat,content,
+    summary:document.getElementById('a-summary').value.trim(),
+    image:document.getElementById('a-img').value.trim(),
+    image2:document.getElementById('a-img2').value.trim(),
+    image3:document.getElementById('a-img3').value.trim(),
+    tags:document.getElementById('a-tags').value.trim(),
+    status,submitted_by:currentUser.username,
+    date:new Date().toLocaleDateString('en-IN',{day:'numeric',month:'long',year:'numeric'})
+  };
+  try{
+    if(editingId){
+      // UPDATE existing article
+      await db('articles?id=eq.'+editingId,{method:'PATCH',prefer:'return=minimal',body:JSON.stringify(article)});
+      toast('✅ Article updated!');
+    } else {
+      // CREATE new article
+      await db('articles',{method:'POST',prefer:'return=minimal',body:JSON.stringify(article)});
+      const msgs={published:'✅ Published!',draft:'💾 Draft saved!','pending-approval':'📨 Submitted!'};
+      toast(msgs[status]||'✅ Done!');
+    }
+  }catch(e){
+    const arts=JSON.parse(localStorage.getItem('sd_articles')||'[]');
+    if(editingId){const idx=arts.findIndex(a=>String(a.id)===String(editingId));if(idx>-1){arts[idx]={...arts[idx],...article};}}
+    else{arts.unshift({...article,id:Date.now()});}
+    localStorage.setItem('sd_articles',JSON.stringify(arts));
+    toast('💾 Saved locally (offline mode)');
+  }
+  clearForm();loadDashboard();
+}
+
+// FIX: openDraft loads article into the write form for editing
+async function openDraft(id){
+  const arts=await getArts();
+  const a=arts.find(x=>String(x.id)===String(id));
+  if(!a){toast('⚠️ Article not found','#7f1d1d','#fca5a5');return;}
+  editingId=id;
+  document.getElementById('a-title').value=a.title||'';
+  document.getElementById('a-author').value=a.author||'';
+  document.getElementById('a-cat').value=a.category||'';
+  document.getElementById('a-content').value=a.content||'';
+  document.getElementById('a-summary').value=a.summary||'';
+  document.getElementById('a-img').value=a.image||'';
+  document.getElementById('a-img2').value=a.image2||'';
+  document.getElementById('a-img3').value=a.image3||'';
+  document.getElementById('a-tags').value=a.tags||'';
+  document.getElementById('writeFormTitle').textContent='✏️ Editing: '+a.title.slice(0,40)+'...';
+  // Switch to write page
+  go('write',document.getElementById('n-write'));
+  toast('📝 Draft loaded — edit and save!','#1e3a5f','#60a5fa');
+}
+
+function clearForm(){
+  editingId=null;
+  ['a-title','a-author','a-content','a-summary','a-img','a-img2','a-img3','a-tags'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('a-cat').value='';
+  document.getElementById('writeFormTitle').textContent='Article Details';
+}
+
+async function loadArticles(){
+  const arts=await getArts();
+  const role=currentUser.role;
+  const visible=role==='writer'?arts.filter(a=>a.submitted_by===currentUser.username):arts;
+  const el=document.getElementById('arts-list');
+  if(!visible.length){el.innerHTML='<div class="empty"><div class="em">📭</div><p>No articles yet.</p></div>';return;}
+  el.innerHTML=visible.map(a=>{
+    let acts='';
+    // FIX: Edit/Open Draft button for ALL roles on their own articles
+    const canEdit=role==='founder'||role==='editor'||(role==='writer'&&a.submitted_by===currentUser.username);
+    if(canEdit&&(a.status==='draft'||a.status==='pending-approval')){
+      acts+=`<button class="btn-xs bx-edit" onclick="openDraft('${a.id}')">✏️ Edit</button>`;
+    }
+    if(role==='founder'||role==='editor'){
+      if(a.status==='pending-approval')acts+=`<button class="btn-xs bx-approve" onclick="approveArt('${a.id}')">✅ Approve</button>`;
+      else acts+=`<button class="btn-xs bx-toggle" onclick="toggleArt('${a.id}')">${a.status==='published'?'Unpublish':'Publish'}</button>`;
+      if(role==='founder')acts+=`<button class="btn-xs bx-del" onclick="delArt('${a.id}')">Del</button>`;
+    }
+    if(!acts)acts=`<span style="font-size:11px;color:#475569;">${a.status==='pending-approval'?'⏳ Awaiting':a.status}</span>`;
+    const bClass=a.status==='published'?'b-pub':a.status==='draft'?'b-draft':'b-pend';
+    return `<div class="tbl-row">
+      <div class="art-t">${a.title}</div>
+      <div><span class="cat-tag">${a.category}</span></div>
+      <div class="date-txt">${a.author}</div>
+      <div><span class="badge ${bClass}">${a.status}</span></div>
+      <div class="act-btns">${acts}</div>
+    </div>`;
+  }).join('');
+}
+
+async function approveArt(id){try{await db('articles?id=eq.'+id,{method:'PATCH',prefer:'return=minimal',body:JSON.stringify({status:'published'})});}catch(e){}loadArticles();loadDashboard();toast('✅ Approved & Published!');}
+async function toggleArt(id){const arts=await getArts();const a=arts.find(x=>String(x.id)===String(id));const ns=a&&a.status==='published'?'draft':'published';try{await db('articles?id=eq.'+id,{method:'PATCH',prefer:'return=minimal',body:JSON.stringify({status:ns})});}catch(e){}loadArticles();toast('✅ Updated');}
+async function delArt(id){if(!confirm('Delete this article?'))return;try{await db('articles?id=eq.'+id,{method:'DELETE',prefer:'return=minimal'});}catch(e){}loadArticles();loadDashboard();toast('🗑️ Deleted');}
+
+// ═══════════════ TOP STORIES PICKER ═══════════════
+async function loadTopStoriesPicker(){
+  const arts=await getArts();
+  const published=arts.filter(a=>a.status==='published');
+  const pinned=JSON.parse(localStorage.getItem('sd_top_stories')||'[]');
+  document.getElementById('pinned-count').textContent=pinned.length?pinned.length+' article(s) pinned':'None — showing latest 3 automatically';
+  const el=document.getElementById('story-picker-list');
+  if(!published.length){el.innerHTML='<div class="empty"><div class="em">📭</div><p>No published articles yet.</p></div>';return;}
+  el.innerHTML='<div class="story-picker">'+published.slice(0,30).map(a=>`
+    <div class="story-picker-item">
+      <input type="checkbox" id="sp-${a.id}" value="${a.id}" ${pinned.includes(String(a.id))?'checked':''} onchange="limitPick()"/>
+      <label for="sp-${a.id}" class="sp-title">${a.title}</label>
+      <span class="sp-cat">${a.category}</span>
+    </div>`).join('')+'</div>';
+}
+
+function limitPick(){
+  const checked=document.querySelectorAll('.story-picker input[type=checkbox]:checked');
+  if(checked.length>3){
+    event.target.checked=false;
+    toast('⚠️ Max 3 stories allowed','#451a03','#fb923c');
+  }
+}
+
+function saveTopStories(){
+  const checked=Array.from(document.querySelectorAll('.story-picker input[type=checkbox]:checked')).map(c=>c.value);
+  localStorage.setItem('sd_top_stories',JSON.stringify(checked));
+  // Also save to Supabase
+  db('site_settings',{method:'POST',prefer:'return=minimal',body:JSON.stringify({key:'top_stories',value:JSON.stringify(checked)})}).catch(()=>{});
+  document.getElementById('pinned-count').textContent=checked.length+' article(s) pinned';
+  toast('✅ Top Stories saved! Refresh website to see changes.');
+}
+
+function clearTopStories(){
+  localStorage.setItem('sd_top_stories',JSON.stringify([]));
+  document.querySelectorAll('.story-picker input[type=checkbox]').forEach(c=>c.checked=false);
+  document.getElementById('pinned-count').textContent='None — showing latest 3 automatically';
+  toast('✅ Cleared — website will show latest 3 articles automatically.');
+}
+
+// ═══════════════ DASHBOARD ═══════════════
+async function loadDashboard(){
+  const arts=await getArts();
+  let reqs=[];
+  try{reqs=await db('feature_requests?order=created_at.desc');}catch(e){reqs=JSON.parse(localStorage.getItem('sd_requests')||'[]');}
+  document.getElementById('s-total').textContent=arts.length;
+  document.getElementById('s-pub').textContent=arts.filter(a=>a.status==='published').length;
+  document.getElementById('s-pend').textContent=arts.filter(a=>a.status==='pending-approval').length;
+  document.getElementById('s-req').textContent=reqs.filter(r=>!r.status||r.status==='pending').length;
+  document.getElementById('dashWelcome').textContent=`Welcome back, ${currentUser.name}! Here's your content overview.`;
+  const el=document.getElementById('d-recent');
+  const recent=arts.slice(0,6);
+  el.innerHTML=recent.length?recent.map(a=>`
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:11px 0;border-bottom:1px solid #334155;">
+      <div>
+        <div style="font-size:13px;font-weight:600;color:#e2e8f0;">${a.title}</div>
+        <div style="font-size:11px;color:#475569;margin-top:2px;">${a.category} · ${a.author} · ${a.date||''}</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span class="badge ${a.status==='published'?'b-pub':a.status==='draft'?'b-draft':'b-pend'}">${a.status}</span>
+        ${(a.status==='draft'||a.status==='pending-approval')?`<button class="btn-xs bx-edit" onclick="openDraft('${a.id}')">✏️ Edit</button>`:''}
+      </div>
+    </div>`).join(''):'<div class="empty"><div class="em">✍️</div><p>No articles yet. Write your first one!</p></div>';
+}
+
+// ═══════════════ REQUESTS ═══════════════
+async function loadRequests(){
+  let reqs=[];
+  try{reqs=await db('feature_requests?order=created_at.desc');}catch(e){reqs=JSON.parse(localStorage.getItem('sd_requests')||'[]');}
+  const el=document.getElementById('reqs-list');
+  if(!reqs.length){el.innerHTML='<div class="empty"><div class="em">📭</div><p>No feature requests yet.</p></div>';return;}
+  el.innerHTML=reqs.map((r,i)=>`
+    <div class="req-card">
+      <div class="req-info">
+        <h4>🚀 ${r.startup||'Unnamed'}</h4>
+        <p>${r.about||'No description.'}</p>
+        <div class="req-meta">📧 ${r.email||'—'} &nbsp;|&nbsp; 👤 ${r.name||'—'} &nbsp;|&nbsp; 📱 ${r.mobile||'—'} &nbsp;|&nbsp; 🏷️ ${r.category||'—'} &nbsp;|&nbsp;
+          <span class="badge ${r.status==='approved'?'b-pub':r.status==='rejected'?'b-draft':'b-pend'}" style="font-size:10px;">${r.status||'pending'}</span>
+        </div>
+      </div>
+      <div class="req-acts">
+        <button class="btn-app" onclick="updateReq('${r.id||i}','approved')">✅ Approve</button>
+        <button class="btn-rej" onclick="updateReq('${r.id||i}','rejected')">❌ Reject</button>
+      </div>
+    </div>`).join('');
+}
+
+async function updateReq(id,s){
+  try{await db('feature_requests?id=eq.'+id,{method:'PATCH',prefer:'return=minimal',body:JSON.stringify({status:s})});}catch(e){}
+  loadRequests();toast(s==='approved'?'✅ Approved — status updated.':'❌ Rejected');
+}
+
+// ═══════════════ SEARCHES ═══════════════
+function loadSearches(){
+  const s=JSON.parse(localStorage.getItem('sd_searches')||'[]');
+  const el=document.getElementById('search-list');
+  if(!s.length){el.innerHTML='<div class="empty"><div class="em">🔍</div><p>No searches yet.</p></div>';return;}
+  el.innerHTML='<div style="display:flex;flex-wrap:wrap;">'+s.sort((a,b)=>b.count-a.count).map(x=>`<div class="s-tag"><span class="q">${x.q}</span><span class="ct">${x.count}x</span></div>`).join('')+'</div>';
+}
+
+// ═══════════════ USERS ═══════════════
+function loadUsers(){
+  const users=getUsers();
+  const el=document.getElementById('users-list');
+  const rMap={founder:'rp-founder',editor:'rp-editor',writer:'rp-writer'};
+  const rLabel={founder:'👑 Founder',editor:'✏️ Editor',writer:'📝 Writer'};
+  el.innerHTML=users.map((u,i)=>`
+    <div class="user-row">
+      <div><h4>${u.name} &nbsp;<span class="role-pill ${rMap[u.role]||''}">${rLabel[u.role]||u.role}</span></h4>
+      <p>@${u.username} &nbsp;|&nbsp; Access: ${(u.access||[]).join(', ')||'dashboard only'}</p></div>
+      ${u.role!=='founder'?`<div style="display:flex;gap:8px;">
+        <button class="btn-xs bx-toggle" onclick="resetPw(${i})">🔑 Reset PW</button>
+        <button class="btn-xs bx-del" onclick="removeUser(${i})">Remove</button>
+      </div>`:'<span style="font-size:11px;color:#475569;">Protected</span>'}
+    </div>`).join('');
+}
+
+function addUser(){
+  const name=document.getElementById('n-name').value.trim(),uname=document.getElementById('n-user').value.trim().toLowerCase(),pass=document.getElementById('n-pass').value,role=document.getElementById('n-role').value;
+  if(!name||!uname||!pass){toast('⚠️ Fill all fields','#7f1d1d','#fca5a5');return;}
+  if(pass.length<8){toast('⚠️ Password must be 8+ characters','#7f1d1d','#fca5a5');return;}
+  if(!/^[a-z0-9_]+$/.test(uname)){toast('⚠️ Username: lowercase, numbers, underscore only','#7f1d1d','#fca5a5');return;}
+  const users=getUsers();
+  if(users.find(u=>u.username===uname)){toast('⚠️ Username already exists','#7f1d1d','#fca5a5');return;}
+  const access=['dashboard'];
+  if(document.getElementById('ac-write').checked)access.push('write');
+  if(document.getElementById('ac-articles').checked)access.push('articles');
+  if(document.getElementById('ac-requests').checked)access.push('requests');
+  if(document.getElementById('ac-searches').checked)access.push('searches');
+  users.push({name,username:uname,passwordHash:SEC.hash(pass),role,access});
+  saveUsers(users);loadUsers();
+  ['n-name','n-user','n-pass'].forEach(id=>document.getElementById(id).value='');
+  toast('✅ Team member added!');
+}
+function removeUser(i){if(!confirm('Remove?'))return;const u=getUsers();u.splice(i,1);saveUsers(u);loadUsers();toast('🗑️ Removed');}
+function resetPw(i){const np=prompt('New password (min 8 chars):');if(!np)return;if(np.length<8){toast('⚠️ Too short','#7f1d1d','#fca5a5');return;}const u=getUsers();u[i].passwordHash=SEC.hash(np);saveUsers(u);toast('🔑 Password reset!');}
+
+// ═══════════════ DATA PAGE ═══════════════
+let allFeatured=[],allSubscribers=[];
+
+async function loadDataPage(){
+  // Featured
+  try{
+    allFeatured=await db('feature_requests?order=created_at.desc');
+    document.getElementById('d-feat-count').textContent=allFeatured.length;
+    document.getElementById('d-pend-count').textContent=allFeatured.filter(r=>r.status==='pending'||!r.status).length;
+    renderFeaturedTable(allFeatured);
+  }catch(e){document.getElementById('featured-table').innerHTML='<div class="empty"><div class="em">⚠️</div><p>Could not load. Check Supabase.</p></div>';}
+  // Subscribers
+  try{
+    allSubscribers=await db('subscribers?order=created_at.desc');
+    document.getElementById('d-sub-count').textContent=allSubscribers.length;
+    renderSubscribersTable(allSubscribers);
+  }catch(e){
+    const local=JSON.parse(localStorage.getItem('sd_subscribers')||'[]');
+    allSubscribers=local.map(s=>({email:s.email,source:'newsletter',created_at:s.date}));
+    document.getElementById('d-sub-count').textContent=allSubscribers.length;
+    if(allSubscribers.length)renderSubscribersTable(allSubscribers);
+    else document.getElementById('subscribers-table').innerHTML='<div class="empty"><div class="em">📭</div><p>No subscribers yet. Create a "subscribers" table in Supabase.</p></div>';
+  }
+}
+
+function renderFeaturedTable(data){
+  if(!data.length){document.getElementById('featured-table').innerHTML='<div class="empty"><div class="em">📭</div><p>No requests yet.</p></div>';return;}
+  document.getElementById('featured-table').innerHTML=`<table><thead><tr><th>#</th><th>Startup</th><th>Founder</th><th>Email</th><th>Mobile</th><th>Category</th><th>Status</th><th>Date</th></tr></thead><tbody>`+
+  data.map((r,i)=>{
+    const dt=r.created_at?new Date(r.created_at).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'}):'—';
+    const sc=r.status==='approved'?'status-app':r.status==='rejected'?'status-rej':'status-pend';
+    return `<tr><td>${i+1}</td><td><strong style="color:#e2e8f0;">${r.startup||'—'}</strong></td><td>${r.name||'—'}</td><td>${r.email||'—'}</td><td>${r.mobile||'—'}</td><td><span style="background:#0A2463;color:#00C2CB;font-size:10px;padding:2px 8px;border-radius:4px;">${r.category||'—'}</span></td><td><span class="${sc}">${r.status||'pending'}</span></td><td style="color:#475569;">${dt}</td></tr>`;
+  }).join('')+`</tbody></table>`;
+}
+
+function renderSubscribersTable(data){
+  if(!data.length){document.getElementById('subscribers-table').innerHTML='<div class="empty"><div class="em">📭</div><p>No subscribers yet.</p></div>';return;}
+  document.getElementById('subscribers-table').innerHTML=`<table><thead><tr><th>#</th><th>Email</th><th>Name</th><th>Source</th><th>Date</th></tr></thead><tbody>`+
+  data.map((s,i)=>{
+    const dt=s.created_at?new Date(s.created_at).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'}):'—';
+    const sc=s.source==='signup'?'status-app':'status-pend';
+    return `<tr><td>${i+1}</td><td><strong style="color:#e2e8f0;">${s.email||'—'}</strong></td><td>${s.name||'—'}</td><td><span class="${sc}">${s.source||'newsletter'}</span></td><td style="color:#475569;">${dt}</td></tr>`;
+  }).join('')+`</tbody></table>`;
+}
+
+function filterDataTable(type,q){
+  q=q.toLowerCase();
+  if(type==='featured'){
+    const filtered=allFeatured.filter(r=>(r.startup||'').toLowerCase().includes(q)||(r.name||'').toLowerCase().includes(q)||(r.email||'').toLowerCase().includes(q));
+    renderFeaturedTable(filtered);
+  } else {
+    const filtered=allSubscribers.filter(s=>(s.email||'').toLowerCase().includes(q)||(s.name||'').toLowerCase().includes(q));
+    renderSubscribersTable(filtered);
+  }
+}
+
+function switchDataTab(tab,btn){
+  document.querySelectorAll('.data-tab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('data-featured').style.display=tab==='featured'?'block':'none';
+  document.getElementById('data-subscribers').style.display=tab==='subscribers'?'block':'none';
+}
+
+function exportCSV(type){
+  let data,filename,headers,rows;
+  if(type==='featured'){
+    data=allFeatured;filename='featured_requests_'+new Date().toISOString().slice(0,10)+'.csv';
+    headers=['Startup','Founder','Email','Mobile','Category','About','Status','Date'];
+    rows=data.map(r=>[r.startup,r.name,r.email,r.mobile,r.category,(r.about||'').replace(/,/g,' '),r.status,r.created_at?new Date(r.created_at).toLocaleDateString('en-IN'):'']);
+  } else {
+    data=allSubscribers;filename='subscribers_'+new Date().toISOString().slice(0,10)+'.csv';
+    headers=['Email','Name','Source','Date'];
+    rows=data.map(s=>[s.email,s.name||'',s.source||'newsletter',s.created_at?new Date(s.created_at).toLocaleDateString('en-IN'):'']);
+  }
+  const csv=[headers.join(',')].concat(rows.map(r=>r.map(v=>'"'+(v||'')+'"').join(','))).join('\n');
+  const blob=new Blob([csv],{type:'text/csv'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;a.download=filename;a.click();
+  URL.revokeObjectURL(url);
+  toast('⬇ CSV downloaded!');
+}
+
+// ═══════════════ ABOUT SETTINGS ═══════════════
+function loadAboutSettings(){
+  const s=JSON.parse(localStorage.getItem('sd_about_settings')||'{}');
+  if(s.stories)document.getElementById('ab-stories').value=s.stories;
+  if(s.readers)document.getElementById('ab-readers').value=s.readers;
+  if(s.startups)document.getElementById('ab-startups').value=s.startups;
+  if(s.cities)document.getElementById('ab-cities').value=s.cities;
+  if(s.mission)document.getElementById('ab-mission').value=s.mission;
+  if(s.cf1name)document.getElementById('cf1-name').value=s.cf1name;
+  if(s.cf1role)document.getElementById('cf1-role').value=s.cf1role;
+  if(s.cf1bio)document.getElementById('cf1-bio').value=s.cf1bio;
+  if(s.cf2name)document.getElementById('cf2-name').value=s.cf2name;
+  if(s.cf2role)document.getElementById('cf2-role').value=s.cf2role;
+  if(s.cf2bio)document.getElementById('cf2-bio').value=s.cf2bio;
+  if(s.email)document.getElementById('ab-email').value=s.email;
+  if(s.partner)document.getElementById('ab-partner').value=s.partner;
+}
+
+function saveAboutSettings(){
+  const s={
+    stories:document.getElementById('ab-stories').value,
+    readers:document.getElementById('ab-readers').value,
+    startups:document.getElementById('ab-startups').value,
+    cities:document.getElementById('ab-cities').value,
+    mission:document.getElementById('ab-mission').value,
+    cf1name:document.getElementById('cf1-name').value,
+    cf1role:document.getElementById('cf1-role').value,
+    cf1bio:document.getElementById('cf1-bio').value,
+    cf2name:document.getElementById('cf2-name').value,
+    cf2role:document.getElementById('cf2-role').value,
+    cf2bio:document.getElementById('cf2-bio').value,
+    email:document.getElementById('ab-email').value,
+    partner:document.getElementById('ab-partner').value,
+    updated:new Date().toISOString()
+  };
+  localStorage.setItem('sd_about_settings',JSON.stringify(s));
+  db('site_settings',{method:'POST',prefer:'return=minimal',body:JSON.stringify({key:'about_settings',value:JSON.stringify(s)})}).catch(()=>{});
+  toast('✅ About Us settings saved!');
+}
+
+// ═══════════════ SITE SETTINGS ═══════════════
+function loadSettings(){
+  const s=JSON.parse(localStorage.getItem('sd_settings')||'{}');
+  if(s.stories)document.getElementById('s-stories').value=s.stories;
+  if(s.readers)document.getElementById('s-readers').value=s.readers;
+  if(s.startups)document.getElementById('s-startups').value=s.startups;
+  if(s.cities)document.getElementById('s-cities').value=s.cities;
+  if(s.featTitle)document.getElementById('s-feat-title').value=s.featTitle;
+  if(s.featDesc)document.getElementById('s-feat-desc').value=s.featDesc;
+  if(s.featBtn)document.getElementById('s-feat-btn').value=s.featBtn;
+  if(s.email)document.getElementById('s-email').value=s.email;
+  if(s.partner)document.getElementById('s-partner').value=s.partner;
+  if(s.insta)document.getElementById('s-insta').value=s.insta;
+  if(s.linkedin)document.getElementById('s-linkedin').value=s.linkedin;
+  if(s.twitter)document.getElementById('s-twitter').value=s.twitter;
+  if(s.youtube)document.getElementById('s-youtube').value=s.youtube;
+}
+
+function saveSettings(){
+  const s={
+    stories:document.getElementById('s-stories').value,
+    readers:document.getElementById('s-readers').value,
+    startups:document.getElementById('s-startups').value,
+    cities:document.getElementById('s-cities').value,
+    featTitle:document.getElementById('s-feat-title').value,
+    featDesc:document.getElementById('s-feat-desc').value,
+    featBtn:document.getElementById('s-feat-btn').value,
+    email:document.getElementById('s-email').value,
+    partner:document.getElementById('s-partner').value,
+    insta:document.getElementById('s-insta').value,
+    linkedin:document.getElementById('s-linkedin').value,
+    twitter:document.getElementById('s-twitter').value,
+    youtube:document.getElementById('s-youtube').value,
+    updated:new Date().toISOString()
+  };
+  localStorage.setItem('sd_settings',JSON.stringify(s));
+  db('site_settings',{method:'POST',prefer:'return=minimal',body:JSON.stringify({key:'settings',value:JSON.stringify(s)})}).catch(()=>{});
+  toast('✅ Settings saved! Refresh website to see changes.');
+}
+
+// ═══════════════ TOAST ═══════════════
+function toast(msg,bg='#064e3b',color='#34d399'){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.style.background=bg;t.style.color=color;t.style.display='block';
+  setTimeout(()=>t.style.display='none',3500);
+}
+
+// ═══════════════ INIT ═══════════════
+window.addEventListener('load',()=>{
+  const s=SEC.getSession();
+  if(s){
+    const users=getUsers();
+    currentUser=users.find(u=>u.username===s.username);
+    if(currentUser){
+      document.getElementById('loginScreen').style.display='none';
+      document.getElementById('adminWrap').style.display='block';
+      setupUI();loadDashboard();startSessionTimer();
+    }
+  }
+});
+document.getElementById('loginScreen').addEventListener('contextmenu',e=>e.preventDefault());
+</script>
+</body>
+</html>
