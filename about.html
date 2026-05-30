@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>About Us — Startup Decoding | India's Premier Startup Media Platform</title>
+  <!-- SEO Meta Tags -->
+  <meta name="description" content="About Startup Decoding — India's premier startup media platform. Learn our story, mission, team and how to contact us. 4.2M+ monthly readers across India."/>
+  <meta name="keywords" content="about startup decoding, startup media India, startup news platform, contact startup decoding"/>
+  <meta name="robots" content="index, follow"/>
+  <link rel="canonical" href="https://startupdecoding.in/about.html"/>
+  <meta property="og:type" content="website"/>
+  <meta property="og:title" content="About Us — Startup Decoding"/>
+  <meta property="og:description" content="Learn about Startup Decoding — India's premier startup media platform with 4.2M+ monthly readers."/>
+  <meta property="og:url" content="https://startupdecoding.in/about.html"/>
+  <meta property="og:image" content="https://startupdecoding.in/og-image.png"/>
+  <meta name="twitter:card" content="summary_large_image"/>
+  <meta name="twitter:title" content="About Us — Startup Decoding"/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <!-- Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZDSH0FZJR3"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-ZDSH0FZJR3');
+  </script>
+  <style>
+    :root {
+      --blue: #0A2463;
+      --cyan: #00C2CB;
+      --red: #E63946;
+      --light: #F8F9FB;
+      --white: #ffffff;
+      --gray: #6B7280;
+      --dark: #111827;
+      --border: #E5E7EB;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:'DM Sans',sans-serif; background:var(--light); color:var(--dark); }
+
+    /* NAV */
+    nav {
+      background: white;
+      border-bottom: 2px solid var(--border);
+      padding: 0 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 20px rgba(0,0,0,0.06);
+    }
+    .logo { font-size:22px; font-weight:600; padding:16px 0; text-decoration:none; }
+    .logo .s1 { color:var(--blue); }
+    .logo .s2 { color:var(--cyan); font-weight:700; }
+    .nav-links { display:flex; gap:4px; list-style:none; }
+    .nav-links a { display:block; padding:22px 14px; font-size:14px; font-weight:500; color:var(--dark); text-decoration:none; transition:color .2s; }
+    .nav-links a:hover { color:var(--cyan); }
+    .nav-cta { background:var(--cyan); color:white !important; padding:9px 20px !important; border-radius:6px; font-weight:600 !important; font-size:13px !important; }
+    .nav-cta:hover { background:var(--blue) !important; }
+
+    /* HERO */
+    .about-hero {
+      background: linear-gradient(135deg, var(--blue) 0%, #1a3a8f 60%, #0e2f6e 100%);
+      padding: 80px 40px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .about-hero::before {
+      content: '';
+      position: absolute;
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, rgba(0,194,203,0.15) 0%, transparent 70%);
+      top: -200px; right: -100px;
+      border-radius: 50%;
+    }
+    .about-hero::after {
+      content: '';
+      position: absolute;
+      width: 400px; height: 400px;
+      background: radial-gradient(circle, rgba(0,194,203,0.1) 0%, transparent 70%);
+      bottom: -150px; left: -50px;
+      border-radius: 50%;
+    }
+    .hero-tag {
+      display: inline-block;
+      background: rgba(0,194,203,0.2);
+      color: var(--cyan);
+      border: 1px solid rgba(0,194,203,0.4);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      padding: 6px 16px;
+      border-radius: 20px;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+    .about-hero h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 52px;
+      color: white;
+      line-height: 1.2;
+      margin-bottom: 20px;
+      position: relative;
+      z-index: 1;
+    }
+    .about-hero h1 span { color: var(--cyan); }
+    .about-hero p {
+      color: #94a3b8;
+      font-size: 18px;
+      line-height: 1.7;
+      max-width: 600px;
+      margin: 0 auto 32px;
+      position: relative;
+      z-index: 1;
+    }
+    .hero-stats {
+      display: flex;
+      justify-content: center;
+      gap: 48px;
+      position: relative;
+      z-index: 1;
+    }
+    .hero-stat strong { display:block; font-family:'Playfair Display',serif; font-size:36px; color:white; font-weight:900; }
+    .hero-stat span { font-size:13px; color:#64748b; }
+
+    /* MISSION */
+    .mission {
+      max-width: 900px;
+      margin: 80px auto;
+      padding: 0 20px;
+      text-align: center;
+    }
+    .section-label {
+      display: inline-block;
+      background: #e0f7fa;
+      color: var(--cyan);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      padding: 5px 14px;
+      border-radius: 20px;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+    .mission h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 38px;
+      color: var(--blue);
+      margin-bottom: 20px;
+      line-height: 1.3;
+    }
+    .mission p {
+      font-size: 17px;
+      color: var(--gray);
+      line-height: 1.85;
+      max-width: 720px;
+      margin: 0 auto;
+    }
+
+    /* VALUES */
+    .values-section {
+      background: white;
+      padding: 80px 40px;
+    }
+    .values-inner { max-width: 1100px; margin: 0 auto; }
+    .values-inner h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 36px;
+      color: var(--blue);
+      text-align: center;
+      margin-bottom: 48px;
+    }
+    .values-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 28px;
+    }
+    .value-card {
+      background: var(--light);
+      border-radius: 14px;
+      padding: 32px 28px;
+      border: 1px solid var(--border);
+      transition: transform .25s, box-shadow .25s;
+    }
+    .value-card:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(0,0,0,0.08); }
+    .value-icon { font-size: 36px; margin-bottom: 16px; }
+    .value-card h3 { font-size: 17px; font-weight: 700; color: var(--blue); margin-bottom: 10px; }
+    .value-card p { font-size: 14px; color: var(--gray); line-height: 1.7; }
+
+    /* TEAM */
+    .team-section { padding: 80px 40px; max-width: 1100px; margin: 0 auto; }
+    .team-section h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 36px;
+      color: var(--blue);
+      text-align: center;
+      margin-bottom: 12px;
+    }
+    .team-sub { text-align:center; color:var(--gray); font-size:15px; margin-bottom:48px; }
+    .team-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; }
+    .team-card {
+      background: white;
+      border-radius: 14px;
+      padding: 32px 24px;
+      border: 1px solid var(--border);
+      text-align: center;
+      transition: transform .25s, box-shadow .25s;
+    }
+    .team-card:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(0,0,0,0.08); }
+    .team-avatar {
+      width: 80px; height: 80px;
+      border-radius: 50%;
+      margin: 0 auto 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      font-weight: 800;
+      color: white;
+    }
+    .av-1 { background: linear-gradient(135deg, #0A2463, #00C2CB); }
+    .av-2 { background: linear-gradient(135deg, #7c3aed, #06b6d4); }
+    .av-3 { background: linear-gradient(135deg, #059669, #0A2463); }
+    .av-4 { background: linear-gradient(135deg, #dc2626, #f59e0b); }
+    .av-5 { background: linear-gradient(135deg, #0891b2, #6366f1); }
+    .av-6 { background: linear-gradient(135deg, #be185d, #f97316); }
+    .team-card h3 { font-size: 16px; font-weight: 700; color: var(--dark); margin-bottom: 4px; }
+    .team-role { font-size: 13px; color: var(--cyan); font-weight: 600; margin-bottom: 10px; }
+    .team-card p { font-size: 13px; color: var(--gray); line-height: 1.6; }
+
+    /* CONTACT */
+    .contact-section {
+      background: linear-gradient(135deg, var(--blue) 0%, #1a3a8f 100%);
+      padding: 80px 40px;
+    }
+    .contact-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      align-items: start;
+    }
+    .contact-left h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 38px;
+      color: white;
+      margin-bottom: 16px;
+    }
+    .contact-left p { color: #94a3b8; font-size: 15px; line-height: 1.7; margin-bottom: 32px; }
+    .contact-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+    .contact-icon {
+      width: 44px; height: 44px;
+      background: rgba(0,194,203,0.15);
+      border: 1px solid rgba(0,194,203,0.3);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+    .contact-item h4 { font-size: 13px; font-weight: 700; color: #94a3b8; margin-bottom: 2px; }
+    .contact-item a, .contact-item span { font-size: 15px; color: white; font-weight: 500; text-decoration: none; }
+    .contact-item a:hover { color: var(--cyan); }
+
+    /* FORM */
+    .contact-form {
+      background: white;
+      border-radius: 16px;
+      padding: 36px;
+    }
+    .contact-form h3 { font-size: 20px; font-weight: 700; color: var(--blue); margin-bottom: 6px; }
+    .contact-form p { font-size: 13px; color: var(--gray); margin-bottom: 24px; }
+    .f-row { margin-bottom: 16px; }
+    .f-row label { display:block; font-size:12px; font-weight:700; color:var(--dark); margin-bottom:6px; text-transform:uppercase; letter-spacing:0.5px; }
+    .f-row input, .f-row select, .f-row textarea {
+      width: 100%;
+      padding: 11px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      font-size: 14px;
+      font-family: 'DM Sans', sans-serif;
+      outline: none;
+      transition: border-color .2s;
+      background: white;
+      color: var(--dark);
+    }
+    .f-row input:focus, .f-row select:focus, .f-row textarea:focus { border-color: var(--cyan); }
+    .f-row textarea { height: 110px; resize: none; line-height: 1.6; }
+    .f-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .submit-btn {
+      width: 100%;
+      background: var(--blue);
+      color: white;
+      border: none;
+      padding: 13px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 15px;
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      transition: background .2s;
+      margin-top: 4px;
+    }
+    .submit-btn:hover { background: var(--cyan); }
+
+    /* FOOTER */
+    footer {
+      background: var(--dark);
+      padding: 40px;
+      text-align: center;
+    }
+    footer .logo-f { font-size:20px; font-weight:700; margin-bottom:12px; }
+    footer .logo-f .s1 { color:white; }
+    footer .logo-f .s2 { color:var(--cyan); }
+    footer p { color:#4b5563; font-size:13px; }
+    footer a { color:var(--cyan); text-decoration:none; margin:0 10px; }
+
+    /* SUCCESS */
+    .success-msg {
+      display: none;
+      background: #064e3b;
+      color: #34d399;
+      padding: 16px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      text-align: center;
+      margin-top: 12px;
+    }
+
+    /* RESPONSIVE */
+    @media(max-width:768px) {
+      nav { padding: 0 16px; }
+      .nav-links { display: none; }
+      .about-hero { padding: 50px 20px; }
+      .about-hero h1 { font-size: 34px; }
+      .hero-stats { gap: 24px; flex-wrap: wrap; }
+      .values-grid, .team-grid { grid-template-columns: 1fr; }
+      .contact-inner { grid-template-columns: 1fr; gap: 32px; }
+      .values-section, .contact-section { padding: 50px 20px; }
+      .team-section { padding: 50px 20px; }
+      .f-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="index.html" class="logo"><span class="s1">startup</span><span class="s2">decoding</span></a>
+  <ul class="nav-links">
+    <li><a href="index.html">🏠 Home</a></li>
+    <li><a href="index.html#trending-news-section">News</a></li>
+    <li><a href="index.html#startup-stories-section">Stories</a></li>
+    <li><a href="about.html" style="color:var(--cyan);">About</a></li>
+    <li><a href="#contact">Contact</a></li>
+    <li><a href="index.html" class="nav-cta">Get Featured</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<div class="about-hero">
+  <div class="hero-tag">Our Story</div>
+  <h1>Decoding India's<br/><span>Startup Revolution</span></h1>
+  <p>We are India's dedicated platform for decoding startup journeys, celebrating entrepreneurial grit, and connecting the next generation of founders with stories that inspire.</p>
+  <div class="hero-stats">
+    <div class="hero-stat"><strong>12K+</strong><span>Stories Published</span></div>
+    <div class="hero-stat"><strong>4.2M</strong><span>Monthly Readers</span></div>
+    <div class="hero-stat"><strong>850+</strong><span>Startups Featured</span></div>
+    <div class="hero-stat"><strong>200+</strong><span>Cities Covered</span></div>
+  </div>
+</div>
+
+<!-- MISSION -->
+<div class="mission">
+  <div class="section-label">Our Mission</div>
+  <h2>Every Startup Story<br/>Deserves to Be Told</h2>
+  <p>Startup Decoding was born from a simple belief — that behind every successful startup is a human story worth telling. What started as a passionate media venture grew into a community of millions. Our flagship Instagram page reached 750K followers before being banned — but that didn't stop us. We rebuilt stronger, with News Decoding (300K), Startups Unboxing (200K), and a growing presence on LinkedIn, Twitter, and YouTube. Today, Startup Decoding is India's dedicated platform for decoding startup journeys, celebrating entrepreneurial grit, and connecting founders with stories that inspire.</p>
+</div>
+
+<!-- VALUES -->
+<div class="values-section">
+  <div class="values-inner">
+    <h2>What We Stand For</h2>
+    <div class="values-grid">
+      <div class="value-card">
+        <div class="value-icon">🎯</div>
+        <h3>Authentic Storytelling</h3>
+        <p>We go beyond press releases to tell the real story — the struggles, the pivots, and the grit behind every success.</p>
+      </div>
+      <div class="value-card">
+        <div class="value-icon">🇮🇳</div>
+        <h3>India First</h3>
+        <p>We celebrate India's startup ecosystem — from Tier 1 metros to small towns. Every founder's story matters, regardless of city or background.</p>
+      </div>
+      <div class="value-card">
+        <div class="value-icon">💡</div>
+        <h3>Decode, Don't Just Report</h3>
+        <p>We break down complex business strategies, funding rounds, and market dynamics into insights anyone can understand and apply.</p>
+      </div>
+      <div class="value-card">
+        <div class="value-icon">🤝</div>
+        <h3>Community First</h3>
+        <p>We're building more than a media platform — we're creating a community where founders, investors, and readers connect and grow.</p>
+      </div>
+      <div class="value-card">
+        <div class="value-icon">⚡</div>
+        <h3>Speed & Accuracy</h3>
+        <p>Breaking startup news fast — but always verified. We never compromise on facts even in the race to publish first.</p>
+      </div>
+      <div class="value-card">
+        <div class="value-icon">🚀</div>
+        <h3>Founder Focused</h3>
+        <p>Everything we do is for founders. Our content, tools, and platform are built to help entrepreneurs decode their path to success.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TEAM -->
+<div class="team-section">
+  <div class="section-label" style="display:block;text-align:center;">The Team</div>
+  <h2>Meet the People Behind<br/>Startup Decoding</h2>
+  <p class="team-sub">A passionate team of journalists, entrepreneurs, and storytellers dedicated to India's startup ecosystem.</p>
+  <div class="team-grid">
+    <div class="team-card">
+      <div class="team-avatar av-1">A</div>
+      <h3>Anup Yadav</h3>
+      <div class="team-role">Founder & Editor-in-Chief</div>
+      <p>Medical student turned media entrepreneur. Passionate about India's startup ecosystem and making complex business stories accessible to everyone.</p>
+    </div>
+    <div class="team-card">
+      <div class="team-avatar av-2">P</div>
+      <h3>Content Team</h3>
+      <div class="team-role">Writers & Researchers</div>
+      <p>A team of dedicated journalists and researchers who dig deep into startup stories, verify facts, and craft narratives that inspire.</p>
+    </div>
+    <div class="team-card">
+      <div class="team-avatar av-3">S</div>
+      <h3>Join Our Team</h3>
+      <div class="team-role">We're Hiring!</div>
+      <p>Passionate about startups and storytelling? We're always looking for talented writers, researchers, and content creators to join our mission.</p>
+    </div>
+  </div>
+</div>
+
+<!-- CONTACT -->
+<div class="contact-section" id="contact">
+  <div class="contact-inner">
+    <div class="contact-left">
+      <div class="section-label" style="background:rgba(0,194,203,0.15);color:#00C2CB;">Get In Touch</div>
+      <h2>Let's Decode<br/>Together</h2>
+      <p>Have a startup story to share? Want to advertise with us? Looking to partner or collaborate? We'd love to hear from you.</p>
+
+      <div class="contact-item">
+        <div class="contact-icon">📧</div>
+        <div>
+          <h4>Email Us</h4>
+          <a href="mailto:gourav@startupdecoding.com">gourav@startupdecoding.com</a>
+        </div>
+      </div>
+      <div class="contact-item">
+        <div class="contact-icon">🚀</div>
+        <div>
+          <h4>Get Featured</h4>
+          <a href="index.html">Submit your startup story →</a>
+        </div>
+      </div>
+      <div class="contact-item">
+        <div class="contact-icon">💼</div>
+        <div>
+          <h4>Advertise With Us</h4>
+          <span>Reach 4.2M+ startup enthusiasts</span>
+        </div>
+      </div>
+      <div class="contact-item">
+        <div class="contact-icon">🤝</div>
+        <div>
+          <h4>Partnerships</h4>
+          <a href="mailto:partner@startupdecoding.com">partner@startupdecoding.com</a>
+        </div>
+      </div>
+      <div class="contact-item">
+        <div class="contact-icon">🌍</div>
+        <div>
+          <h4>Based In</h4>
+          <span>India 🇮🇳</span>
+        </div>
+      </div>
+
+      <div style="margin-top:32px;padding-top:24px;border-top:1px solid rgba(255,255,255,0.1);">
+        <h4 style="color:#94a3b8;font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:16px;">Our Community</h4>
+        <div style="display:flex;flex-wrap:wrap;gap:10px;">
+          <div style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);border-radius:8px;padding:10px 14px;">
+            <div style="font-size:11px;color:#64748b;font-weight:700;">📸 Instagram (Original)</div>
+            <div style="font-size:14px;color:white;font-weight:700;">750K Followers</div>
+            <div style="font-size:10px;color:#ef4444;">Account Banned</div>
+          </div>
+          <div style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);border-radius:8px;padding:10px 14px;">
+            <div style="font-size:11px;color:#64748b;font-weight:700;">📸 News Decoding</div>
+            <div style="font-size:14px;color:white;font-weight:700;">300K Followers</div>
+            <div style="font-size:10px;color:#34d399;">Active</div>
+          </div>
+          <div style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);border-radius:8px;padding:10px 14px;">
+            <div style="font-size:11px;color:#64748b;font-weight:700;">📸 Startups Unboxing</div>
+            <div style="font-size:14px;color:white;font-weight:700;">200K Followers</div>
+            <div style="font-size:10px;color:#34d399;">Active</div>
+          </div>
+          <div style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);border-radius:8px;padding:10px 14px;">
+            <div style="font-size:11px;color:#64748b;font-weight:700;">LinkedIn · Twitter · YouTube</div>
+            <div style="font-size:14px;color:white;font-weight:700;">Growing Fast 🚀</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="contact-form">
+      <h3>Send Us a Message</h3>
+      <p>Fill out the form and we'll get back to you within 24 hours.</p>
+      <div class="f-grid">
+        <div class="f-row">
+          <label>Your Name *</label>
+          <input type="text" id="c-name" placeholder="Rahul Sharma"/>
+        </div>
+        <div class="f-row">
+          <label>Email *</label>
+          <input type="email" id="c-email" placeholder="rahul@startup.com"/>
+        </div>
+      </div>
+      <div class="f-row">
+        <label>Subject</label>
+        <select id="c-subject">
+          <option>Share My Startup Story</option>
+          <option>Advertise With Us</option>
+          <option>Partnership Inquiry</option>
+          <option>Press / Media</option>
+          <option>Careers / Join Team</option>
+          <option>General Inquiry</option>
+        </select>
+      </div>
+      <div class="f-row">
+        <label>Message *</label>
+        <textarea id="c-message" placeholder="Tell us what's on your mind..."></textarea>
+      </div>
+      <button class="submit-btn" onclick="sendMessage()">Send Message 🚀</button>
+      <div class="success-msg" id="successMsg">✅ Message sent! We'll get back to you within 24 hours.</div>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="logo-f"><span class="s1">startup</span><span class="s2">decoding</span></div>
+  <p style="margin-bottom:12px;">
+    <a href="index.html">Home</a>
+    <a href="about.html">About</a>
+    <a href="#contact">Contact</a>
+    <a href="mailto:hello@startupdecoding.com">Email</a>
+  </p>
+  <p>© 2026 Startup Decoding. All Rights Reserved. Made with ❤️ for India's startup ecosystem.</p>
+</footer>
+
+<script>
+  function sendMessage() {
+    const name = document.getElementById('c-name').value.trim();
+    const email = document.getElementById('c-email').value.trim();
+    const message = document.getElementById('c-message').value.trim();
+    if (!name || !email || !message) {
+      alert('Please fill in your name, email and message!');
+      return;
+    }
+    // Save to localStorage as fallback
+    const messages = JSON.parse(localStorage.getItem('sd_contact') || '[]');
+    messages.push({
+      name, email,
+      subject: document.getElementById('c-subject').value,
+      message,
+      date: new Date().toISOString()
+    });
+    localStorage.setItem('sd_contact', JSON.stringify(messages));
+    document.getElementById('successMsg').style.display = 'block';
+    document.getElementById('c-name').value = '';
+    document.getElementById('c-email').value = '';
+    document.getElementById('c-message').value = '';
+  }
+</script>
+
+</body>
+</html>
