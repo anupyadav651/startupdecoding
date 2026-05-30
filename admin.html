@@ -377,21 +377,33 @@
         <h3>👥 Co-Founder Profiles</h3>
         <div class="grid2">
           <div>
-            <div class="team-preview" style="margin-bottom:12px;">
-              <div class="team-av" style="background:linear-gradient(135deg,#0A2463,#00C2CB);">G</div>
+            <div class="team-preview" style="margin-bottom:12px;" id="cf1-preview">
+              <div class="team-av" id="cf1-prev-av" style="background:linear-gradient(135deg,#0A2463,#00C2CB);">G</div>
               <strong style="color:#f1f5f9;">Co-Founder 1</strong>
             </div>
             <div class="f"><label>Name</label><input type="text" id="cf1-name" value="Gourav Yadav"/></div>
             <div class="f"><label>Role/Title</label><input type="text" id="cf1-role" value="Co-Founder & CEO"/></div>
+            <div class="f"><label>Photo URL <span style="color:#475569;font-weight:400;text-transform:none;">(paste link from ImgBB, Cloudinary, etc.)</span></label>
+              <input type="text" id="cf1-photo" placeholder="https://i.ibb.co/your-photo.jpg" oninput="previewPhoto('cf1')"/>
+            </div>
+            <div class="f" style="font-size:11px;color:#475569;margin-top:-10px;">
+              💡 Free upload: go to <a href="https://imgbb.com" target="_blank" style="color:#00C2CB;">imgbb.com</a> → upload photo → copy "Direct link"
+            </div>
             <div class="f"><label>Bio</label><textarea id="cf1-bio" style="height:80px;" placeholder="Short bio...">Visionary entrepreneur and growth strategist driving Startup Decoding's mission to decode India's startup ecosystem.</textarea></div>
           </div>
           <div>
-            <div class="team-preview" style="margin-bottom:12px;">
-              <div class="team-av" style="background:linear-gradient(135deg,#7c3aed,#06b6d4);">A</div>
+            <div class="team-preview" style="margin-bottom:12px;" id="cf2-preview">
+              <div class="team-av" id="cf2-prev-av" style="background:linear-gradient(135deg,#7c3aed,#06b6d4);">A</div>
               <strong style="color:#f1f5f9;">Co-Founder 2</strong>
             </div>
             <div class="f"><label>Name</label><input type="text" id="cf2-name" value="Anup Yadav"/></div>
             <div class="f"><label>Role/Title</label><input type="text" id="cf2-role" value="Co-Founder & Editor-in-Chief"/></div>
+            <div class="f"><label>Photo URL <span style="color:#475569;font-weight:400;text-transform:none;">(paste link from ImgBB, Cloudinary, etc.)</span></label>
+              <input type="text" id="cf2-photo" placeholder="https://i.ibb.co/your-photo.jpg" oninput="previewPhoto('cf2')"/>
+            </div>
+            <div class="f" style="font-size:11px;color:#475569;margin-top:-10px;">
+              💡 Free upload: go to <a href="https://imgbb.com" target="_blank" style="color:#00C2CB;">imgbb.com</a> → upload photo → copy "Direct link"
+            </div>
             <div class="f"><label>Bio</label><textarea id="cf2-bio" style="height:80px;" placeholder="Short bio...">Medical student turned media entrepreneur. Passionate about making complex startup stories accessible to everyone in India.</textarea></div>
           </div>
         </div>
@@ -921,6 +933,17 @@ function exportCSV(type){
 }
 
 // ═══════════════ ABOUT SETTINGS ═══════════════
+function previewPhoto(who){
+  var url=document.getElementById(who+'-photo').value.trim();
+  var avEl=document.getElementById(who+'-prev-av');
+  if(url){
+    avEl.innerHTML='<img src="'+url+'" style="width:56px;height:56px;border-radius:50%;object-fit:cover;" onerror="this.style.display=\'none\'"/>';
+  } else {
+    var initials=who==='cf1'?'G':'A';
+    avEl.innerHTML=initials;
+  }
+}
+
 function loadAboutSettings(){
   const s=JSON.parse(localStorage.getItem('sd_about_settings')||'{}');
   if(s.stories)document.getElementById('ab-stories').value=s.stories;
@@ -928,6 +951,8 @@ function loadAboutSettings(){
   if(s.startups)document.getElementById('ab-startups').value=s.startups;
   if(s.cities)document.getElementById('ab-cities').value=s.cities;
   if(s.mission)document.getElementById('ab-mission').value=s.mission;
+  if(s.cf1photo){document.getElementById('cf1-photo').value=s.cf1photo;previewPhoto('cf1');}
+  if(s.cf2photo){document.getElementById('cf2-photo').value=s.cf2photo;previewPhoto('cf2');}
   if(s.cf1name)document.getElementById('cf1-name').value=s.cf1name;
   if(s.cf1role)document.getElementById('cf1-role').value=s.cf1role;
   if(s.cf1bio)document.getElementById('cf1-bio').value=s.cf1bio;
@@ -948,9 +973,11 @@ function saveAboutSettings(){
     cf1name:document.getElementById('cf1-name').value,
     cf1role:document.getElementById('cf1-role').value,
     cf1bio:document.getElementById('cf1-bio').value,
+    cf1photo:document.getElementById('cf1-photo').value.trim(),
     cf2name:document.getElementById('cf2-name').value,
     cf2role:document.getElementById('cf2-role').value,
     cf2bio:document.getElementById('cf2-bio').value,
+    cf2photo:document.getElementById('cf2-photo').value.trim(),
     email:document.getElementById('ab-email').value,
     partner:document.getElementById('ab-partner').value,
     updated:new Date().toISOString()

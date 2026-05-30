@@ -362,18 +362,7 @@
   <div class="hero-side">
     <h3>⚡ Top Stories Today</h3>
     <div id="topStoriesContainer">
-      <div class="side-story" onclick="goTo('tech-section')">
-        <div class="side-img"><img src="https://images.unsplash.com/photo-1593941707882-a5bba14938c7?w=128&h=108&fit=crop" style="width:100%;height:100%;object-fit:cover;border-radius:6px;"/></div>
-        <div><h4>Noida founder builds EV power bank startup 'Mobec Innovation'</h4><span>🕐 25 MAY 2026</span></div>
-      </div>
-      <div class="side-story" onclick="goTo('startup-news-section')">
-        <div class="side-img"><img src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=128&h=108&fit=crop" style="width:100%;height:100%;object-fit:cover;border-radius:6px;"/></div>
-        <div><h4>RIL records historic $10.1B net profit for FY2025-26</h4><span>🕐 25 MAY 2026</span></div>
-      </div>
-      <div class="side-story" onclick="goTo('startup-stories-section')">
-        <div class="side-img"><img src="https://images.unsplash.com/photo-1556761175-5973dc0f32e7?w=128&h=108&fit=crop" style="width:100%;height:100%;object-fit:cover;border-radius:6px;"/></div>
-        <div><h4>Mumbai man runs Safsafaiwala, a home cleaning business</h4><span>🕐 25 MAY 2026</span></div>
-      </div>
+      <div style="text-align:center;padding:20px;color:rgba(255,255,255,0.3);font-size:13px;">Loading...</div>
     </div>
   </div>
 </div>
@@ -820,8 +809,40 @@
   function loadSettings(){try{var s=JSON.parse(localStorage.getItem('sd_settings')||'{}');if(s.stories)document.getElementById('stat-stories').textContent=s.stories;if(s.readers)document.getElementById('stat-readers').textContent=s.readers;if(s.startups)document.getElementById('stat-startups').textContent=s.startups;if(s.cities)document.getElementById('stat-cities').textContent=s.cities;}catch(e){}}
 
   // INIT
+  // ── TOP STORIES — reads pinned IDs from admin, falls back to latest 3 ──
+  async function loadTopStories(){
+    var container=document.getElementById('topStoriesContainer');
+    if(!container)return;
+    try{
+      var arts=await supaFetch('articles?status=eq.published&order=created_at.desc');
+      var pinned=JSON.parse(localStorage.getItem('sd_top_stories')||'[]');
+      var stories=[];
+      // If admin pinned specific articles, use those
+      if(pinned.length>0){
+        pinned.forEach(function(pid){
+          var a=arts.find(function(x){return String(x.id)===String(pid);});
+          if(a)stories.push(a);
+        });
+      }
+      // Fallback to latest 3 published if nothing pinned
+      if(!stories.length)stories=arts.slice(0,3);
+      if(!stories.length){container.innerHTML='<div style="text-align:center;padding:20px;color:rgba(255,255,255,0.3);font-size:13px;">No stories yet</div>';return;}
+      container.innerHTML=stories.map(function(a){
+        var img=a.image||a.image_url||'';
+        var date=a.created_at?new Date(a.created_at).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'}).toUpperCase():a.date||'';
+        var secMap={'Startup News':'startup-news-section','Startup Stories':'startup-stories-section','Young Entrepreneur':'young-entrepreneur-section','Her Story':'her-story-section','Tech & Innovation':'tech-section','Gov Schemes':'gov-schemes-section','Trending News':'trending-news-section'};
+        var sec=secMap[a.category]||'startup-news-section';
+        return '<div class="side-story" onclick="goTo(\''+sec+'\')">'+'<div class="side-img">'+(img?'<img src="'+img+'" style="width:100%;height:100%;object-fit:cover;border-radius:6px;" onerror="this.style.display=\'none\'"/>':'')+'</div>'+'<div><h4>'+a.title+'</h4><span>🕐 '+date+'</span></div>'+'</div>';
+      }).join('');
+    }catch(e){
+      // Fallback hardcoded if Supabase fails
+      container.innerHTML='<div class="side-story" onclick="goTo(\'tech-section\')"><div class="side-img"><img src="https://images.unsplash.com/photo-1593941707882-a5bba14938c7?w=128&h=108&fit=crop" style="width:100%;height:100%;object-fit:cover;border-radius:6px;"/></div><div><h4>Noida founder builds EV power bank startup</h4><span>🕐 25 MAY 2026</span></div></div><div class="side-story" onclick="goTo(\'startup-news-section\')"><div class="side-img"><img src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=128&h=108&fit=crop" style="width:100%;height:100%;object-fit:cover;border-radius:6px;"/></div><div><h4>RIL records historic $10.1B net profit</h4><span>🕐 25 MAY 2026</span></div></div><div class="side-story" onclick="goTo(\'startup-stories-section\')"><div class="side-img"><img src="https://images.unsplash.com/photo-1556761175-5973dc0f32e7?w=128&h=108&fit=crop" style="width:100%;height:100%;object-fit:cover;border-radius:6px;"/></div><div><h4>Mumbai man runs Safsafaiwala home cleaning biz</h4><span>🕐 25 MAY 2026</span></div></div>';
+    }
+  }
+
   window.addEventListener('load',function(){
     loadSettings();
+    loadTopStories();
     loadPublishedArticles();
     showFallbackNews();
     setTimeout(function(){fetchLiveNews();},1500);

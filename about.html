@@ -161,14 +161,28 @@
   <div class="team-grid">
     <!-- Co-Founder 1 — loaded from admin settings -->
     <div class="team-card">
-      <div class="team-avatar av-1" id="cf1-avatar">G</div>
+      <!-- Photo upload area -->
+      <div style="position:relative;width:100px;height:100px;margin:0 auto 8px;cursor:pointer;" onclick="document.getElementById('photo-cf1').click()">
+        <div class="team-avatar av-1" id="cf1-avatar" style="width:100px;height:100px;font-size:32px;">G</div>
+        <img id="cf1-photo" src="" alt="" style="display:none;width:100px;height:100px;border-radius:50%;object-fit:cover;position:absolute;top:0;left:0;"/>
+        <div style="position:absolute;bottom:0;right:0;background:#00C2CB;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-size:14px;box-shadow:0 2px 6px rgba(0,0,0,0.2);">📷</div>
+      </div>
+      <input type="file" id="photo-cf1" accept="image/*" style="display:none;" onchange="uploadPhoto('cf1',this)"/>
+      <p style="font-size:10px;color:var(--gray);margin-bottom:16px;">Tap 📷 to upload photo</p>
       <h3 id="cf1-name">Gourav Yadav</h3>
       <div class="team-role" id="cf1-role">Co-Founder & CEO</div>
       <p id="cf1-bio">Visionary entrepreneur and growth strategist driving Startup Decoding's mission to decode India's startup ecosystem.</p>
     </div>
     <!-- Co-Founder 2 — loaded from admin settings -->
     <div class="team-card">
-      <div class="team-avatar av-2" id="cf2-avatar">A</div>
+      <!-- Photo upload area -->
+      <div style="position:relative;width:100px;height:100px;margin:0 auto 8px;cursor:pointer;" onclick="document.getElementById('photo-cf2').click()">
+        <div class="team-avatar av-2" id="cf2-avatar" style="width:100px;height:100px;font-size:32px;">A</div>
+        <img id="cf2-photo" src="" alt="" style="display:none;width:100px;height:100px;border-radius:50%;object-fit:cover;position:absolute;top:0;left:0;"/>
+        <div style="position:absolute;bottom:0;right:0;background:#00C2CB;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-size:14px;box-shadow:0 2px 6px rgba(0,0,0,0.2);">📷</div>
+      </div>
+      <input type="file" id="photo-cf2" accept="image/*" style="display:none;" onchange="uploadPhoto('cf2',this)"/>
+      <p style="font-size:10px;color:var(--gray);margin-bottom:16px;">Tap 📷 to upload photo</p>
       <h3 id="cf2-name">Anup Yadav</h3>
       <div class="team-role" id="cf2-role">Co-Founder & Editor-in-Chief</div>
       <p id="cf2-bio">Medical student turned media entrepreneur. Passionate about making complex startup stories accessible to everyone in India.</p>
@@ -294,7 +308,11 @@
       }
       if (about.cf1role) document.getElementById('cf1-role').textContent = about.cf1role;
       if (about.cf1bio) document.getElementById('cf1-bio').textContent = about.cf1bio;
-
+      if (about.cf1photo) {
+        var p1=document.getElementById('cf1-photo');
+        var a1=document.getElementById('cf1-avatar');
+        p1.src=about.cf1photo; p1.style.display='block'; a1.style.display='none';
+      }
       // Co-Founder 2
       if (about.cf2name) {
         document.getElementById('cf2-name').textContent = about.cf2name;
@@ -302,6 +320,11 @@
       }
       if (about.cf2role) document.getElementById('cf2-role').textContent = about.cf2role;
       if (about.cf2bio) document.getElementById('cf2-bio').textContent = about.cf2bio;
+      if (about.cf2photo) {
+        var p2=document.getElementById('cf2-photo');
+        var a2=document.getElementById('cf2-avatar');
+        p2.src=about.cf2photo; p2.style.display='block'; a2.style.display='none';
+      }
 
       // Emails
       if (about.email) {
@@ -328,6 +351,41 @@
     } catch(e) {}
   }
 
+  // ── Photo Upload from Gallery ──
+  function uploadPhoto(who, input) {
+    var file = input.files[0];
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      var src = e.target.result;
+      // Show uploaded photo, hide avatar initials
+      var photoEl = document.getElementById(who + '-photo');
+      var avatarEl = document.getElementById(who + '-avatar');
+      photoEl.src = src;
+      photoEl.style.display = 'block';
+      avatarEl.style.display = 'none';
+      // Save to localStorage so it persists
+      localStorage.setItem('sd_photo_' + who, src);
+    };
+    reader.readAsDataURL(file);
+  }
+
+  // Load saved photos on page load
+  function loadSavedPhotos() {
+    ['cf1','cf2'].forEach(function(who) {
+      var saved = localStorage.getItem('sd_photo_' + who);
+      if (saved) {
+        var photoEl = document.getElementById(who + '-photo');
+        var avatarEl = document.getElementById(who + '-avatar');
+        if (photoEl && avatarEl) {
+          photoEl.src = saved;
+          photoEl.style.display = 'block';
+          avatarEl.style.display = 'none';
+        }
+      }
+    });
+  }
+
   // ── Contact Form ──
   function sendMessage() {
     var name = document.getElementById('c-name').value.trim();
@@ -344,7 +402,10 @@
   }
 
   // Run on load
-  window.addEventListener('load', loadAdminSettings);
+  window.addEventListener('load', function() {
+    loadAdminSettings();
+    loadSavedPhotos();
+  });
 </script>
 </body>
 </html>
