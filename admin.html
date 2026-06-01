@@ -694,7 +694,13 @@ async function loadArticles(){
     }
     if(role==='founder'||role==='editor'){
       if(a.status==='pending-approval')acts+=`<button class="btn-xs bx-approve" onclick="approveArt('${a.id}')">✅ Approve</button>`;
-      else acts+=`<button class="btn-xs bx-toggle" onclick="toggleArt('${a.id}')">${a.status==='published'?'Unpublish':'Publish'}</button>`;
+      else{
+        acts+=`<button class="btn-xs bx-toggle" onclick="toggleArt('${a.id}')">${a.status==='published'?'Unpublish':'Publish'}</button>`;
+        if(a.status==='published'){
+          const isPinned=a.pinned===true||a.pinned==='true';
+          acts+=`<button class="btn-xs bx-pin" onclick="togglePin('${a.id}',${isPinned})" style="background:${isPinned?'#4c1d95':'#1e293b'};color:${isPinned?'#c4b5fd':'#94a3b8'};">${isPinned?'📌 Pinned':'📌 Pin'}</button>`;
+        }
+      }
       if(role==='founder')acts+=`<button class="btn-xs bx-del" onclick="delArt('${a.id}')">Del</button>`;
     }
     if(!acts)acts=`<span style="font-size:11px;color:#475569;">${a.status==='pending-approval'?'⏳ Awaiting':a.status}</span>`;
@@ -712,6 +718,32 @@ async function loadArticles(){
 async function approveArt(id){try{await db('articles?id=eq.'+id,{method:'PATCH',prefer:'return=minimal',body:JSON.stringify({status:'published'})});}catch(e){}loadArticles();loadDashboard();toast('✅ Approved & Published!');}
 async function toggleArt(id){const arts=await getArts();const a=arts.find(x=>String(x.id)===String(id));const ns=a&&a.status==='published'?'draft':'published';try{await db('articles?id=eq.'+id,{method:'PATCH',prefer:'return=minimal',body:JSON.stringify({status:ns})});}catch(e){}loadArticles();toast('✅ Updated');}
 async function delArt(id){if(!confirm('Delete this article?'))return;try{await db('articles?id=eq.'+id,{method:'DELETE',prefer:'return=minimal'});}catch(e){}loadArticles();loadDashboard();toast('🗑️ Deleted');}
+
+async function togglePin(id,currentlyPinned){
+  const newPinned=!currentlyPinned;
+  try{
+    await db('articles?id=eq.'+id,{method:'PATCH',prefer:'return=minimal',body:JSON.stringify({pinned:newPinned})});
+  }catch(e){
+    // localStorage fallback
+    const arts=JSON.parse(localStorage.getItem('sd_articles')||'[]');
+    const idx=arts.findIndex(a=>String(a.id)===String(id));
+    if(idx>-1){arts[idx].pinned=newPinned;localStorage.setItem('sd_articles',JSON.stringify(arts));}
+  }
+  // Also update sd_top_stories for hero
+  if(newPinned){
+    const pinned=JSON.parse(localStorage.getItem('sd_top_stories')||'[]');
+    if(!pinned.includes(String(id))&&pinned.length<3){
+      pinned.unshift(String(id));
+      localStorage.setItem('sd_top_stories',JSON.stringify(pinned));
+    }
+  } else {
+    const pinned=JSON.parse(localStorage.getItem('sd_top_stories')||'[]');
+    const updated=pinned.filter(p=>String(p)!==String(id));
+    localStorage.setItem('sd_top_stories',JSON.stringify(updated));
+  }
+  loadArticles();
+  toast(newPinned?'📌 Pinned! Shows at top of section & hero.':'📌 Unpinned.');
+}
 
 // ═══════════════ TOP STORIES PICKER ═══════════════
 async function loadTopStoriesPicker(){
