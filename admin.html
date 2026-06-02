@@ -427,6 +427,23 @@
 
       <button class="btn-pub" onclick="saveAboutSettings()">💾 Save All About Page Changes</button>
       <p style="font-size:12px;color:#475569;margin-top:10px;">Note: These are saved to your database. The about.html page will auto-read them on next visit.</p>
+
+      <!-- TEAM MEMBERS -->
+      <div class="box" style="margin-top:24px;">
+        <h3>👥 Team Members (Editors, Writers, Contributors)</h3>
+        <p style="font-size:13px;color:#475569;margin-bottom:16px;">These appear on the About Us page below the co-founders. Clicking a member's name shows all articles by them.</p>
+        <div id="team-members-list" style="display:flex;flex-direction:column;gap:10px;margin-bottom:16px;"></div>
+        <div class="box" style="background:#0f172a;border:1px solid #334155;">
+          <h4 style="color:#f1f5f9;margin-bottom:12px;">➕ Add Team Member</h4>
+          <div class="grid2">
+            <div class="f"><label>Name</label><input type="text" id="tm-name" placeholder="Arshita Chaudhary"/></div>
+            <div class="f"><label>Role/Title</label><input type="text" id="tm-role" placeholder="Senior Editor"/></div>
+          </div>
+          <div class="f"><label>Photo URL <span style="color:#475569;font-weight:400;">(optional — from imgbb.com)</span></label><input type="text" id="tm-photo" placeholder="https://i.ibb.co/..."/></div>
+          <div class="f"><label>Short Bio <span style="color:#475569;font-weight:400;">(optional)</span></label><input type="text" id="tm-bio" placeholder="Covers startup funding and growth stories..."/></div>
+          <button class="btn-pub" onclick="addTeamMember()" style="margin-top:8px;">➕ Add Member</button>
+        </div>
+      </div>
     </div>
 
     <!-- DENIED -->
@@ -597,7 +614,7 @@ function go(page,el){
   if(page==='settings')loadSettings();
   if(page==='users')loadUsers();
   if(page==='data')loadDataPage();
-  if(page==='about')loadAboutSettings();
+  if(page==='about'){loadAboutSettings();loadTeamMembersList();}
 }
 function showDenied(){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById('page-denied').classList.add('active');}
 
@@ -914,6 +931,51 @@ function addUser(){
 }
 function removeUser(i){if(!confirm('Remove?'))return;const u=getUsers();u.splice(i,1);saveUsers(u);loadUsers();toast('🗑️ Removed');}
 function resetPw(i){const np=prompt('New password (min 8 chars):');if(!np)return;if(np.length<8){toast('⚠️ Too short','#7f1d1d','#fca5a5');return;}const u=getUsers();u[i].passwordHash=SEC.hash(np);saveUsers(u);toast('🔑 Password reset!');}
+
+// ═══════════════ TEAM MEMBERS ═══════════════
+async function loadTeamMembersList(){
+  try{
+    var rows=await db('team_members?order=sort_order.asc');
+    var list=document.getElementById('team-members-list');
+    if(!list)return;
+    if(!rows||!rows.length){list.innerHTML='<p style="color:#475569;font-size:13px;">No team members added yet.</p>';return;}
+    list.innerHTML=rows.map(function(m){
+      return '<div style="display:flex;align-items:center;gap:12px;background:#0f172a;border:1px solid #334155;border-radius:8px;padding:12px;">'
+        +(m.photo?'<img src="'+m.photo+'" style="width:40px;height:40px;border-radius:50%;object-fit:cover;" onerror="this.style.display='none'">'
+          :'<div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#0A2463,#00C2CB);display:flex;align-items:center;justify-content:center;font-weight:800;color:white;">'+m.name.charAt(0).toUpperCase()+'</div>')
+        +'<div style="flex:1;">'
+          +'<div style="color:#f1f5f9;font-weight:700;font-size:14px;">'+m.name+'</div>'
+          +'<div style="color:#00C2CB;font-size:12px;">'+m.role+'</div>'
+          +(m.bio?'<div style="color:#94a3b8;font-size:12px;margin-top:2px;">'+m.bio+'</div>':'')
+        +'</div>'
+        +'<button onclick="deleteTeamMember(''+m.id+'')" style="background:#7f1d1d;border:none;color:#fca5a5;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px;">🗑️ Remove</button>'
+      +'</div>';
+    }).join('');
+  }catch(e){console.log('Team load error',e);}
+}
+
+async function addTeamMember(){
+  var name=document.getElementById('tm-name').value.trim();
+  var role=document.getElementById('tm-role').value.trim();
+  var photo=document.getElementById('tm-photo').value.trim();
+  var bio=document.getElementById('tm-bio').value.trim();
+  if(!name||!role){toast('⚠️ Name and Role are required','#7f1d1d','#fca5a5');return;}
+  try{
+    await db('team_members',{method:'POST',prefer:'return=minimal',body:JSON.stringify({name,role,photo:photo||null,bio:bio||null,sort_order:Date.now()})});
+    ['tm-name','tm-role','tm-photo','tm-bio'].forEach(id=>document.getElementById(id).value='');
+    toast('✅ Team member added! Visible on About Us page.');
+    loadTeamMembersList();
+  }catch(e){toast('❌ Error adding member. Check Supabase table.','#7f1d1d','#fca5a5');}
+}
+
+async function deleteTeamMember(id){
+  if(!confirm('Remove this team member from the About Us page?'))return;
+  try{
+    await db('team_members?id=eq.'+id,{method:'DELETE',prefer:'return=minimal'});
+    toast('🗑️ Team member removed.');
+    loadTeamMembersList();
+  }catch(e){toast('❌ Error removing member.','#7f1d1d','#fca5a5');}
+}
 
 // ═══════════════ DATA PAGE ═══════════════
 let allFeatured=[],allSubscribers=[];

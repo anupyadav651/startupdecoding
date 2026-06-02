@@ -756,7 +756,7 @@
         card.innerHTML='<div class="card-img-wrap">'+imgHtml+topBadge+'</div>'+
           '<div class="card-body">'+
           '<h3>'+a.title+'</h3>'+(a.summary?'<p style="font-size:12px;color:#6b7280;margin-bottom:8px;">'+a.summary+'</p>':'')+
-          '<div class="card-meta"><span class="author">'+(a.author||'SD Team')+'</span><span class="dot">•</span><span>'+(a.date||'')+'</span></div></div>';
+          '<div class="card-meta"><span class="author" style="cursor:pointer;" onclick="event.stopPropagation();window.location.href=\'articles.html?author=\'+encodeURIComponent(this.textContent)" title="View all articles by this author">'+(a.author||'SD Team')+'</span><span class="dot">•</span><span>'+(a.date||'')+'</span></div></div>';
         card.addEventListener('click',function(){openArticle(a.id,a);});
         // Pinned go to very front, others prepend normally
         if(a.pinned){grid.insertBefore(card,grid.firstChild);}
@@ -949,7 +949,24 @@
   }
 
   // SETTINGS
-  function loadSettings(){try{var s=JSON.parse(localStorage.getItem('sd_settings')||'{}');if(s.stories)document.getElementById('stat-stories').textContent=s.stories;if(s.readers)document.getElementById('stat-readers').textContent=s.readers;if(s.startups)document.getElementById('stat-startups').textContent=s.startups;if(s.cities)document.getElementById('stat-cities').textContent=s.cities;}catch(e){}}
+  async function loadSettings(){
+    try{
+      var res=await supaFetch('site_settings?key=eq.settings&order=updated_at.desc&limit=1');
+      if(res&&res.length){var s=JSON.parse(res[0].value||'{}');
+        if(s.stories)document.getElementById('stat-stories').textContent=s.stories;
+        if(s.readers)document.getElementById('stat-readers').textContent=s.readers;
+        if(s.startups)document.getElementById('stat-startups').textContent=s.startups;
+        if(s.cities)document.getElementById('stat-cities').textContent=s.cities;
+        return;
+      }
+    }catch(e){}
+    try{var s=JSON.parse(localStorage.getItem('sd_settings')||'{}');
+      if(s.stories)document.getElementById('stat-stories').textContent=s.stories;
+      if(s.readers)document.getElementById('stat-readers').textContent=s.readers;
+      if(s.startups)document.getElementById('stat-startups').textContent=s.startups;
+      if(s.cities)document.getElementById('stat-cities').textContent=s.cities;
+    }catch(e){}
+  }
 
   // INIT
   // ── TOP STORIES — reads pinned IDs from admin, falls back to latest 3 ──
