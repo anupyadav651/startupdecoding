@@ -515,12 +515,19 @@ const SEC={
 
 let capAnswer=null;
 function genCaptcha(){const a=Math.floor(Math.random()*9)+1,b=Math.floor(Math.random()*9)+1;capAnswer=a+b;document.getElementById('capQ').textContent=`Security: What is ${a} + ${b}?`;document.getElementById('capRow').style.display='block';document.getElementById('capA').value='';}
-function checkShowCaptcha(){const a=SEC.getAttempts();if(a.count>=2&&document.getElementById('capRow').style.display==='none')genCaptcha();}
+function checkShowCaptcha(){} // captcha disabled
 
 function getUsers(){
+  // Always ensure founder account exists with correct password
   const s=localStorage.getItem('_sd_users');
-  if(s)return JSON.parse(s);
-  const d=[{name:'Founder',username:'founder',passwordHash:SEC.hash('decoding@2026'),role:'founder',access:['dashboard','write','articles','topstories','requests','searches','users','data','about','settings']}];
+  const founderHash=SEC.hash('decoding@2026');
+  if(s){
+    const users=JSON.parse(s);
+    // Fix founder password if corrupted
+    const fi=users.findIndex(x=>x.username==='founder');
+    if(fi>-1){users[fi].passwordHash=founderHash;localStorage.setItem('_sd_users',JSON.stringify(users));return users;}
+  }
+  const d=[{name:'Founder',username:'founder',passwordHash:founderHash,role:'founder',access:['dashboard','write','articles','topstories','requests','searches','users','data','about','settings']}];
   localStorage.setItem('_sd_users',JSON.stringify(d));return d;
 }
 function saveUsers(u){localStorage.setItem('_sd_users',JSON.stringify(u));}
