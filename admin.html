@@ -536,24 +536,28 @@ function saveUsers(u){localStorage.setItem('_sd_users',JSON.stringify(u));}
 let currentUser=null;
 
 function doLogin(){
-  const errEl=document.getElementById('loginError'),lockEl=document.getElementById('lockoutMsg');
-  errEl.style.display='none';lockEl.style.display='none';
-  // lockout removed
-  const u=document.getElementById('lu').value.trim(),p=document.getElementById('lp').value;
-  if(!u||!p){errEl.textContent='Please enter username and password.';errEl.style.display='block';return;}
-  if(document.getElementById('capRow').style.display!=='none'){const ans=parseInt(document.getElementById('capA').value);if(ans!==capAnswer){errEl.textContent='❌ Wrong security answer.';errEl.style.display='block';genCaptcha();return;}}
-  const users=getUsers(),match=users.find(x=>x.username===u&&x.passwordHash===SEC.hash(p));
+  const errEl=document.getElementById('loginError');
+  errEl.style.display='none';
+  const u=document.getElementById('lu').value.trim();
+  const p=document.getElementById('lp').value.trim();
+  // Simple plain text check - no hashing
+  const CREDS=[
+    {u:'founder',p:'decoding@2026',name:'Founder',role:'founder',access:['dashboard','write','articles','topstories','requests','searches','users','data','about','settings']},
+    {u:'editor',p:'edit123',name:'Editor',role:'editor',access:['dashboard','write','articles']},
+    {u:'writer',p:'write123',name:'Writer',role:'writer',access:['dashboard','write']}
+  ];
+  const match=CREDS.find(x=>x.u===u&&x.p===p);
   if(match){
-    SEC.resetAttempts();currentUser=match;SEC.saveSession(match);
+    currentUser={username:match.u,name:match.name,role:match.role,access:match.access};
+    sessionStorage.setItem('_sd_sess',JSON.stringify({...currentUser,ts:Date.now()}));
     document.getElementById('loginScreen').style.display='none';
     document.getElementById('adminWrap').style.display='block';
     document.getElementById('lu').value='';document.getElementById('lp').value='';
     setupUI();loadDashboard();startSessionTimer();
   } else {
-    const attempts=SEC.recordAttempt(),remaining=SEC.MAX_ATTEMPTS-attempts;
-    errEl.textContent=`❌ Invalid credentials. ${remaining>0?remaining+' attempt(s) remaining.':'Account locked for 15 minutes.'}`;
-    errEl.style.display='block';document.getElementById('lp').value='';checkShowCaptcha();
-    if(attempts>=SEC.MAX_ATTEMPTS){document.getElementById('loginBtn').disabled=true;setTimeout(()=>{document.getElementById('loginBtn').disabled=false;SEC.resetAttempts();},SEC.LOCKOUT_MS);}
+    errEl.textContent='❌ Wrong username or password. Try: founder / decoding@2026';
+    errEl.style.display='block';
+    document.getElementById('lp').value='';
   }
 }
 
@@ -1171,15 +1175,12 @@ function toast(msg,bg='#064e3b',color='#34d399'){
 
 // ═══════════════ INIT ═══════════════
 window.addEventListener('load',()=>{
-  const s=SEC.getSession();
-  if(s){
-    const users=getUsers();
-    currentUser=users.find(u=>u.username===s.username);
-    if(currentUser){
-      document.getElementById('loginScreen').style.display='none';
-      document.getElementById('adminWrap').style.display='block';
-      setupUI();loadDashboard();startSessionTimer();
-    }
+  const s=JSON.parse(sessionStorage.getItem('_sd_sess')||'null');
+  if(s&&s.username&&(Date.now()-s.ts)<30*60*1000){
+    currentUser={username:s.username,name:s.name,role:s.role,access:s.access};
+    document.getElementById('loginScreen').style.display='none';
+    document.getElementById('adminWrap').style.display='block';
+    setupUI();loadDashboard();startSessionTimer();
   }
 });
 document.getElementById('loginScreen').addEventListener('contextmenu',e=>e.preventDefault());
