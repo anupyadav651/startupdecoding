@@ -639,7 +639,12 @@ async function saveArticle(status){
     status,submitted_by:currentUser.username,
     date:(()=>{
       const v=document.getElementById('a-date').value;
-      if(v){const d=new Date(v);return d.toLocaleDateString('en-IN',{day:'numeric',month:'long',year:'numeric'});}
+      if(v){
+        // Parse YYYY-MM-DD directly to avoid timezone shift
+        const [yr,mn,dy]=v.split('-');
+        const months=['January','February','March','April','May','June','July','August','September','October','November','December'];
+        return parseInt(dy)+' '+months[parseInt(mn)-1]+' '+yr;
+      }
       return new Date().toLocaleDateString('en-IN',{day:'numeric',month:'long',year:'numeric'});
     })()
   };
