@@ -549,12 +549,19 @@ function doLogin(){
   ];
   const match=CREDS.find(x=>x.u===u&&x.p===p);
   if(match){
-    currentUser={username:match.u,name:match.name,role:match.role,access:match.access};
-    sessionStorage.setItem('_sd_sess',JSON.stringify({...currentUser,ts:Date.now()}));
-    document.getElementById('loginScreen').style.display='none';
-    document.getElementById('adminWrap').style.display='block';
-    document.getElementById('lu').value='';document.getElementById('lp').value='';
-    setupUI();loadDashboard();startSessionTimer();
+    try{
+      currentUser={username:match.u,name:match.name,role:match.role,access:match.access};
+      sessionStorage.setItem('_sd_sess',JSON.stringify({...currentUser,ts:Date.now()}));
+      document.getElementById('loginScreen').style.display='none';
+      document.getElementById('adminWrap').style.display='block';
+      document.getElementById('lu').value='';document.getElementById('lp').value='';
+      setupUI();loadDashboard();startSessionTimer();
+    }catch(err){
+      errEl.textContent='❌ Login error: '+err.message;
+      errEl.style.display='block';
+      document.getElementById('loginScreen').style.display='flex';
+      document.getElementById('adminWrap').style.display='none';
+    }
   } else {
     errEl.textContent='❌ Wrong username or password. Try: founder / decoding@2026';
     errEl.style.display='block';
