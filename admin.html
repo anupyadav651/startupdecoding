@@ -246,6 +246,14 @@
           <div class="f"><label>Image 2 URL (mid-article)</label><input type="text" id="a-img2" placeholder="https://... (optional)"/></div>
           <div class="f"><label>Image 3 URL (near end)</label><input type="text" id="a-img3" placeholder="https://... (optional)"/></div>
           <div class="f"><label>Tags</label><input type="text" id="a-tags" placeholder="startup, funding, India"/></div>
+          <div class="f"><label>Article Date</label><input type="date" id="a-date" title="Leave blank to use today's date automatically"/><small style="color:#64748b;font-size:11px;margin-top:4px;display:block;">Leave blank → today's date is used automatically</small></div>
+          <div class="f" style="display:flex;align-items:center;gap:12px;padding-top:24px;">
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-weight:500;">
+              <input type="checkbox" id="a-hide-readtime" style="width:18px;height:18px;cursor:pointer;accent-color:#00C2CB;"/>
+              Hide "Read Time" on this article
+            </label>
+            <small style="color:#64748b;font-size:11px;">(Uncheck = read time shown automatically)</small>
+          </div>
         </div>
         <div class="btn-row" id="writeBtns"></div>
       </div>
@@ -627,8 +635,13 @@ async function saveArticle(status){
     image2:document.getElementById('a-img2').value.trim(),
     image3:document.getElementById('a-img3').value.trim(),
     tags:document.getElementById('a-tags').value.trim(),
+    hide_read_time:document.getElementById('a-hide-readtime').checked,
     status,submitted_by:currentUser.username,
-    date:new Date().toLocaleDateString('en-IN',{day:'numeric',month:'long',year:'numeric'})
+    date:(()=>{
+      const v=document.getElementById('a-date').value;
+      if(v){const d=new Date(v);return d.toLocaleDateString('en-IN',{day:'numeric',month:'long',year:'numeric'});}
+      return new Date().toLocaleDateString('en-IN',{day:'numeric',month:'long',year:'numeric'});
+    })()
   };
   try{
     if(editingId){
@@ -666,6 +679,16 @@ async function openDraft(id){
   document.getElementById('a-img2').value=a.image2||'';
   document.getElementById('a-img3').value=a.image3||'';
   document.getElementById('a-tags').value=a.tags||'';
+  document.getElementById('a-hide-readtime').checked=a.hide_read_time===true||a.hide_read_time==='true';
+  // Convert stored date back to YYYY-MM-DD for the date input
+  if(a.date){
+    try{
+      const parts=a.date.split(' ');
+      const months={'January':'01','February':'02','March':'03','April':'04','May':'05','June':'06','July':'07','August':'08','September':'09','October':'10','November':'11','December':'12'};
+      const day=parts[0].padStart(2,'0');const mon=months[parts[1]]||'01';const yr=parts[2];
+      document.getElementById('a-date').value=`${yr}-${mon}-${day}`;
+    }catch(e){document.getElementById('a-date').value='';}
+  } else {document.getElementById('a-date').value='';}
   document.getElementById('writeFormTitle').textContent='✏️ Editing: '+a.title.slice(0,40)+'...';
   // Switch to write page
   go('write',document.getElementById('n-write'));
@@ -674,8 +697,9 @@ async function openDraft(id){
 
 function clearForm(){
   editingId=null;
-  ['a-title','a-author','a-content','a-summary','a-img','a-img2','a-img3','a-tags'].forEach(id=>document.getElementById(id).value='');
+  ['a-title','a-author','a-content','a-summary','a-img','a-img2','a-img3','a-tags','a-date'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('a-cat').value='';
+  document.getElementById('a-hide-readtime').checked=false;
   document.getElementById('writeFormTitle').textContent='Article Details';
 }
 
@@ -691,6 +715,10 @@ async function loadArticles(){
     const canEdit=role==='founder'||role==='editor'||(role==='writer'&&a.submitted_by===currentUser.username);
     if(canEdit&&(a.status==='draft'||a.status==='pending-approval')){
       acts+=`<button class="btn-xs bx-edit" onclick="openDraft('${a.id}')">✏️ Edit</button>`;
+    }
+    // Founder/Editor can also edit published articles (to change category, date, read time, etc.)
+    if(canEdit&&a.status==='published'&&(role==='founder'||role==='editor')){
+      acts+=`<button class="btn-xs bx-edit" onclick="openDraft('${a.id}')" title="Edit category, date, read time etc.">✏️ Edit</button>`;
     }
     if(role==='founder'||role==='editor'){
       if(a.status==='pending-approval')acts+=`<button class="btn-xs bx-approve" onclick="approveArt('${a.id}')">✅ Approve</button>`;
