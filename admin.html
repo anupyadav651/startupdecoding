@@ -530,8 +530,7 @@ let currentUser=null;
 function doLogin(){
   const errEl=document.getElementById('loginError'),lockEl=document.getElementById('lockoutMsg');
   errEl.style.display='none';lockEl.style.display='none';
-  const locked=SEC.isLockedOut();
-  if(locked){lockEl.textContent=`🔒 Too many attempts. Try again in ${locked} minute(s).`;lockEl.style.display='block';document.getElementById('loginBtn').disabled=true;setTimeout(()=>{document.getElementById('loginBtn').disabled=false;lockEl.style.display='none';},locked*60000);return;}
+  // lockout removed
   const u=document.getElementById('lu').value.trim(),p=document.getElementById('lp').value;
   if(!u||!p){errEl.textContent='Please enter username and password.';errEl.style.display='block';return;}
   if(document.getElementById('capRow').style.display!=='none'){const ans=parseInt(document.getElementById('capA').value);if(ans!==capAnswer){errEl.textContent='❌ Wrong security answer.';errEl.style.display='block';genCaptcha();return;}}
@@ -563,6 +562,7 @@ function startSessionTimer(){
   },30000);
 }
 document.addEventListener('mousemove',()=>SEC.getSession());
+SEC.resetAttempts(); // always reset on load
 document.addEventListener('keydown',()=>SEC.getSession());
 
 // ═══════════════ UI SETUP ═══════════════
