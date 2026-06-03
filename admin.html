@@ -563,26 +563,21 @@ function doLogin(){
     document.getElementById('loginScreen').style.display='flex';
     document.getElementById('adminWrap').style.display='none';
   }
-  if(false){
-    document.getElementById('lp').value='';
-  }
 }
 
-function logout(){SEC.clearSession();currentUser=null;document.getElementById('adminWrap').style.display='none';document.getElementById('loginScreen').style.display='flex';}
+function logout(){sessionStorage.removeItem('_sd_sess');currentUser=null;document.getElementById('adminWrap').style.display='none';document.getElementById('loginScreen').style.display='flex';}
 
 let sessionInterval;
 function startSessionTimer(){
   clearInterval(sessionInterval);
   sessionInterval=setInterval(()=>{
-    const s=SEC.getSession();
-    if(!s){toast('⏰ Session expired. Please login again.','#7f1d1d','#fca5a5');logout();return;}
-    const mins=Math.floor((SEC.SESSION_TIMEOUT-(Date.now()-s.ts))/60000);
+    const s=JSON.parse(sessionStorage.getItem('_sd_sess')||'null');
+    if(!s||Date.now()-s.ts>30*60*1000){toast('⏰ Session expired. Please login again.','#7f1d1d','#fca5a5');logout();return;}
+    const mins=Math.floor((30*60*1000-(Date.now()-s.ts))/60000);
     document.getElementById('sessionTimer').textContent=`Session: ${mins}m remaining`;
   },30000);
 }
-document.addEventListener('mousemove',()=>SEC.getSession());
-SEC.resetAttempts(); // always reset on load
-document.addEventListener('keydown',()=>SEC.getSession());
+// session keep-alive removed - using simple session
 
 // ═══════════════ UI SETUP ═══════════════
 const ALL_PAGES=['write','articles','topstories','requests','searches','users','data','about','settings'];
@@ -1182,13 +1177,15 @@ function toast(msg,bg='#064e3b',color='#34d399'){
 
 // ═══════════════ INIT ═══════════════
 window.addEventListener('load',()=>{
-  const s=JSON.parse(sessionStorage.getItem('_sd_sess')||'null');
-  if(s&&s.username&&(Date.now()-s.ts)<30*60*1000){
-    currentUser={username:s.username,name:s.name,role:s.role,access:s.access};
-    document.getElementById('loginScreen').style.display='none';
-    document.getElementById('adminWrap').style.display='block';
-    setupUI();loadDashboard();startSessionTimer();
-  }
+  try{
+    const s=JSON.parse(sessionStorage.getItem('_sd_sess')||'null');
+    if(s&&s.username&&(Date.now()-s.ts)<30*60*1000){
+      currentUser={username:s.username,name:s.name,role:s.role,access:s.access};
+      document.getElementById('loginScreen').style.display='none';
+      document.getElementById('adminWrap').style.display='block';
+      setupUI();loadDashboard();startSessionTimer();
+    }
+  }catch(e){}
 });
 document.getElementById('loginScreen').addEventListener('contextmenu',e=>e.preventDefault());
 </script>
