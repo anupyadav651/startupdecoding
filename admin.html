@@ -537,34 +537,33 @@ function saveUsers(u){localStorage.setItem('_sd_users',JSON.stringify(u));}
 let currentUser=null;
 
 function doLogin(){
-  const errEl=document.getElementById('loginError');
+  var errEl=document.getElementById('loginError');
   errEl.style.display='none';
-  const u=document.getElementById('lu').value.trim();
-  const p=document.getElementById('lp').value.trim();
-  // Simple plain text check - no hashing
-  const CREDS=[
-    {u:'founder',p:'decoding@2026',name:'Founder',role:'founder',access:['dashboard','write','articles','topstories','requests','searches','users','data','about','settings']},
-    {u:'editor',p:'edit123',name:'Editor',role:'editor',access:['dashboard','write','articles']},
-    {u:'writer',p:'write123',name:'Writer',role:'writer',access:['dashboard','write']}
-  ];
-  const match=CREDS.find(x=>x.u===u&&x.p===p);
-  if(match){
-    try{
-      currentUser={username:match.u,name:match.name,role:match.role,access:match.access};
-      sessionStorage.setItem('_sd_sess',JSON.stringify({...currentUser,ts:Date.now()}));
-      document.getElementById('loginScreen').style.display='none';
-      document.getElementById('adminWrap').style.display='block';
-      document.getElementById('lu').value='';document.getElementById('lp').value='';
-      setupUI();loadDashboard();startSessionTimer();
-    }catch(err){
-      errEl.textContent='❌ Login error: '+err.message;
-      errEl.style.display='block';
-      document.getElementById('loginScreen').style.display='flex';
-      document.getElementById('adminWrap').style.display='none';
-    }
+  var u=document.getElementById('lu').value.trim();
+  var p=document.getElementById('lp').value.trim();
+  if(u==='founder'&&p==='decoding@2026'){
+    currentUser={username:'founder',name:'Founder',role:'founder',access:['dashboard','write','articles','topstories','requests','searches','users','data','about','settings']};
+  } else if(u==='editor'&&p==='edit123'){
+    currentUser={username:'editor',name:'Editor',role:'editor',access:['dashboard','write','articles']};
+  } else if(u==='writer'&&p==='write123'){
+    currentUser={username:'writer',name:'Writer',role:'writer',access:['dashboard','write']};
   } else {
-    errEl.textContent='❌ Wrong username or password. Try: founder / decoding@2026';
+    errEl.textContent='❌ Wrong username or password.';
     errEl.style.display='block';
+    return;
+  }
+  try{
+    sessionStorage.setItem('_sd_sess',JSON.stringify({username:currentUser.username,name:currentUser.name,role:currentUser.role,access:currentUser.access,ts:Date.now()}));
+    document.getElementById('loginScreen').style.display='none';
+    document.getElementById('adminWrap').style.display='block';
+    setupUI();loadDashboard();startSessionTimer();
+  }catch(err){
+    errEl.textContent='❌ Error: '+err.message;
+    errEl.style.display='block';
+    document.getElementById('loginScreen').style.display='flex';
+    document.getElementById('adminWrap').style.display='none';
+  }
+  if(false){
     document.getElementById('lp').value='';
   }
 }
@@ -1195,5 +1194,3 @@ document.getElementById('loginScreen').addEventListener('contextmenu',e=>e.preve
 </script>
 </body>
 </html>
-
-
