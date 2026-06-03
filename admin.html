@@ -954,16 +954,9 @@ async function loadTeamMembersList(){
     if(!list)return;
     if(!rows||!rows.length){list.innerHTML='<p style="color:#475569;font-size:13px;">No team members added yet.</p>';return;}
     list.innerHTML=rows.map(function(m){
-      return '<div style="display:flex;align-items:center;gap:12px;background:#0f172a;border:1px solid #334155;border-radius:8px;padding:12px;">'
-        +(m.photo?'<img src="'+m.photo+'" style="width:40px;height:40px;border-radius:50%;object-fit:cover;" onerror="this.style.display='none'">'
-          :'<div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#0A2463,#00C2CB);display:flex;align-items:center;justify-content:center;font-weight:800;color:white;">'+m.name.charAt(0).toUpperCase()+'</div>')
-        +'<div style="flex:1;">'
-          +'<div style="color:#f1f5f9;font-weight:700;font-size:14px;">'+m.name+'</div>'
-          +'<div style="color:#00C2CB;font-size:12px;">'+m.role+'</div>'
-          +(m.bio?'<div style="color:#94a3b8;font-size:12px;margin-top:2px;">'+m.bio+'</div>':'')
-        +'</div>'
-        +'<button onclick="deleteTeamMember(''+m.id+'')" style="background:#7f1d1d;border:none;color:#fca5a5;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px;">🗑️ Remove</button>'
-      +'</div>';
+      var photoHtml=m.photo?'<img src="'+m.photo+'" style="width:40px;height:40px;border-radius:50%;object-fit:cover;">':'<div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#0A2463,#00C2CB);display:flex;align-items:center;justify-content:center;font-weight:800;color:white;">'+m.name.charAt(0).toUpperCase()+'</div>';
+      var bioHtml=m.bio?'<div style="color:#94a3b8;font-size:12px;margin-top:2px;">'+m.bio+'</div>':'';
+      return '<div style="display:flex;align-items:center;gap:12px;background:#0f172a;border:1px solid #334155;border-radius:8px;padding:12px;">'+photoHtml+'<div style="flex:1;"><div style="color:#f1f5f9;font-weight:700;font-size:14px;">'+m.name+'</div><div style="color:#00C2CB;font-size:12px;">'+m.role+'</div>'+bioHtml+'</div><button onclick="deleteTeamMember('+JSON.stringify(m.id)+')" style="background:#7f1d1d;border:none;color:#fca5a5;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px;">Remove</button></div>';
     }).join('');
   }catch(e){console.log('Team load error',e);}
 }
