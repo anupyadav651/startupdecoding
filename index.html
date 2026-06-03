@@ -601,43 +601,17 @@
   </div>
 </div>
 
-<script type="module">
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script>
+firebase.initializeApp({apiKey:'AIzaSyDpB7BMUeGidRxVDP_5S9Xru4eVmdVYSWI',authDomain:'startupdecoding-7b53a.firebaseapp.com',projectId:'startupdecoding-7b53a'});
+const fsdb=firebase.firestore();
+async function fbGet(col){try{const s=await fsdb.collection(col).get();return s.docs.map(d=>({...d.data(),id:d.id}));}catch(e){return[];}}
+async function fbQuery(col,field,value){try{const s=await fsdb.collection(col).where(field,'==',value).get();return s.docs.map(d=>({...d.data(),id:d.id}));}catch(e){return[];}}
+async function fbAdd(col,obj){try{const r=await fsdb.collection(col).add({...obj,created_at:new Date().toISOString()});return{id:r.id,...obj};}catch(e){}}
+async function fbSet(col,id,obj){try{await fsdb.collection(col).doc(id).set({...obj},{merge:true});}catch(e){}}
+async function fbDelete(col,id){try{await fsdb.collection(col).doc(id).delete();}catch(e){}}
 
-  // ═══ FIREBASE SDK CONFIG ═══
-  import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-  import { getFirestore, collection, query, where, getDocs, addDoc, doc, setDoc, deleteDoc, getDoc } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
-
-  const firebaseApp = initializeApp({
-    apiKey: 'AIzaSyDpB7BMUeGidRxVDP_5S9Xru4eVmdVYSWI',
-    authDomain: 'startupdecoding-7b53a.firebaseapp.com',
-    projectId: 'startupdecoding-7b53a'
-  });
-  const fsdb = getFirestore(firebaseApp);
-
-  async function fbGet(col){
-    try{
-      const snap=await getDocs(collection(fsdb,col));
-      return snap.docs.map(d=>({...d.data(),id:d.id}));
-    }catch(e){console.log('fbGet error:',e);return[];}
-  }
-  async function fbQuery(col,field,value){
-    try{
-      const q=query(collection(fsdb,col),where(field,'==',value));
-      const snap=await getDocs(q);
-      return snap.docs.map(d=>({...d.data(),id:d.id}));
-    }catch(e){console.log('fbQuery error:',e);return[];}
-  }
-  async function fbAdd(col,obj){
-    try{return await addDoc(collection(fsdb,col),{...obj,created_at:new Date().toISOString()});}
-    catch(e){console.log('fbAdd error:',e);}
-  }
-  async function fbSet(col,id,obj){
-    try{return await setDoc(doc(fsdb,col,id),{...obj,updated_at:new Date().toISOString()},{merge:true});}
-    catch(e){console.log('fbSet error:',e);}
-  }
-  async function fbDelete(col,id){
-    try{await deleteDoc(doc(fsdb,col,id));}catch(e){}
-  }
 
   var secGridMap={'Startup News':'grid-startup-news','Startup Stories':'grid-startup-stories','Young Entrepreneur':'grid-young-entrepreneur','Her Story':'grid-her-story','Tech & Innovation':'grid-tech','Gov Schemes':'grid-gov-schemes','Trending News':'liveNewsGrid'};
   var secSectionMap={'Startup News':'startup-news-section','Startup Stories':'startup-stories-section','Young Entrepreneur':'young-entrepreneur-section','Her Story':'her-story-section','Tech & Innovation':'tech-section','Gov Schemes':'gov-schemes-section'};

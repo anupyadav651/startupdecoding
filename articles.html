@@ -155,18 +155,16 @@
   <p>© 2026 Startup Decoding · <a href="/">Home</a> · <a href="/about.html">About</a> · <a href="mailto:gourav@startupdecoding.com">Contact</a></p>
 </footer>
 
-<script type="module">
-
-  // ═══ FIREBASE SDK ═══
-  import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-  import { getFirestore, collection, query, where, getDocs, addDoc, doc, setDoc, deleteDoc, getDoc } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
-  const firebaseApp=initializeApp({apiKey:'AIzaSyDpB7BMUeGidRxVDP_5S9Xru4eVmdVYSWI',authDomain:'startupdecoding-7b53a.firebaseapp.com',projectId:'startupdecoding-7b53a'});
-  const fsdb=getFirestore(firebaseApp);
-  async function fbGet(col){try{const s=await getDocs(collection(fsdb,col));return s.docs.map(d=>({...d.data(),id:d.id}));}catch(e){return[];}}
-  async function fbQuery(col,field,value){try{const q=query(collection(fsdb,col),where(field,'==',value));const s=await getDocs(q);return s.docs.map(d=>({...d.data(),id:d.id}));}catch(e){return[];}}
-  async function fbAdd(col,obj){try{return await addDoc(collection(fsdb,col),{...obj,created_at:new Date().toISOString()});}catch(e){}}
-  async function fbSet(col,id,obj){try{return await setDoc(doc(fsdb,col,id),{...obj,updated_at:new Date().toISOString()},{merge:true});}catch(e){}}
-  async function fbDelete(col,id){try{await deleteDoc(doc(fsdb,col,id));}catch(e){}}
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script>
+firebase.initializeApp({apiKey:'AIzaSyDpB7BMUeGidRxVDP_5S9Xru4eVmdVYSWI',authDomain:'startupdecoding-7b53a.firebaseapp.com',projectId:'startupdecoding-7b53a'});
+const fsdb=firebase.firestore();
+async function fbGet(col){try{const s=await fsdb.collection(col).get();return s.docs.map(d=>({...d.data(),id:d.id}));}catch(e){return[];}}
+async function fbQuery(col,field,value){try{const s=await fsdb.collection(col).where(field,'==',value).get();return s.docs.map(d=>({...d.data(),id:d.id}));}catch(e){return[];}}
+async function fbAdd(col,obj){try{const r=await fsdb.collection(col).add({...obj,created_at:new Date().toISOString()});return{id:r.id,...obj};}catch(e){}}
+async function fbSet(col,id,obj){try{await fsdb.collection(col).doc(id).set({...obj},{merge:true});}catch(e){}}
+async function fbDelete(col,id){try{await fsdb.collection(col).doc(id).delete();}catch(e){}}
 
 async function loadArticles(){
   try{

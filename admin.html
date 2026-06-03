@@ -509,7 +509,33 @@
 
 <div class="toast" id="toast"></div>
 
-<script type="module">
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script>
+// ═══ FIREBASE COMPAT SDK ═══
+firebase.initializeApp({apiKey:'AIzaSyDpB7BMUeGidRxVDP_5S9Xru4eVmdVYSWI',authDomain:'startupdecoding-7b53a.firebaseapp.com',projectId:'startupdecoding-7b53a'});
+const fsdb=firebase.firestore();
+async function fbGet(col){try{const s=await fsdb.collection(col).get();return s.docs.map(d=>({...d.data(),id:d.id}));}catch(e){console.log('fbGet err',e);return[];}}
+async function fbQuery(col,field,value){try{const s=await fsdb.collection(col).where(field,'==',value).get();return s.docs.map(d=>({...d.data(),id:d.id}));}catch(e){return[];}}
+async function fbAdd(col,obj){try{const r=await fsdb.collection(col).add({...obj,created_at:new Date().toISOString()});return{id:r.id,...obj};}catch(e){throw e;}}
+async function fbSet(col,id,obj){try{await fsdb.collection(col).doc(id).set({...obj,updated_at:new Date().toISOString()},{merge:true});}catch(e){throw e;}}
+async function fbDelete(col,id){try{await fsdb.collection(col).doc(id).delete();}catch(e){throw e;}}
+async function fbGetDoc(col,id){try{const d=await fsdb.collection(col).doc(id).get();return d.exists?{...d.data(),id:d.id}:null;}catch(e){return null;}}
+async function db(path,opts={}){
+  const qIdx=path.indexOf('?');const col=qIdx>=0?path.slice(0,qIdx):path;const params=qIdx>=0?path.slice(qIdx+1):'';
+  const method=(opts.method||'GET').toUpperCase();const body=opts.body?JSON.parse(opts.body):null;
+  if(method==='DELETE'){const m=params.match(/id=eq\.([^&]+)/);if(m)return fbDelete(col,m[1]);}
+  if(method==='PATCH'){const m=params.match(/id=eq\.([^&]+)/);if(m)return fbSet(col,m[1],body||{});}
+  if(method==='POST'){
+    if(body&&body.key){const ex=await fbQuery(col,'key',body.key);if(ex&&ex.length)return fbSet(col,ex[0].id,body);}
+    return fbAdd(col,body||{});
+  }
+  const idM=params.match(/id=eq\.([^&]+)/);if(idM)return[await fbGetDoc(col,idM[1])].filter(Boolean);
+  const keyM=params.match(/key=eq\.([^&]+)/);if(keyM)return fbQuery(col,'key',decodeURIComponent(keyM[1]));
+  const stM=params.match(/status=eq\.([^&]+)/);if(stM)return fbQuery(col,'status',decodeURIComponent(stM[1]));
+  return fbGet(col);
+}
+
 // ═══════════════ SECURITY ═══════════════
 const SEC={
   MAX_ATTEMPTS:5,LOCKOUT_MS:15*60*1000,SESSION_TIMEOUT:30*60*1000,
@@ -702,16 +728,14 @@ function showDenied(){document.querySelectorAll('.page').forEach(p=>p.classList.
 // ═══════════════ SUPABASE ═══════════════
 
 // ═══ FIREBASE SDK ═══
-import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-import { getFirestore, collection, query, where, getDocs, addDoc, doc, setDoc, deleteDoc, getDoc } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 const firebaseApp=initializeApp({apiKey:'AIzaSyDpB7BMUeGidRxVDP_5S9Xru4eVmdVYSWI',authDomain:'startupdecoding-7b53a.firebaseapp.com',projectId:'startupdecoding-7b53a'});
 const fsdb=getFirestore(firebaseApp);
-async function fbGet(col){try{const s=await getDocs(collection(fsdb,col));return s.docs.map(d=>({...d.data(),id:d.id}));}catch(e){return[];}}
-async function fbQuery(col,field,value){try{const q=query(collection(fsdb,col),where(field,'==',value));const s=await getDocs(q);return s.docs.map(d=>({...d.data(),id:d.id}));}catch(e){return[];}}
-async function fbAdd(col,obj){try{const r=await addDoc(collection(fsdb,col),{...obj,created_at:new Date().toISOString()});return{id:r.id,...obj};}catch(e){throw e;}}
-async function fbSet(col,id,obj){try{await setDoc(doc(fsdb,col,id),{...obj,updated_at:new Date().toISOString()},{merge:true});}catch(e){throw e;}}
-async function fbDelete(col,id){try{await deleteDoc(doc(fsdb,col,id));}catch(e){throw e;}}
-async function fbGetDoc(col,id){try{const d=await getDoc(doc(fsdb,col,id));return d.exists()?{...d.data(),id:d.id}:null;}catch(e){return null;}}
+async function fbGet(col){try{const s=await fsdb.collection(col).get();return s.docs.map(d=>({...d.data(),id:d.id}));}catch(e){console.log('fbGet err',e);return[];}}
+async function fbQuery(col,field,value){try{const s=await fsdb.collection(col).where(field,'==',value).get();return s.docs.map(d=>({...d.data(),id:d.id}));}catch(e){console.log('fbQuery err',e);return[];}}
+async function fbAdd(col,obj){try{const r=await fsdb.collection(col).add({...obj,created_at:new Date().toISOString()});return{id:r.id,...obj};}catch(e){throw e;}}
+async function fbSet(col,id,obj){try{await fsdb.collection(col).doc(id).set({...obj,updated_at:new Date().toISOString()},{merge:true});}catch(e){throw e;}}
+async function fbDelete(col,id){try{await fsdb.collection(col).doc(id).delete();}catch(e){throw e;}}
+async function fbGetDoc(col,id){try{const d=await fsdb.collection(col).doc(id).get();return d.exists?{...d.data(),id:d.id}:null;}catch(e){return null;}}
 async function db(path,opts={}){
   const qIdx=path.indexOf('?');const col=qIdx>=0?path.slice(0,qIdx):path;const params=qIdx>=0?path.slice(qIdx+1):'';
   const method=(opts.method||'GET').toUpperCase();const body=opts.body?JSON.parse(opts.body):null;
