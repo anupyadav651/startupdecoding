@@ -439,7 +439,7 @@
     </div>
 
     <!-- 6. GOVERNMENT SCHEMES -->
-    <div class="section" id="gov-schemes-section" style="display:none;">
+    <div class="section" id="gov-schemes-section">
       <div class="sec-head">
         <h2>🏛️ Government Schemes for Startups</h2><div class="line"></div>
         <a href="articles.html?cat=Gov+Schemes" class="see-all">See All →</a>
@@ -738,12 +738,13 @@
         var card=document.createElement('div');card.className='card';
         card.style.border=a.pinned?'2px solid #f59e0b':'2px solid #00C2CB';
         card.style.cursor='pointer';
-        var imgHtml=(a.image||a.image_url)?'<img src="'+(a.image||a.image_url)+'" style="width:100%;height:180px;object-fit:cover;" onerror="this.style.display='none'"/>':'<div class="card-placeholder img-blue" style="display:flex;align-items:center;justify-content:center;font-size:32px;">📰</div>';
+        var imgSrc=a.image||a.image_url||'';
+        var imgHtml=imgSrc?'<img src="'+imgSrc+'" style="width:100%;height:180px;object-fit:cover;"/>':'<div class="card-placeholder img-blue" style="display:flex;align-items:center;justify-content:center;font-size:32px;">📰</div>';
         var topBadge=a.pinned?'<span class="card-badge" style="background:#f59e0b;color:#111;">📌 Featured</span>':'<span class="card-badge" style="background:#00C2CB;">✨ NEW</span>';
-        card.innerHTML='<div class="card-img-wrap">'+imgHtml+topBadge+'</div>'+
-          '<div class="card-body">'+
-          '<h3>'+a.title+'</h3>'+(a.summary?'<p style="font-size:12px;color:#6b7280;margin-bottom:8px;">'+a.summary+'</p>':'')+
-          '<div class="card-meta"><span class="author" style="cursor:pointer;" onclick="event.stopPropagation();window.location.href='articles.html?author='+encodeURIComponent(this.textContent)">'+(a.author||'SD Team')+'</span><span class="dot">•</span><span>'+(a.date||'')+'</span></div></div>';
+        card.innerHTML='<div class="card-img-wrap">'+imgHtml+topBadge+'</div>'
+          +'<div class="card-body">'
+          +'<h3>'+a.title+'</h3>'+(a.summary?'<p style="font-size:12px;color:#6b7280;margin-bottom:8px;">'+a.summary+'</p>':'')
+          +'<div class="card-meta"><span class="author">'+(a.author||'SD Team')+'</span><span class="dot">•</span><span>'+(a.date||'')+'</span></div></div>';
         card.addEventListener('click',function(){window.location.href='article.html?id='+a.id;});
         grid.appendChild(card);
       });
