@@ -95,8 +95,8 @@
 </div>
 
 <div id="author-banner" class="author-banner" style="display:none;">
-  <strong>📝 Articles by: <span id="banner-author-name"></span></strong>
-  <a onclick="clearAuthorFilter()">✕ Clear filter — View all articles</a>
+  <strong><span id="banner-label">📝 Articles by:</span> <span id="banner-author-name"></span></strong>
+  <a onclick="clearAllFilters()">✕ Clear filter — View all articles</a>
 </div>
 
 <div class="controls">
@@ -151,6 +151,26 @@ var authorFilter='';
 // Read ?author= from URL
 var urlParams=new URLSearchParams(window.location.search);
 authorFilter=urlParams.get('author')||'';
+var catParam=urlParams.get('cat')||'';
+// Pre-set category dropdown from URL
+if(catParam){
+  document.addEventListener('DOMContentLoaded',function(){
+    var sel=document.getElementById('cat-filter');
+    if(sel){
+      // Try to match the cat param to an option
+      for(var i=0;i<sel.options.length;i++){
+        if(sel.options[i].value===catParam||sel.options[i].value===catParam.replace(/\+/g,' ')){
+          sel.value=sel.options[i].value;break;
+        }
+      }
+      // If no exact match try decoded
+      var decoded=decodeURIComponent(catParam.replace(/\+/g,' '));
+      for(var i=0;i<sel.options.length;i++){
+        if(sel.options[i].value===decoded){sel.value=decoded;break;}
+      }
+    }
+  });
+}
 
 async function loadArticles(){
   try{
@@ -165,9 +185,11 @@ function filterArticles(){
   var q=(document.getElementById('search-input').value||'').toLowerCase();
   var cat=document.getElementById('cat-filter').value;
   var sort=document.getElementById('sort-filter').value;
+  // If no dropdown selected but catParam exists, use it
+  var activeCat=cat||(catParam?decodeURIComponent(catParam.replace(/\+/g,' ')):'');
   filteredArticles=allArticles.filter(function(a){
     var matchQ=!q||(a.title||'').toLowerCase().includes(q)||(a.summary||'').toLowerCase().includes(q)||(a.content||'').toLowerCase().includes(q)||(a.author||'').toLowerCase().includes(q);
-    var matchCat=!cat||(a.category||'')=== cat;
+    var matchCat=!activeCat||(a.category||'').toLowerCase()===activeCat.toLowerCase();
     var matchAuthor=!authorFilter||(a.author||'').toLowerCase()===authorFilter.toLowerCase();
     return matchQ&&matchCat&&matchAuthor;
   });
@@ -180,6 +202,16 @@ function filterArticles(){
 function clearAuthorFilter(){
   authorFilter='';
   document.getElementById('author-banner').style.display='none';
+  history.pushState({},'','/articles.html');
+  filterArticles();
+}
+
+function clearAllFilters(){
+  authorFilter='';
+  catParam='';
+  document.getElementById('author-banner').style.display='none';
+  document.getElementById('cat-filter').value='';
+  document.getElementById('banner-label').textContent='📝 Articles by:';
   history.pushState({},'','/articles.html');
   filterArticles();
 }
@@ -263,6 +295,12 @@ window.addEventListener('load',function(){
   if(authorFilter){
     document.getElementById('banner-author-name').textContent=authorFilter;
     document.getElementById('author-banner').style.display='flex';
+  }
+  if(catParam&&!authorFilter){
+    var decoded=decodeURIComponent(catParam.replace(/\+/g,' '));
+    document.getElementById('banner-author-name').textContent=decoded;
+    document.getElementById('author-banner').style.display='flex';
+    document.getElementById('banner-label').textContent='📂 Category:';
   }
   loadArticles();
 });
