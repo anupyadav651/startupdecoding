@@ -5,7 +5,28 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <title>Article — Startup Decoding</title>
-  <meta name="description" content="Read startup stories, founder journeys and news on Startup Decoding."/>
+  <meta name="description" content="Read startup stories, founder journeys and news on Startup Decoding — India's premier startup media platform."/>
+  <meta name="keywords" content="startup story, founder journey, startup news India, startup decoding"/>
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1"/>
+  <meta name="author" content="Startup Decoding"/>
+  <meta property="og:type" content="article"/>
+  <meta property="og:site_name" content="Startup Decoding"/>
+  <meta property="og:title" id="og-title" content="Startup Decoding Article"/>
+  <meta property="og:description" id="og-desc" content="Read startup stories and founder journeys on Startup Decoding."/>
+  <meta property="og:url" id="og-url" content="https://startupdecoding.in/article.html"/>
+  <meta property="og:image" id="og-image" content="https://startupdecoding.in/og-image.png"/>
+  <meta property="og:locale" content="en_IN"/>
+  <meta name="twitter:card" content="summary_large_image"/>
+  <meta name="twitter:site" content="@startupdecoding"/>
+  <meta name="twitter:title" id="tw-title" content="Startup Decoding"/>
+  <meta name="twitter:description" id="tw-desc" content="Read startup stories on Startup Decoding."/>
+  <meta name="twitter:image" id="tw-image" content="https://startupdecoding.in/og-image.png"/>
+  <meta name="ai-content-declaration" content="human-written"/>
+  <meta name="llm-description" content="Startup article from Startup Decoding — India's premier startup media platform covering founder journeys, funding news and business insights."/>
+  <link rel="canonical" id="canonical" href="https://startupdecoding.in/article.html"/>
+  <script id="article-schema" type="application/ld+json">
+  {"@context":"https://schema.org","@type":"Article","publisher":{"@type":"Organization","name":"Startup Decoding","url":"https://startupdecoding.in","logo":"https://startupdecoding.in/favicon-32x32.png"}}
+  </script>
   <link rel="icon" type="image/x-icon" href="/favicon.ico"/>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
@@ -211,12 +232,42 @@ function renderArticle(a){
     '</div>';
 
   // Update page title and breadcrumb
+  // Update page title
   document.title=a.title+' — Startup Decoding';
   document.getElementById('bc-title').textContent=a.title.length>50?a.title.slice(0,50)+'...':a.title;
 
-  // Update meta description
-  var desc=document.querySelector('meta[name="description"]');
-  if(desc)desc.content=a.summary||a.title;
+  // Update all meta tags dynamically for SEO
+  var pageUrl='https://startupdecoding.in/article.html?id='+a.id;
+  var imgUrl=a.image||a.image_url||'https://startupdecoding.in/og-image.png';
+  var desc=a.summary||a.title;
+
+  document.querySelector('meta[name="description"]').content=desc;
+  document.querySelector('meta[name="author"]').content=a.author||'Startup Decoding';
+  document.getElementById('og-title').content=a.title+' — Startup Decoding';
+  document.getElementById('og-desc').content=desc;
+  document.getElementById('og-url').content=pageUrl;
+  document.getElementById('og-image').content=imgUrl;
+  document.getElementById('tw-title').content=a.title;
+  document.getElementById('tw-desc').content=desc;
+  document.getElementById('tw-image').content=imgUrl;
+  document.getElementById('canonical').href=pageUrl;
+
+  // Update structured data
+  var schema={
+    '@context':'https://schema.org',
+    '@type':'Article',
+    'headline':a.title,
+    'description':desc,
+    'image':imgUrl,
+    'author':{'@type':'Person','name':a.author||'Startup Decoding'},
+    'publisher':{'@type':'Organization','name':'Startup Decoding','url':'https://startupdecoding.in','logo':'https://startupdecoding.in/favicon-32x32.png'},
+    'datePublished':a.created_at||new Date().toISOString(),
+    'dateModified':a.updated_at||a.created_at||new Date().toISOString(),
+    'mainEntityOfPage':{'@type':'WebPage','@id':pageUrl},
+    'articleSection':a.category||'Startup News',
+    'keywords':a.tags||'startup, India, entrepreneur'
+  };
+  document.getElementById('article-schema').textContent=JSON.stringify(schema);
 }
 
 function shareArticle(){

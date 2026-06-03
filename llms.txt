@@ -1,0 +1,26 @@
+# Startup Decoding
+
+> India's premier startup media platform covering startup news, founder journeys, funding rounds, government schemes and entrepreneurship stories.
+
+## About
+Startup Decoding is an independent Indian startup media platform that decodes the strategies, failures, and breakthroughs shaping India's startup ecosystem. We cover startup funding news, founder stories, young entrepreneur journeys, women-led startups (Her Story), tech innovation, and government schemes for startups.
+
+## What We Cover
+- Startup News: Latest funding rounds, acquisitions, IPOs and business news from India
+- Startup Stories: In-depth founder journeys and startup origin stories
+- Young Entrepreneur: Stories of entrepreneurs under 30 building successful businesses
+- Her Story: Women founders and leaders shaping India's startup ecosystem
+- Tech & Innovation: Technology startups and innovation from India
+- Gov Schemes: Government schemes, policies and support for Indian startups
+
+## Key Pages
+- Homepage: https://startupdecoding.in/
+- All Articles: https://startupdecoding.in/articles.html
+- About Us: https://startupdecoding.in/about.html
+
+## Contact
+- Email: gourav@startupdecoding.com
+- Instagram: @startupdecoding.in
+
+## Content Policy
+All content on Startup Decoding is human-written by our editorial team. We cover Indian startups with a focus on accuracy, depth and storytelling.
