@@ -153,24 +153,8 @@ var urlParams=new URLSearchParams(window.location.search);
 authorFilter=urlParams.get('author')||'';
 var catParam=urlParams.get('cat')||'';
 // Pre-set category dropdown from URL
-if(catParam){
-  document.addEventListener('DOMContentLoaded',function(){
-    var sel=document.getElementById('cat-filter');
-    if(sel){
-      // Try to match the cat param to an option
-      for(var i=0;i<sel.options.length;i++){
-        if(sel.options[i].value===catParam||sel.options[i].value===catParam.replace(/\+/g,' ')){
-          sel.value=sel.options[i].value;break;
-        }
-      }
-      // If no exact match try decoded
-      var decoded=decodeURIComponent(catParam.replace(/\+/g,' '));
-      for(var i=0;i<sel.options.length;i++){
-        if(sel.options[i].value===decoded){sel.value=decoded;break;}
-      }
-    }
-  });
-}
+// catParam decoded for use in filtering
+var catDecoded=catParam?decodeURIComponent(catParam.replace(/\+/g,' ')):'';
 
 async function loadArticles(){
   try{
@@ -185,8 +169,8 @@ function filterArticles(){
   var q=(document.getElementById('search-input').value||'').toLowerCase();
   var cat=document.getElementById('cat-filter').value;
   var sort=document.getElementById('sort-filter').value;
-  // If no dropdown selected but catParam exists, use it
-  var activeCat=cat||(catParam?decodeURIComponent(catParam.replace(/\+/g,' ')):'');
+  // Use dropdown OR catParam from URL
+  var activeCat=cat||catDecoded;
   filteredArticles=allArticles.filter(function(a){
     var matchQ=!q||(a.title||'').toLowerCase().includes(q)||(a.summary||'').toLowerCase().includes(q)||(a.content||'').toLowerCase().includes(q)||(a.author||'').toLowerCase().includes(q);
     var matchCat=!activeCat||(a.category||'').toLowerCase()===activeCat.toLowerCase();
@@ -209,6 +193,7 @@ function clearAuthorFilter(){
 function clearAllFilters(){
   authorFilter='';
   catParam='';
+  catDecoded='';
   document.getElementById('author-banner').style.display='none';
   document.getElementById('cat-filter').value='';
   document.getElementById('banner-label').textContent='📝 Articles by:';
@@ -296,11 +281,13 @@ window.addEventListener('load',function(){
     document.getElementById('banner-author-name').textContent=authorFilter;
     document.getElementById('author-banner').style.display='flex';
   }
-  if(catParam&&!authorFilter){
-    var decoded=decodeURIComponent(catParam.replace(/\+/g,' '));
-    document.getElementById('banner-author-name').textContent=decoded;
+  if(catDecoded&&!authorFilter){
+    document.getElementById('banner-author-name').textContent=catDecoded;
     document.getElementById('author-banner').style.display='flex';
     document.getElementById('banner-label').textContent='📂 Category:';
+    // Also set the dropdown to match
+    var sel=document.getElementById('cat-filter');
+    if(sel){sel.value=catDecoded;}
   }
   loadArticles();
 });
