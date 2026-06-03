@@ -155,98 +155,18 @@
   <p>© 2026 Startup Decoding · <a href="/">Home</a> · <a href="/about.html">About</a> · <a href="mailto:gourav@startupdecoding.com">Contact</a></p>
 </footer>
 
-<script>
+<script type="module">
 
-  // ═══ FIREBASE CONFIG ═══
-  var FB_PROJECT = 'startupdecoding-7b53a';
-  var FB_API_KEY = 'AIzaSyDpB7BMUeGidRxVDP_5S9Xru4eVmdVYSWI';
-  var FB_URL = 'https://firestore.googleapis.com/v1/projects/'+FB_PROJECT+'/databases/(default)/documents';
-
-  function fsToObj(doc){
-    if(!doc||!doc.fields)return null;
-    var obj={id:doc.name?doc.name.split('/').pop():null};
-    Object.keys(doc.fields).forEach(function(k){
-      var v=doc.fields[k];
-      if(v.stringValue!==undefined)obj[k]=v.stringValue;
-      else if(v.integerValue!==undefined)obj[k]=parseInt(v.integerValue);
-      else if(v.booleanValue!==undefined)obj[k]=v.booleanValue;
-      else if(v.timestampValue!==undefined)obj[k]=v.timestampValue;
-      else if(v.nullValue!==undefined)obj[k]=null;
-      else if(v.doubleValue!==undefined)obj[k]=v.doubleValue;
-    });
-    return obj;
-  }
-
-  function objToFs(obj){
-    var fields={};
-    Object.keys(obj).forEach(function(k){
-      var v=obj[k];
-      if(v===null||v===undefined)fields[k]={nullValue:null};
-      else if(typeof v==='boolean')fields[k]={booleanValue:v};
-      else if(typeof v==='number'&&Number.isInteger(v))fields[k]={integerValue:String(v)};
-      else if(typeof v==='number')fields[k]={doubleValue:v};
-      else fields[k]={stringValue:String(v)};
-    });
-    return fields;
-  }
-
-  async function fbGet(collection){
-    try{
-      var r=await fetch(FB_URL+'/'+collection+'?pageSize=500&key='+FB_API_KEY);
-      var d=await r.json();
-      if(!d.documents)return[];
-      return d.documents.map(fsToObj).filter(Boolean);
-    }catch(e){return[];}
-  }
-
-  async function fbAdd(collection,obj){
-    try{
-      var r=await fetch(FB_URL+'/'+collection+'?key='+FB_API_KEY,{
-        method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({fields:objToFs(obj)})
-      });
-      return r.json();
-    }catch(e){}
-  }
-
-  async function fbSet(collection,id,obj){
-    try{
-      var r=await fetch(FB_URL+'/'+collection+'/'+id+'?key='+FB_API_KEY,{
-        method:'PATCH',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({fields:objToFs(obj)})
-      });
-      return r.json();
-    }catch(e){}
-  }
-
-  async function fbDelete(collection,id){
-    try{await fetch(FB_URL+'/'+collection+'/'+id+'?key='+FB_API_KEY,{method:'DELETE'});}catch(e){}
-  }
-
-  async function fbQuery(collection,field,value){
-    try{
-      var body={structuredQuery:{from:[{collectionId:collection}],where:{fieldFilter:{field:{fieldPath:field},op:'EQUAL',value:{stringValue:value}}},limit:500}};
-      var r=await fetch('https://firestore.googleapis.com/v1/projects/'+FB_PROJECT+'/databases/(default):runQuery?key='+FB_API_KEY,{
-        method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)
-      });
-      var docs=await r.json();
-      return docs.filter(function(d){return d.document;}).map(function(d){return fsToObj(d.document);});
-    }catch(e){return[];}
-  }
-
-var allArticles=[];
-var filteredArticles=[];
-var currentPage=1;
-var perPage=12;
-var authorFilter='';
-
-// Read ?author= from URL
-var urlParams=new URLSearchParams(window.location.search);
-authorFilter=urlParams.get('author')||'';
-var catParam=urlParams.get('cat')||'';
-// Pre-set category dropdown from URL
-// catParam decoded for use in filtering
-var catDecoded=catParam?decodeURIComponent(catParam.replace(/\+/g,' ')):'';
+  // ═══ FIREBASE SDK ═══
+  import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+  import { getFirestore, collection, query, where, getDocs, addDoc, doc, setDoc, deleteDoc, getDoc } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+  const firebaseApp=initializeApp({apiKey:'AIzaSyDpB7BMUeGidRxVDP_5S9Xru4eVmdVYSWI',authDomain:'startupdecoding-7b53a.firebaseapp.com',projectId:'startupdecoding-7b53a'});
+  const fsdb=getFirestore(firebaseApp);
+  async function fbGet(col){try{const s=await getDocs(collection(fsdb,col));return s.docs.map(d=>({...d.data(),id:d.id}));}catch(e){return[];}}
+  async function fbQuery(col,field,value){try{const q=query(collection(fsdb,col),where(field,'==',value));const s=await getDocs(q);return s.docs.map(d=>({...d.data(),id:d.id}));}catch(e){return[];}}
+  async function fbAdd(col,obj){try{return await addDoc(collection(fsdb,col),{...obj,created_at:new Date().toISOString()});}catch(e){}}
+  async function fbSet(col,id,obj){try{return await setDoc(doc(fsdb,col,id),{...obj,updated_at:new Date().toISOString()},{merge:true});}catch(e){}}
+  async function fbDelete(col,id){try{await deleteDoc(doc(fsdb,col,id));}catch(e){}}
 
 async function loadArticles(){
   try{

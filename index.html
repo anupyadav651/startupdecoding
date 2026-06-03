@@ -601,207 +601,44 @@
   </div>
 </div>
 
-<script>
+<script type="module">
 
-  // ═══ FIREBASE CONFIG ═══
-  var FB_PROJECT = 'startupdecoding-7b53a';
-  var FB_API_KEY = 'AIzaSyDpB7BMUeGidRxVDP_5S9Xru4eVmdVYSWI';
-  var FB_URL = 'https://firestore.googleapis.com/v1/projects/'+FB_PROJECT+'/databases/(default)/documents';
+  // ═══ FIREBASE SDK CONFIG ═══
+  import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+  import { getFirestore, collection, query, where, getDocs, addDoc, doc, setDoc, deleteDoc, getDoc } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 
-  function fsToObj(doc){
-    if(!doc||!doc.fields)return null;
-    var obj={id:doc.name?doc.name.split('/').pop():null};
-    Object.keys(doc.fields).forEach(function(k){
-      var v=doc.fields[k];
-      if(v.stringValue!==undefined)obj[k]=v.stringValue;
-      else if(v.integerValue!==undefined)obj[k]=parseInt(v.integerValue);
-      else if(v.booleanValue!==undefined)obj[k]=v.booleanValue;
-      else if(v.timestampValue!==undefined)obj[k]=v.timestampValue;
-      else if(v.nullValue!==undefined)obj[k]=null;
-      else if(v.doubleValue!==undefined)obj[k]=v.doubleValue;
-    });
-    return obj;
-  }
+  const firebaseApp = initializeApp({
+    apiKey: 'AIzaSyDpB7BMUeGidRxVDP_5S9Xru4eVmdVYSWI',
+    authDomain: 'startupdecoding-7b53a.firebaseapp.com',
+    projectId: 'startupdecoding-7b53a'
+  });
+  const fsdb = getFirestore(firebaseApp);
 
-  function objToFs(obj){
-    var fields={};
-    Object.keys(obj).forEach(function(k){
-      var v=obj[k];
-      if(v===null||v===undefined)fields[k]={nullValue:null};
-      else if(typeof v==='boolean')fields[k]={booleanValue:v};
-      else if(typeof v==='number'&&Number.isInteger(v))fields[k]={integerValue:String(v)};
-      else if(typeof v==='number')fields[k]={doubleValue:v};
-      else fields[k]={stringValue:String(v)};
-    });
-    return fields;
-  }
-
-  async function fbGet(collection){
+  async function fbGet(col){
     try{
-      var r=await fetch(FB_URL+'/'+collection+'?pageSize=500&key='+FB_API_KEY);
-      var d=await r.json();
-      if(!d.documents)return[];
-      return d.documents.map(fsToObj).filter(Boolean);
-    }catch(e){return[];}
+      const snap=await getDocs(collection(fsdb,col));
+      return snap.docs.map(d=>({...d.data(),id:d.id}));
+    }catch(e){console.log('fbGet error:',e);return[];}
   }
-
-  async function fbAdd(collection,obj){
+  async function fbQuery(col,field,value){
     try{
-      var r=await fetch(FB_URL+'/'+collection+'?key='+FB_API_KEY,{
-        method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({fields:objToFs(obj)})
-      });
-      return r.json();
-    }catch(e){}
+      const q=query(collection(fsdb,col),where(field,'==',value));
+      const snap=await getDocs(q);
+      return snap.docs.map(d=>({...d.data(),id:d.id}));
+    }catch(e){console.log('fbQuery error:',e);return[];}
+  }
+  async function fbAdd(col,obj){
+    try{return await addDoc(collection(fsdb,col),{...obj,created_at:new Date().toISOString()});}
+    catch(e){console.log('fbAdd error:',e);}
+  }
+  async function fbSet(col,id,obj){
+    try{return await setDoc(doc(fsdb,col,id),{...obj,updated_at:new Date().toISOString()},{merge:true});}
+    catch(e){console.log('fbSet error:',e);}
+  }
+  async function fbDelete(col,id){
+    try{await deleteDoc(doc(fsdb,col,id));}catch(e){}
   }
 
-  async function fbSet(collection,id,obj){
-    try{
-      var r=await fetch(FB_URL+'/'+collection+'/'+id+'?key='+FB_API_KEY,{
-        method:'PATCH',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({fields:objToFs(obj)})
-      });
-      return r.json();
-    }catch(e){}
-  }
-
-  async function fbDelete(collection,id){
-    try{await fetch(FB_URL+'/'+collection+'/'+id+'?key='+FB_API_KEY,{method:'DELETE'});}catch(e){}
-  }
-
-  async function fbQuery(collection,field,value){
-    try{
-      var body={structuredQuery:{from:[{collectionId:collection}],where:{fieldFilter:{field:{fieldPath:field},op:'EQUAL',value:{stringValue:value}}},limit:500}};
-      var r=await fetch('https://firestore.googleapis.com/v1/projects/'+FB_PROJECT+'/databases/(default):runQuery?key='+FB_API_KEY,{
-        method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)
-      });
-      var docs=await r.json();
-      return docs.filter(function(d){return d.document;}).map(function(d){return fsToObj(d.document);});
-    }catch(e){return[];}
-  }
-
-  // DATE
-  (function(){
-    var d=new Date(),days=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'],
-    months=['January','February','March','April','May','June','July','August','September','October','November','December'];
-    var el=document.getElementById('topbarDate');
-    if(el)el.textContent=days[d.getDay()]+', '+d.getDate()+' '+months[d.getMonth()]+' '+d.getFullYear()+'  |  India\'s Premier Startup Media Platform';
-  })();
-
-  // THEME
-  function toggleTheme(){
-    var isDark=document.body.classList.toggle('dark-mode');
-    document.getElementById('themeBtn').textContent=isDark?'☀️ Light':'🌙 Dark';
-    localStorage.setItem('sd_theme',isDark?'dark':'light');
-  }
-  if(localStorage.getItem('sd_theme')==='dark'){document.body.classList.add('dark-mode');var tb=document.getElementById('themeBtn');if(tb)tb.textContent='☀️ Light';}
-
-  // SCROLL TO SECTION
-  function goTo(id){
-    var el=document.getElementById(id);
-    if(el)el.scrollIntoView({behavior:'smooth',block:'start'});
-  }
-
-  // MOBILE
-  function toggleMobile(){document.getElementById('mobileMenu').classList.toggle('open');}
-
-  // AUTH
-  function openAuth(tab){document.getElementById('authModal').classList.add('open');document.body.style.overflow='hidden';switchTab(tab||'login');}
-  function closeAuth(){document.getElementById('authModal').classList.remove('open');document.body.style.overflow='';}
-  function switchTab(tab){
-    document.querySelectorAll('.auth-tab').forEach(function(t){t.classList.remove('active');});
-    document.querySelectorAll('.auth-form').forEach(function(f){f.classList.remove('active');});
-    document.getElementById('tab-'+tab).classList.add('active');
-    document.getElementById('form-'+tab).classList.add('active');
-  }
-  document.getElementById('authModal').addEventListener('click',function(e){if(e.target===this)closeAuth();});
-
-  function handleLogin(){
-    var email=document.getElementById('login-email').value.trim();
-    var pass=document.getElementById('login-pass').value.trim();
-    if(!email||!pass){alert('Please enter your email and password.');return;}
-    alert('✅ Login coming soon! Subscribe to our newsletter to stay updated.');
-    closeAuth();
-  }
-  function handleSignup(){
-    var name=document.getElementById('signup-name').value.trim();
-    var email=document.getElementById('signup-email').value.trim();
-    var pass=document.getElementById('signup-pass').value.trim();
-    if(!name||!email||!pass){alert('Please fill in all fields.');return;}
-    if(pass.length<6){alert('Password must be at least 6 characters.');return;}
-    fbAdd('subscribers',{name:name,email:email,source:'signup',created_at:new Date().toISOString()});
-    alert('🎉 Welcome, '+name+'! We\'ll notify you when full accounts launch.');
-    closeAuth();
-  }
-
-  // NEWSLETTER — FIX: now saves to Supabase
-  function handleNewsletter(){
-    var email=document.getElementById('newsletterEmail').value.trim();
-    if(!email||!email.includes('@')){alert('Please enter a valid email address.');return;}
-    fbAdd('subscribers',{email:email,source:'newsletter',created_at:new Date().toISOString()})
-    .then(function(){
-      alert('🎉 You\'re subscribed! Welcome to Startup Decoding.');
-      document.getElementById('newsletterEmail').value='';
-    }).catch(function(){
-      var subs=JSON.parse(localStorage.getItem('sd_subscribers')||'[]');
-      subs.push({email:email,date:new Date().toISOString()});
-      localStorage.setItem('sd_subscribers',JSON.stringify(subs));
-      alert('🎉 You\'re subscribed! Welcome to Startup Decoding.');
-      document.getElementById('newsletterEmail').value='';
-    });
-  }
-
-  // GET FEATURED
-  function openFeatured(){document.getElementById('featuredModal').classList.add('open');document.body.style.overflow='hidden';}
-  function closeFeatured(){document.getElementById('featuredModal').classList.remove('open');document.body.style.overflow='';}
-  document.getElementById('featuredModal').addEventListener('click',function(e){if(e.target===this)closeFeatured();});
-
-  function submitFeatured(){
-    var startup=document.getElementById('f-startup').value.trim();
-    var name=document.getElementById('f-name').value.trim();
-    var email=document.getElementById('f-email').value.trim();
-    var mobile=document.getElementById('f-mobile').value.trim();
-    var category=document.getElementById('f-category').value;
-    var about=document.getElementById('f-about').value.trim();
-    if(!startup||!name||!email){alert('Please fill in Startup Name, Your Name and Email!');return;}
-    fbAdd('feature_requests',{startup:startup,name:name,email:email,mobile:mobile,category:category,about:about,status:'pending',created_at:new Date().toISOString()});
-    emailjs.send('service_8g4olxi','template_qcjuo5p',{startup_name:startup,from_name:name,from_email:email,mobile:mobile,category:category,message:about}).catch(function(e){console.log('Email err:',e);});
-    alert('✅ Thank you! Your request has been submitted. We will contact you within 48 hours.');
-    closeFeatured();
-  }
-
-  // ARTICLE READER
-  function openArticle(id,a){
-    if(!a)return;
-    var images=[a.image,a.image2,a.image3].filter(Boolean);
-    var date=a.date||(a.created_at?new Date(a.created_at).toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long',year:'numeric'}):'Recently');
-    var paras=(a.content||'').split('\n').filter(function(p){return p.trim();});
-    var ch='';
-    paras.forEach(function(p,i){
-      ch+='<p style="margin-bottom:18px;line-height:1.85;font-size:16px;color:#374151;">'+p+'</p>';
-      if(i===1&&images[1])ch+='<img src="'+images[1]+'" style="width:100%;border-radius:10px;margin:20px 0;max-height:400px;object-fit:cover;" loading="lazy"/>';
-      if(i===3&&images[2])ch+='<img src="'+images[2]+'" style="width:100%;border-radius:10px;margin:20px 0;max-height:400px;object-fit:cover;" loading="lazy"/>';
-    });
-    var heroImg=images[0]?'<img src="'+images[0]+'" style="width:100%;max-height:420px;object-fit:cover;border-radius:12px;margin-bottom:24px;" loading="lazy"/>':'<div style="width:100%;height:280px;background:linear-gradient(135deg,#0A2463,#00C2CB);border-radius:12px;margin-bottom:24px;display:flex;align-items:center;justify-content:center;font-size:48px;">📰</div>';
-    var tags=a.tags?a.tags.split(',').map(function(t){return'<span style="background:#e0f7fa;color:#0A2463;font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;">'+t.trim()+'</span>';}).join(''):'';
-    var summary=a.summary?'<p style="font-size:17px;font-weight:500;color:#374151;line-height:1.7;margin-bottom:24px;padding:16px;background:#f0f9ff;border-left:4px solid #00C2CB;border-radius:0 8px 8px 0;">'+a.summary+'</p>':'';
-    var rt=Math.ceil((a.content||'').split(' ').length/200);
-    var al=(a.author||'A')[0];
-    document.getElementById('articleContent').innerHTML=heroImg+
-      '<div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap;"><span style="background:#00C2CB;color:white;font-size:11px;font-weight:700;padding:4px 12px;border-radius:4px;text-transform:uppercase;">'+(a.category||'')+'</span>'+tags+'</div>'+
-      '<h1 style="font-size:26px;font-weight:800;line-height:1.3;color:#111827;margin-bottom:16px;">'+a.title+'</h1>'+
-      '<div style="display:flex;align-items:center;gap:12px;padding:14px 0;border-top:1px solid #e5e7eb;border-bottom:1px solid #e5e7eb;margin-bottom:24px;">'+
-        '<div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#0A2463,#00C2CB);display:flex;align-items:center;justify-content:center;color:white;font-size:16px;font-weight:700;flex-shrink:0;">'+al+'</div>'+
-        '<div><div style="font-size:14px;font-weight:700;color:#0A2463;">By '+(a.author||'SD Team')+'</div><div style="font-size:12px;color:#6b7280;">'+date+(a.hide_read_time?'':' · '+rt+' min read')+'</div></div>'+
-        '<div style="margin-left:auto;"><button onclick="shareArt()" style="background:#0A2463;color:white;border:none;padding:7px 14px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;font-family:DM Sans,sans-serif;">🔗 Share</button></div>'+
-      '</div>'+summary+'<div style="font-family:DM Sans,sans-serif;">'+ch+'</div>';
-    document.getElementById('articleModal').classList.add('open');
-    document.body.style.overflow='hidden';
-  }
-  function closeArticle(){document.getElementById('articleModal').classList.remove('open');document.body.style.overflow='';}
-  function shareArt(){if(navigator.share){navigator.share({title:document.title,url:window.location.href});}else{navigator.clipboard.writeText(window.location.href);alert('Link copied!');}}
-
-  // LOAD PUBLISHED ARTICLES FROM SUPABASE
   var secGridMap={'Startup News':'grid-startup-news','Startup Stories':'grid-startup-stories','Young Entrepreneur':'grid-young-entrepreneur','Her Story':'grid-her-story','Tech & Innovation':'grid-tech','Gov Schemes':'grid-gov-schemes','Trending News':'liveNewsGrid'};
   var secSectionMap={'Startup News':'startup-news-section','Startup Stories':'startup-stories-section','Young Entrepreneur':'young-entrepreneur-section','Her Story':'her-story-section','Tech & Innovation':'tech-section','Gov Schemes':'gov-schemes-section'};
   var secLimits={'Startup Stories':6};
@@ -1111,8 +948,7 @@
     });
   }
   // PWA Install prompt
-  var deferredPrompt;
-  var installBanner=null;
+  var deferredPrompt=null;
   window.addEventListener('beforeinstallprompt',function(e){
     e.preventDefault();
     deferredPrompt=e;
@@ -1122,18 +958,25 @@
     if(document.getElementById('pwa-banner'))return;
     var banner=document.createElement('div');
     banner.id='pwa-banner';
-    banner.style.cssText='position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#0A2463;color:white;padding:12px 20px;border-radius:12px;display:flex;align-items:center;gap:12px;z-index:9999;box-shadow:0 4px 20px rgba(0,0,0,0.3);font-family:Inter,sans-serif;font-size:14px;max-width:340px;width:90%;';
-    banner.innerHTML='<span style="font-size:24px;">📱</span><div style="flex:1;"><div style="font-weight:700;">Install Startup Decoding</div><div style="font-size:12px;opacity:0.8;">Add to home screen for quick access</div></div><button onclick="installPWA()" style="background:#00C2CB;border:none;color:white;padding:8px 14px;border-radius:8px;font-weight:700;cursor:pointer;font-size:13px;">Install</button><button onclick="document.getElementById('pwa-banner').remove()" style="background:none;border:none;color:white;cursor:pointer;font-size:18px;padding:0 4px;">✕</button>';
+    banner.style.cssText='position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#0A2463;color:white;padding:12px 20px;border-radius:12px;display:flex;align-items:center;gap:12px;z-index:9999;box-shadow:0 4px 20px rgba(0,0,0,.3);font-family:Inter,sans-serif;font-size:14px;max-width:340px;width:90%;';
+    var icon=document.createElement('span');icon.style.fontSize='24px';icon.textContent='📱';
+    var txt=document.createElement('div');txt.style.flex='1';
+    var h=document.createElement('div');h.style.fontWeight='700';h.textContent='Install Startup Decoding';
+    var s=document.createElement('div');s.style.fontSize='12px';s.style.opacity='0.8';s.textContent='Add to home screen for quick access';
+    txt.appendChild(h);txt.appendChild(s);
+    var btn=document.createElement('button');btn.textContent='Install';btn.style.cssText='background:#00C2CB;border:none;color:white;padding:8px 14px;border-radius:8px;font-weight:700;cursor:pointer;font-size:13px;';
+    btn.onclick=function(){installPWA();};
+    var close=document.createElement('button');close.textContent='✕';close.style.cssText='background:none;border:none;color:white;cursor:pointer;font-size:18px;padding:0 4px;';
+    close.onclick=function(){banner.remove();};
+    banner.appendChild(icon);banner.appendChild(txt);banner.appendChild(btn);banner.appendChild(close);
     document.body.appendChild(banner);
   }
   function installPWA(){
     if(!deferredPrompt)return;
     deferredPrompt.prompt();
-    deferredPrompt.userChoice.then(function(result){
-      if(result.outcome==='accepted'){console.log('PWA installed');}
+    deferredPrompt.userChoice.then(function(r){
       deferredPrompt=null;
-      var b=document.getElementById('pwa-banner');
-      if(b)b.remove();
+      var b=document.getElementById('pwa-banner');if(b)b.remove();
     });
   }
   </script>
