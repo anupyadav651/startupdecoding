@@ -196,7 +196,7 @@ function renderGrid(){
     var img=a.image_url?'<img class="card-img" src="'+a.image_url+'" loading="lazy" onerror="this.style.display=\'none\'">'
       :'<div class="card-img-placeholder">📰</div>';
     var rt=a.hide_read_time?'':' · '+(a.read_time||Math.max(1,Math.ceil((a.content||'').split(' ').length/200)))+' min read';
-    return '<div class="card" onclick="openModal(\''+a.id+'\')">'
+    return '<div class="card" onclick="window.location.href=\'article.html?id='+a.id">' 
       +img
       +'<div class="card-body">'
         +'<span class="card-badge">'+(a.category||'Article')+'</span>'

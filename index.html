@@ -736,6 +736,11 @@
   async function loadPublishedArticles(){
     try{
       var arts=await supaFetch('articles?status=eq.published&order=created_at.desc');
+      // Clear hardcoded placeholder cards from all section grids
+      Object.values(secGridMap).forEach(function(gid){
+        var g=document.getElementById(gid);
+        if(g&&gid!=='liveNewsGrid')g.innerHTML='';
+      });
       if(!arts.length)return;
       // Sort: pinned first within each section
       arts.sort(function(a,b){
@@ -757,7 +762,7 @@
           '<div class="card-body">'+
           '<h3>'+a.title+'</h3>'+(a.summary?'<p style="font-size:12px;color:#6b7280;margin-bottom:8px;">'+a.summary+'</p>':'')+
           '<div class="card-meta"><span class="author" style="cursor:pointer;" onclick="event.stopPropagation();window.location.href=\'articles.html?author=\'+encodeURIComponent(this.textContent)" title="View all articles by this author">'+(a.author||'SD Team')+'</span><span class="dot">•</span><span>'+(a.date||'')+'</span></div></div>';
-        card.addEventListener('click',function(){openArticle(a.id,a);});
+        card.addEventListener('click',function(){window.location.href='article.html?id='+a.id;});
         // Pinned go to very front, others prepend normally
         if(a.pinned){grid.insertBefore(card,grid.firstChild);}
         else{grid.prepend(card);}
