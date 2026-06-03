@@ -161,28 +161,24 @@
   <div class="team-grid">
     <!-- Co-Founder 1 — loaded from admin settings -->
     <div class="team-card">
-      <!-- Photo upload area -->
-      <div style="position:relative;width:100px;height:100px;margin:0 auto 8px;cursor:pointer;" onclick="document.getElementById('photo-cf1').click()">
+      <div style="position:relative;width:100px;height:100px;margin:0 auto 8px;">
         <div class="team-avatar av-1" id="cf1-avatar" style="width:100px;height:100px;font-size:32px;">G</div>
         <img id="cf1-photo" src="" alt="" style="display:none;width:100px;height:100px;border-radius:50%;object-fit:cover;position:absolute;top:0;left:0;"/>
         <div style="position:absolute;bottom:0;right:0;background:#00C2CB;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-size:14px;box-shadow:0 2px 6px rgba(0,0,0,0.2);">📷</div>
       </div>
-      <input type="file" id="photo-cf1" accept="image/*" style="display:none;" onchange="uploadPhoto('cf1',this)"/>
-      <p style="font-size:10px;color:var(--gray);margin-bottom:16px;">Tap 📷 to upload photo</p>
+
       <h3 id="cf1-name">Gourav Yadav</h3>
       <div class="team-role" id="cf1-role">Co-Founder & CEO</div>
       <p id="cf1-bio">Visionary entrepreneur and growth strategist driving Startup Decoding's mission to decode India's startup ecosystem.</p>
     </div>
     <!-- Co-Founder 2 — loaded from admin settings -->
     <div class="team-card">
-      <!-- Photo upload area -->
-      <div style="position:relative;width:100px;height:100px;margin:0 auto 8px;cursor:pointer;" onclick="document.getElementById('photo-cf2').click()">
+      <div style="position:relative;width:100px;height:100px;margin:0 auto 8px;">
         <div class="team-avatar av-2" id="cf2-avatar" style="width:100px;height:100px;font-size:32px;">A</div>
         <img id="cf2-photo" src="" alt="" style="display:none;width:100px;height:100px;border-radius:50%;object-fit:cover;position:absolute;top:0;left:0;"/>
         <div style="position:absolute;bottom:0;right:0;background:#00C2CB;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-size:14px;box-shadow:0 2px 6px rgba(0,0,0,0.2);">📷</div>
       </div>
-      <input type="file" id="photo-cf2" accept="image/*" style="display:none;" onchange="uploadPhoto('cf2',this)"/>
-      <p style="font-size:10px;color:var(--gray);margin-bottom:16px;">Tap 📷 to upload photo</p>
+
       <h3 id="cf2-name">Anup Yadav</h3>
       <div class="team-role" id="cf2-role">Co-Founder & Editor-in-Chief</div>
       <p id="cf2-bio">Medical student turned media entrepreneur. Passionate about making complex startup stories accessible to everyone in India.</p>
@@ -387,19 +383,32 @@
 
   async function loadAdminSettings(){
     try{
-      var rows=await supaGet('site_settings?key=eq.about_settings&limit=1');
-      if(rows&&rows.length){applyAbout(JSON.parse(rows[0].value||'{}'));return;}
-    }catch(e){}
-    try{applyAbout(JSON.parse(localStorage.getItem('sd_about_settings')||'{}'));}catch(e){}
-    try{
-      var rows2=await supaGet('site_settings?key=eq.settings&limit=1');
-      if(rows2&&rows2.length){var s=JSON.parse(rows2[0].value||'{}');
-        if(s.stories)document.getElementById('stat-stories').textContent=s.stories;
-        if(s.readers)document.getElementById('stat-readers').textContent=s.readers;
-        if(s.startups)document.getElementById('stat-startups').textContent=s.startups;
-        if(s.cities)document.getElementById('stat-cities').textContent=s.cities;
+      // Load both settings in parallel
+      var [aboutRows, settingsRows] = await Promise.all([
+        supaGet('site_settings?key=eq.about_settings&limit=1'),
+        supaGet('site_settings?key=eq.settings&limit=1')
+      ]);
+      // Apply about settings (co-founders, mission, emails)
+      if(aboutRows&&aboutRows.length) applyAbout(JSON.parse(aboutRows[0].value||'{}'));
+      // Stats: prefer about_settings, fallback to settings key
+      var stats = {};
+      if(settingsRows&&settingsRows.length) stats=JSON.parse(settingsRows[0].value||'{}');
+      if(aboutRows&&aboutRows.length){
+        var ab=JSON.parse(aboutRows[0].value||'{}');
+        // about_settings stats override site settings stats
+        if(ab.stories)stats.stories=ab.stories;
+        if(ab.readers)stats.readers=ab.readers;
+        if(ab.startups)stats.startups=ab.startups;
+        if(ab.cities)stats.cities=ab.cities;
       }
-    }catch(e){}
+      if(stats.stories)document.getElementById('stat-stories').textContent=stats.stories;
+      if(stats.readers)document.getElementById('stat-readers').textContent=stats.readers;
+      if(stats.startups)document.getElementById('stat-startups').textContent=stats.startups;
+      if(stats.cities)document.getElementById('stat-cities').textContent=stats.cities;
+    }catch(e){
+      // Fallback to localStorage
+      try{applyAbout(JSON.parse(localStorage.getItem('sd_about_settings')||'{}'));}catch(e2){}
+    }
   }
 
   // Make co-founder names clickable to view their articles

@@ -430,6 +430,16 @@
       <button class="btn-pub" onclick="saveAboutSettings()">💾 Save All About Page Changes</button>
       <p style="font-size:12px;color:#475569;margin-top:10px;">Note: These are saved to your database. The about.html page will auto-read them on next visit.</p>
 
+      <!-- SECTION MANAGEMENT -->
+      <div class="box" style="margin-top:24px;">
+        <h3>🗂️ Homepage Sections — Show / Hide</h3>
+        <p style="font-size:13px;color:#475569;margin-bottom:16px;">Toggle which sections appear on the homepage. Hidden sections won't show even if articles exist. You can add new sections in future by contacting your developer.</p>
+        <div style="display:flex;flex-direction:column;gap:10px;" id="section-toggles">
+          <!-- loaded dynamically -->
+        </div>
+        <button class="btn-pub" onclick="saveSectionVisibility()" style="margin-top:16px;">💾 Save Section Visibility</button>
+      </div>
+
       <!-- TEAM MEMBERS -->
       <div class="box" style="margin-top:24px;">
         <h3>👥 Team Members (Editors, Writers, Contributors)</h3>
@@ -628,7 +638,7 @@ function go(page,el){
   if(page==='settings')loadSettings();
   if(page==='users')loadUsers();
   if(page==='data')loadDataPage();
-  if(page==='about'){loadAboutSettings();loadTeamMembersList();}
+  if(page==='about'){loadAboutSettings();loadTeamMembersList();loadSectionToggles();}
 }
 function showDenied(){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById('page-denied').classList.add('active');}
 
@@ -946,6 +956,50 @@ function addUser(){
 function removeUser(i){if(!confirm('Remove?'))return;const u=getUsers();u.splice(i,1);saveUsers(u);loadUsers();toast('🗑️ Removed');}
 function resetPw(i){const np=prompt('New password (min 8 chars):');if(!np)return;if(np.length<8){toast('⚠️ Too short','#7f1d1d','#fca5a5');return;}const u=getUsers();u[i].passwordHash=SEC.hash(np);saveUsers(u);toast('🔑 Password reset!');}
 
+// ═══════════════ SECTION MANAGEMENT ═══════════════
+var ALL_SECTIONS=[
+  {id:'Startup News',label:'🚀 Startup News'},
+  {id:'Startup Stories',label:'📖 Startup Stories'},
+  {id:'Young Entrepreneur',label:'⚡ Young Entrepreneur'},
+  {id:'Her Story',label:'👩 Her Story'},
+  {id:'Tech & Innovation',label:'💡 Tech & Innovation'},
+  {id:'Gov Schemes',label:'🏛️ Government Schemes'}
+];
+
+async function loadSectionToggles(){
+  var hiddenSections=[];
+  try{
+    var rows=await db('site_settings?key=eq.hidden_sections&limit=1');
+    if(rows&&rows.length)hiddenSections=JSON.parse(rows[0].value||'[]');
+  }catch(e){}
+  var container=document.getElementById('section-toggles');
+  if(!container)return;
+  container.innerHTML=ALL_SECTIONS.map(function(sec){
+    var isHidden=hiddenSections.includes(sec.id);
+    return '<div style="display:flex;align-items:center;justify-content:space-between;background:#0f172a;border:1px solid #334155;border-radius:8px;padding:12px 16px;">'
+      +'<span style="color:#f1f5f9;font-size:14px;font-weight:600;">'+sec.label+'</span>'
+      +'<label style="display:flex;align-items:center;gap:8px;cursor:pointer;">'
+        +'<input type="checkbox" data-section="'+sec.id+'" '+(isHidden?'':'checked')+' style="width:16px;height:16px;accent-color:#00C2CB;cursor:pointer;"/>'
+        +'<span style="font-size:12px;color:#64748b;">Show on homepage</span>'
+      +'</label>'
+    +'</div>';
+  }).join('');
+}
+
+async function saveSectionVisibility(){
+  var checkboxes=document.querySelectorAll('#section-toggles input[data-section]');
+  var hidden=[];
+  checkboxes.forEach(function(cb){
+    if(!cb.checked)hidden.push(cb.dataset.section);
+  });
+  try{
+    await db('site_settings',{method:'POST',prefer:'return=minimal',body:JSON.stringify({key:'hidden_sections',value:JSON.stringify(hidden)})});
+    toast('✅ Section visibility saved! Homepage updated.');
+  }catch(e){
+    toast('❌ Error saving. Try again.','#7f1d1d','#fca5a5');
+  }
+}
+
 // ═══════════════ TEAM MEMBERS ═══════════════
 async function loadTeamMembersList(){
   try{
@@ -1117,8 +1171,14 @@ function saveAboutSettings(){
     updated:new Date().toISOString()
   };
   localStorage.setItem('sd_about_settings',JSON.stringify(s));
+  // Save to about_settings key
   db('site_settings',{method:'POST',prefer:'return=minimal',body:JSON.stringify({key:'about_settings',value:JSON.stringify(s)})}).catch(()=>{});
-  toast('✅ About Us settings saved!');
+  // Also sync stats to 'settings' key so homepage picks them up too
+  const currentSettings=JSON.parse(localStorage.getItem('sd_settings')||'{}');
+  const mergedSettings={...currentSettings,stories:s.stories,readers:s.readers,startups:s.startups,cities:s.cities};
+  localStorage.setItem('sd_settings',JSON.stringify(mergedSettings));
+  db('site_settings',{method:'POST',prefer:'return=minimal',body:JSON.stringify({key:'settings',value:JSON.stringify(mergedSettings)})}).catch(()=>{});
+  toast('✅ About Us settings saved! Stats synced to homepage too.');
 }
 
 // ═══════════════ SITE SETTINGS ═══════════════
