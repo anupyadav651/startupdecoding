@@ -338,13 +338,7 @@
   }
 
   // ── Supabase helper ──
-  var SUPA_URL='https://yrjsjfzfyhygsgdazbeo.supabase.co';
-  var SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlyanNqZnpmeWh5Z3NnZGF6YmVvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3MjkwMTksImV4cCI6MjA5NTMwNTAxOX0.tC0h3KUAdVlij80ZV3nddL3B1U95hR9FobrwKJzKEmo';
-  async function supaGet(path){
-    var r=await fetch(SUPA_URL+'/rest/v1/'+path,{headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY}});
-    if(!r.ok)throw new Error(r.status);
-    return r.json();
-  }
+  // Firebase is loaded via scripts above
 
   function applyAbout(about){
     if(!about||!Object.keys(about).length)return;
@@ -368,7 +362,7 @@
   var AVATAR_COLORS=['linear-gradient(135deg,#0A2463,#00C2CB)','linear-gradient(135deg,#7c3aed,#06b6d4)','linear-gradient(135deg,#059669,#0A2463)','linear-gradient(135deg,#dc2626,#f59e0b)'];
   async function loadTeamMembers(){
     try{
-      var rows=await supaGet('team_members?order=sort_order.asc');
+      var rows=await(async()=>{try{const s=await fsdb.collection('team_members').get();return s.docs.map(d=>({...d.data(),id:d.id})).sort((a,b)=>(a.sort_order||0)-(b.sort_order||0));}catch(e){return[];}})();
       if(!rows||!rows.length)return;
       var grid=document.getElementById('extra-team-grid');
       if(!grid)return;

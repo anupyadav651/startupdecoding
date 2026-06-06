@@ -578,7 +578,7 @@
 </footer>
 
 <!-- ARTICLE READER MODAL -->
-<div class="modal-overlay" id="articleModal" style="align-items:flex-start;overflow-y:auto;padding:20px;">
+<div class="modal-overlay" id="articleModal" style="align-items:flex-start;overflow-y:auto;padding:20px;" onclick="if(event.target===this)closeArticle()">
   <div style="background:white;border-radius:16px;width:100%;max-width:780px;margin:auto;position:relative;padding:36px;box-shadow:0 25px 60px rgba(0,0,0,0.2);" id="articleBox">
     <button onclick="closeArticle()" style="position:sticky;top:0;float:right;font-size:22px;cursor:pointer;color:#6b7280;border:none;background:none;z-index:10;margin-bottom:8px;">✕</button>
     <div id="articleContent"></div>
@@ -920,6 +920,102 @@ async function fbDelete(col,id){try{await fsdb.collection(col).doc(id).delete();
       if(s.startups)document.getElementById('stat-startups').textContent=s.startups;
       if(s.cities)document.getElementById('stat-cities').textContent=s.cities;
     }catch(e){}
+  }
+
+
+  // ═══ MISSING FUNCTIONS - PRODUCTION FIX ═══
+
+  // Close article modal
+  function closeArticle(){
+    var m=document.getElementById('articleModal');
+    if(m){m.style.display='none';document.body.style.overflow='';}
+  }
+
+  // Auth tab switcher
+  function switchTab(tab){
+    var lf=document.getElementById('loginForm');
+    var sf=document.getElementById('signupForm');
+    var tl=document.getElementById('tab-login');
+    var ts=document.getElementById('tab-signup');
+    if(lf)lf.style.display=tab==='login'?'block':'none';
+    if(sf)sf.style.display=tab==='signup'?'block':'none';
+    if(tl)tl.classList.toggle('active',tab==='login');
+    if(ts)ts.classList.toggle('active',tab==='signup');
+  }
+
+  // Handle login
+  async function handleLogin(){
+    var email=(document.getElementById('login-email')||{}).value||'';
+    var pass=(document.getElementById('login-pass')||{}).value||'';
+    if(!email||!pass){alert('Please enter email and password.');return;}
+    alert('Reader login coming soon! For now, use the admin panel to manage content.');
+    closeAuth();
+  }
+
+  // Handle signup
+  async function handleSignup(){
+    var name=(document.getElementById('signup-name')||{}).value.trim()||'';
+    var email=(document.getElementById('signup-email')||{}).value.trim()||'';
+    var pass=(document.getElementById('signup-pass')||{}).value||'';
+    if(!name||!email){alert('Please fill in your name and email.');return;}
+    if(!email.includes('@')){alert('Please enter a valid email.');return;}
+    var btn=document.querySelector('#signupForm button[onclick]');
+    if(btn){btn.textContent='Signing up...';btn.disabled=true;}
+    try{
+      await fbAdd('subscribers',{name:name,email:email,source:'signup',created_at:new Date().toISOString()});
+      alert('Welcome '+name+'! You are now subscribed to Startup Decoding 🎉');
+      closeAuth();
+      if(btn){btn.textContent='Sign Up';btn.disabled=false;}
+      ['signup-name','signup-email','signup-pass'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
+    }catch(e){
+      if(btn){btn.textContent='Sign Up';btn.disabled=false;}
+      alert('Something went wrong. Please try again.');
+    }
+  }
+
+  // Handle newsletter
+  async function handleNewsletter(){
+    var inp=document.getElementById('newsletterEmail');
+    var email=inp?inp.value.trim():'';
+    if(!email||!email.includes('@')){alert('Please enter a valid email address.');return;}
+    var btn=document.querySelector('.newsletter button');
+    if(btn){btn.textContent='Subscribing...';btn.disabled=true;}
+    try{
+      await fbAdd('subscribers',{email:email,source:'newsletter',created_at:new Date().toISOString()});
+      if(btn){btn.textContent='✅ Subscribed!';}
+      if(inp)inp.value='';
+      setTimeout(function(){if(btn){btn.textContent='Subscribe for Free ✉️';btn.disabled=false;}},3000);
+    }catch(e){
+      if(btn){btn.textContent='Subscribe for Free ✉️';btn.disabled=false;}
+      alert('Something went wrong. Please try again.');
+    }
+  }
+
+  // Submit Get Featured form
+  async function submitFeatured(){
+    var startup=(document.getElementById('f-startup')||{}).value||'';
+    var name=(document.getElementById('f-name')||{}).value||'';
+    var email=(document.getElementById('f-email')||{}).value||'';
+    var mobile=(document.getElementById('f-mobile')||{}).value||'';
+    var category=(document.getElementById('f-category')||{}).value||'';
+    var about=(document.getElementById('f-about')||{}).value||'';
+    startup=startup.trim();name=name.trim();email=email.trim();
+    if(!startup||!name||!email){alert('Please fill in Startup Name, Your Name and Email.');return;}
+    if(!email.includes('@')){alert('Please enter a valid email.');return;}
+    var btn=document.querySelector('#featuredModal .form-submit');
+    if(btn){btn.textContent='Submitting...';btn.disabled=true;}
+    try{
+      await fbAdd('feature_requests',{startup:startup,name:name,email:email,mobile:mobile,category:category,about:about,status:'pending',created_at:new Date().toISOString()});
+      if(btn){btn.textContent='✅ Submitted!';}
+      setTimeout(function(){
+        closeFeatured();
+        if(btn){btn.textContent='Submit Request 🚀';btn.disabled=false;}
+        ['f-startup','f-name','f-email','f-mobile','f-about'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
+      },2000);
+    }catch(e){
+      if(btn){btn.textContent='Submit Request 🚀';btn.disabled=false;}
+      alert('Something went wrong. Please try again.');
+    }
   }
 
   // INIT
