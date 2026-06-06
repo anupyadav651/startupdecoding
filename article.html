@@ -172,13 +172,14 @@
   <p>© 2026 Startup Decoding · <a href="/">Home</a> · <a href="/articles.html">Articles</a> · <a href="/about.html">About</a> · <a href="mailto:gourav@startupdecoding.com">Contact</a></p>
 </footer>
 
-<script type="module">
-
-  // ═══ FIREBASE SDK ═══
-          async function fbGet(col){try{const s=await getDocs(collection(fsdb,col));return s.docs.map(d=>({...d.data(),id:d.id}));}catch(e){return[];}}
-  async function fbQuery(col,field,value){try{const q=query(collection(fsdb,col),where(field,'==',value));const s=await getDocs(q);return s.docs.map(d=>({...d.data(),id:d.id}));}catch(e){return[];}}
-    async function fbSet(col,id,obj){try{return await setDoc(doc(fsdb,col,id),{...obj,updated_at:new Date().toISOString()},{merge:true});}catch(e){}}
-  async function fbDelete(col,id){try{await deleteDoc(doc(fsdb,col,id));}catch(e){}}
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script>
+firebase.initializeApp({apiKey:'AIzaSyDpB7BMUeGidRxVDP_5S9Xru4eVmdVYSWI',authDomain:'startupdecoding-7b53a.firebaseapp.com',projectId:'startupdecoding-7b53a'});
+const fsdb=firebase.firestore();
+async function fbGet(col){try{const s=await fsdb.collection(col).get();return s.docs.map(d=>({...d.data(),id:d.id}));}catch(e){return[];}}
+async function fbQuery(col,field,value){try{const s=await fsdb.collection(col).where(field,'==',value).get();return s.docs.map(d=>({...d.data(),id:d.id}));}catch(e){return[];}}
+async function fbAdd(col,obj){try{return await fsdb.collection(col).add({...obj,created_at:new Date().toISOString()});}catch(e){}}
 
 function getArticleId(){
   return new URLSearchParams(window.location.search).get('id');
@@ -315,7 +316,16 @@ window.addEventListener('load',async function(){
   }
   try{
     var arts=await fbQuery('articles','status','published');
-    arts=arts.filter(function(a){return String(a.id)===String(id)||a._id===id;});
+    // Match by document id OR by id field
+    var found=arts.filter(function(a){return String(a.id)===String(id);});
+    if(!found.length){
+      // Try direct document fetch by Firebase doc ID
+      try{
+        const d=await fsdb.collection('articles').doc(id).get();
+        if(d.exists){found=[{...d.data(),id:d.id}];}
+      }catch(e){}
+    }
+    arts=found;
     if(!arts||!arts.length){
       document.getElementById('article-box').innerHTML='<div class="loader"><h3>Article not found</h3><p><a href="/articles.html" style="color:#00C2CB;">Browse all articles →</a></p></div>';
       return;
@@ -513,13 +523,14 @@ PE html>
   <p>© 2026 Startup Decoding · <a href="/">Home</a> · <a href="/articles.html">Articles</a> · <a href="/about.html">About</a> · <a href="mailto:gourav@startupdecoding.com">Contact</a></p>
 </footer>
 
-<script type="module">
-
-  // ═══ FIREBASE SDK ═══
-          async function fbGet(col){try{const s=await getDocs(collection(fsdb,col));return s.docs.map(d=>({...d.data(),id:d.id}));}catch(e){return[];}}
-  async function fbQuery(col,field,value){try{const q=query(collection(fsdb,col),where(field,'==',value));const s=await getDocs(q);return s.docs.map(d=>({...d.data(),id:d.id}));}catch(e){return[];}}
-    async function fbSet(col,id,obj){try{return await setDoc(doc(fsdb,col,id),{...obj,updated_at:new Date().toISOString()},{merge:true});}catch(e){}}
-  async function fbDelete(col,id){try{await deleteDoc(doc(fsdb,col,id));}catch(e){}}
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script>
+firebase.initializeApp({apiKey:'AIzaSyDpB7BMUeGidRxVDP_5S9Xru4eVmdVYSWI',authDomain:'startupdecoding-7b53a.firebaseapp.com',projectId:'startupdecoding-7b53a'});
+const fsdb=firebase.firestore();
+async function fbGet(col){try{const s=await fsdb.collection(col).get();return s.docs.map(d=>({...d.data(),id:d.id}));}catch(e){return[];}}
+async function fbQuery(col,field,value){try{const s=await fsdb.collection(col).where(field,'==',value).get();return s.docs.map(d=>({...d.data(),id:d.id}));}catch(e){return[];}}
+async function fbAdd(col,obj){try{return await fsdb.collection(col).add({...obj,created_at:new Date().toISOString()});}catch(e){}}
 
 function getArticleId(){
   return new URLSearchParams(window.location.search).get('id');
@@ -656,7 +667,16 @@ window.addEventListener('load',async function(){
   }
   try{
     var arts=await fbQuery('articles','status','published');
-    arts=arts.filter(function(a){return String(a.id)===String(id)||a._id===id;});
+    // Match by document id OR by id field
+    var found=arts.filter(function(a){return String(a.id)===String(id);});
+    if(!found.length){
+      // Try direct document fetch by Firebase doc ID
+      try{
+        const d=await fsdb.collection('articles').doc(id).get();
+        if(d.exists){found=[{...d.data(),id:d.id}];}
+      }catch(e){}
+    }
+    arts=found;
     if(!arts||!arts.length){
       document.getElementById('article-box').innerHTML='<div class="loader"><h3>Article not found</h3><p><a href="/articles.html" style="color:#00C2CB;">Browse all articles →</a></p></div>';
       return;
