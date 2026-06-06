@@ -612,6 +612,61 @@ async function fbAdd(col,obj){try{const r=await fsdb.collection(col).add({...obj
 async function fbSet(col,id,obj){try{await fsdb.collection(col).doc(id).set({...obj},{merge:true});}catch(e){}}
 async function fbDelete(col,id){try{await fsdb.collection(col).doc(id).delete();}catch(e){}}
 
+  // ═══ UI FUNCTIONS ═══
+  function goTo(id){
+    var el=document.getElementById(id);
+    if(el){el.scrollIntoView({behavior:'smooth',block:'start'});}
+    closeMobileMenu();
+  }
+
+  function toggleMobile(){
+    var m=document.getElementById('mobileMenu');
+    if(m)m.style.display=m.style.display==='block'?'none':'block';
+  }
+
+  function closeMobileMenu(){
+    var m=document.getElementById('mobileMenu');
+    if(m)m.style.display='none';
+  }
+
+  function toggleTheme(){
+    document.body.classList.toggle('dark-mode');
+    var btn=document.getElementById('themeBtn');
+    if(btn)btn.textContent=document.body.classList.contains('dark-mode')?'☀️ Light':'🌙 Dark';
+    localStorage.setItem('sd_theme',document.body.classList.contains('dark-mode')?'dark':'light');
+  }
+
+  function openAuth(tab){
+    var modal=document.getElementById('authModal');
+    if(modal){modal.style.display='flex';if(tab)switchAuth(tab);}
+  }
+
+  function closeAuth(){
+    var modal=document.getElementById('authModal');
+    if(modal)modal.style.display='none';
+  }
+
+  function switchAuth(tab){
+    document.getElementById('loginForm').style.display=tab==='login'?'block':'none';
+    document.getElementById('signupForm').style.display=tab==='signup'?'block':'none';
+  }
+
+  function openFeatured(){
+    var modal=document.getElementById('featuredModal');
+    if(modal){modal.style.display='flex';}
+    else{goTo('get-featured-section');}
+  }
+
+  function closeFeatured(){
+    var modal=document.getElementById('featuredModal');
+    if(modal)modal.style.display='none';
+  }
+
+  function openSearch(){
+    var sb=document.getElementById('searchBar');
+    if(sb){sb.style.display=sb.style.display==='block'?'none':'block';document.getElementById('searchInput')&&document.getElementById('searchInput').focus();}
+  }
+
 
   var secGridMap={'Startup News':'grid-startup-news','Startup Stories':'grid-startup-stories','Young Entrepreneur':'grid-young-entrepreneur','Her Story':'grid-her-story','Tech & Innovation':'grid-tech','Gov Schemes':'grid-gov-schemes','Trending News':'liveNewsGrid'};
   var secSectionMap={'Startup News':'startup-news-section','Startup Stories':'startup-stories-section','Young Entrepreneur':'young-entrepreneur-section','Her Story':'her-story-section','Tech & Innovation':'tech-section','Gov Schemes':'gov-schemes-section'};
@@ -868,6 +923,9 @@ async function fbDelete(col,id){try{await fsdb.collection(col).doc(id).delete();
   }
 
   // INIT
+  // Restore theme
+  if(localStorage.getItem('sd_theme')==='dark')document.body.classList.add('dark-mode');
+
   // ── TOP STORIES — reads pinned IDs from admin, falls back to latest 3 ──
   async function loadTopStories(){
     var container=document.getElementById('topStoriesContainer');
