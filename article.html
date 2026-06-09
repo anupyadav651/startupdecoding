@@ -343,7 +343,7 @@ window.addEventListener('load',async function(){
       document.getElementById('article-box').innerHTML='<div class="loader"><h3>Article not found</h3><p><a href="/articles.html" style="color:#00C2CB;">Browse all articles →</a></p></div>';
       return;
     }
-    renderArticle(arts[0]);
+    renderArticle(found[0]);
     loadPopular(id);
     initInfiniteScroll(id);
   }catch(e){
