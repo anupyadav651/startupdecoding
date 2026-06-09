@@ -264,6 +264,47 @@ function renderArticle(a){
   try{var sc=document.getElementById('article-schema');if(sc)sc.textContent=JSON.stringify({'@context':'https://schema.org','@type':'Article','headline':a.title,'author':{'@type':'Person','name':a.author||'Startup Decoding'},'publisher':{'@type':'Organization','name':'Startup Decoding'},'datePublished':a.created_at||new Date().toISOString()});}catch(e){}
 }
 
+function goToNext(el){window.location.href="article.html?id="+el.dataset.id;}
+function initInfiniteScroll(id){
+  // Infinite scroll - loads next article when reaching bottom
+  var allArts=[];
+  var loadedIds=new Set([id]);
+  var loading=false;
+
+  async function fetchAll(){
+    try{allArts=await fbGet('articles');allArts.sort(function(a,b){return new Date(b.created_at)-new Date(a.created_at);});}catch(e){}
+  }
+
+  async function loadNext(){
+    if(loading)return;
+    loading=true;
+    var next=allArts.find(function(a){return !loadedIds.has(a.id)&&a.status==='published';});
+    if(!next){loading=false;return;}
+    loadedIds.add(next.id);
+    var div=document.createElement('div');
+    div.style.cssText='max-width:800px;margin:0 auto 40px;padding:0 24px;';
+    div.innerHTML='<div style="text-align:center;padding:20px 0;font-size:12px;font-weight:700;color:#6b7280;letter-spacing:2px;">— NEXT ARTICLE —</div>'
+      +'<div style="background:white;border-radius:16px;border:1px solid #e5e7eb;padding:32px;cursor:pointer;" onclick="goToNext(this)" data-id="'+next.id+'">'
+      +(next.image||next.image_url?'<img src="'+(next.image||next.image_url)+'" style="width:100%;height:300px;object-fit:cover;border-radius:10px;margin-bottom:20px;">':'')
+      +'<div style="font-size:11px;color:#00838f;font-weight:700;text-transform:uppercase;margin-bottom:8px;">'+(next.category||'Article')+'</div>'
+      +'<h2 style="font-family:Playfair Display,serif;font-size:24px;color:#0A2463;margin-bottom:12px;">'+next.title+'</h2>'
+      +'<div style="font-size:13px;color:#6b7280;">By '+(next.author||'SD Team')+' · '+(next.date||'')+'</div>'
+      +'</div>';
+    var container=document.getElementById('next-articles-container');
+    if(container)container.appendChild(div);
+    history.replaceState({},'','article.html?id='+next.id);
+    loading=false;
+  }
+
+  fetchAll().then(function(){
+    window.addEventListener('scroll',function(){
+      if(window.scrollY+window.innerHeight>=document.documentElement.scrollHeight-400){
+        loadNext();
+      }
+    });
+  });
+}
+
 function shareArticle(){
   if(navigator.share){
     navigator.share({title:document.title,url:window.location.href});
@@ -333,7 +374,6 @@ window.addEventListener('load',async function(){
     renderArticle(found[0]);
     console.log('renderArticle done');
     loadPopular(id);
-    initInfiniteScroll(id);
   }catch(e){
     console.error('ARTICLE ERROR:', e.message, e.stack);
     document.getElementById('article-box').innerHTML='<div class="loader"><h3>Error: '+e.message+'</h3><p>Please try again. <a href="/articles.html" style="color:#00C2CB;">Browse all articles →</a></p></div>';
