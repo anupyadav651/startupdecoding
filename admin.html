@@ -197,6 +197,7 @@
     <div class="nav-item" id="n-topstories" onclick="go('topstories',this)"><span class="icon">⚡</span> Top Stories</div>
     <div class="nav-item" id="n-requests" onclick="go('requests',this)"><span class="icon">🚀</span> Feature Requests</div>
     <div class="nav-item" id="n-searches" onclick="go('searches',this)"><span class="icon">🔍</span> Search Analytics</div>
+    <div class="nav-item" id="n-views" onclick="go('views',this)"><span class="icon">👁️</span> Article Views</div>
     <div class="nav-item" id="n-users" onclick="go('users',this)"><span class="icon">👥</span> Manage Users</div>
     <div class="nav-item" id="n-data" onclick="go('data',this)"><span class="icon">📊</span> Data & Subscribers</div>
     <div class="nav-item" id="n-about" onclick="go('about',this)"><span class="icon">📝</span> Edit About Us</div>
@@ -300,6 +301,24 @@
       <div class="page-title">🔍 Search Analytics</div>
       <div class="page-sub">Topics your visitors search — use this to plan content strategy.</div>
       <div class="box"><h3>🔥 Top Searches</h3><div id="search-list"></div></div>
+    </div>
+
+    <!-- VIEWS ANALYTICS -->
+    <div class="page" id="page-views">
+      <div class="page-title">👁️ Article Views Analytics</div>
+      <div class="page-sub">See how many times each article has been viewed.</div>
+      <div class="box">
+        <div style="display:flex;gap:12px;margin-bottom:20px;flex-wrap:wrap;align-items:center;">
+          <select id="views-period" onchange="loadViews()" style="padding:8px 14px;border:1px solid #334155;border-radius:8px;background:#0f172a;color:#f1f5f9;font-size:13px;">
+            <option value="today">Today</option>
+            <option value="week">This Week</option>
+            <option value="month">This Month</option>
+            <option value="all">All Time</option>
+          </select>
+          <span id="views-total" style="color:#64748b;font-size:13px;"></span>
+        </div>
+        <div id="views-list"></div>
+      </div>
     </div>
 
     <!-- USERS -->
@@ -529,7 +548,7 @@ const SEC={
 // ═══ SECURE LOGIN SYSTEM ═══
 // Passwords stored as hashes only — never plain text in code
 const USERS=[
-  {username:'founder',hash:SEC.hash('decoding@2026'),name:'Founder',role:'founder',access:['dashboard','write','articles','topstories','requests','searches','users','data','about','settings']},
+  {username:'founder',hash:SEC.hash('decoding@2026'),name:'Founder',role:'founder',access:['dashboard','write','articles','topstories','requests','searches','views','users','data','about','settings']},
   {username:'editor',hash:SEC.hash('edit123'),name:'Editor',role:'editor',access:['dashboard','write','articles']},
   {username:'writer',hash:SEC.hash('write123'),name:'Writer',role:'writer',access:['dashboard','write']}
 ];
@@ -649,7 +668,7 @@ function startSessionTimer(){
 // session keep-alive removed - using simple session
 
 // ═══════════════ UI SETUP ═══════════════
-const ALL_PAGES=['write','articles','topstories','requests','searches','users','data','about','settings'];
+const ALL_PAGES=['write','articles','topstories','requests','searches','views','users','data','about','settings'];
 
 function setupUI(){
   const role=currentUser.role,access=currentUser.access||[];
@@ -694,6 +713,7 @@ function go(page,el){
   if(page==='topstories')loadTopStoriesPicker();
   if(page==='requests')loadRequests();
   if(page==='searches')loadSearches();
+  if(page==='views')loadViews();
   if(page==='settings')loadSettings();
   if(page==='users')loadUsers();
   if(page==='data')loadDataPage();
@@ -1305,6 +1325,90 @@ function saveSettings(){
   localStorage.setItem('sd_settings',JSON.stringify(s));
   db('site_settings',{method:'POST',prefer:'return=minimal',body:JSON.stringify({key:'settings',value:JSON.stringify(s)})}).catch(()=>{});
   toast('✅ Settings saved! Refresh website to see changes.');
+}
+
+
+// ═══════════════ VIEWS ANALYTICS ═══════════════
+async function loadViews(){
+  const el=document.getElementById('views-list');
+  const period=document.getElementById('views-period').value;
+  el.innerHTML='<div style="color:#64748b;padding:20px;">Loading...</div>';
+
+  try{
+    // Get date range
+    const now=new Date();
+    let startDate='';
+    if(period==='today'){
+      startDate=now.toISOString().slice(0,10);
+    } else if(period==='week'){
+      const d=new Date(now);d.setDate(d.getDate()-7);
+      startDate=d.toISOString().slice(0,10);
+    } else if(period==='month'){
+      const d=new Date(now);d.setDate(d.getDate()-30);
+      startDate=d.toISOString().slice(0,10);
+    }
+
+    // Fetch views from Firebase
+    let snap;
+    if(startDate&&period!=='all'){
+      snap=await fsdb.collection('article_views').where('day','>=',startDate).get();
+    } else {
+      snap=await fsdb.collection('article_views').get();
+    }
+
+    // Group by article_id and sum views
+    const grouped={};
+    snap.docs.forEach(function(d){
+      const data=d.data();
+      const aid=data.article_id;
+      if(!grouped[aid]){
+        grouped[aid]={
+          article_id:aid,
+          title:data.title||'Unknown',
+          category:data.category||'',
+          author:data.author||'',
+          views:0
+        };
+      }
+      grouped[aid].views+=(data.views||0);
+    });
+
+    // Sort by views
+    const items=Object.values(grouped).sort(function(a,b){return b.views-a.views;});
+    const total=items.reduce(function(s,i){return s+i.views;},0);
+
+    document.getElementById('views-total').textContent=total+' total views';
+
+    if(!items.length){
+      el.innerHTML='<div class="empty"><div class="em">👁️</div><p>No views recorded yet. Views are tracked when visitors open articles.</p></div>';
+      return;
+    }
+
+    const maxViews=items[0].views||1;
+    el.innerHTML=items.map(function(item,i){
+      const pct=Math.round((item.views/maxViews)*100);
+      return '<div style="padding:14px 0;border-bottom:1px solid #1e293b;">'
+        +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">'
+          +'<div style="flex:1;">'
+            +'<div style="color:#f1f5f9;font-size:14px;font-weight:600;margin-bottom:3px;">'+item.title+'</div>'
+            +'<div style="color:#64748b;font-size:12px;">'+(item.category||'')+(item.author?' • '+item.author:'')+'</div>'
+          +'</div>'
+          +'<div style="margin-left:16px;text-align:right;">'
+            +'<div style="color:#00C2CB;font-size:20px;font-weight:800;">'+item.views+'</div>'
+            +'<div style="color:#64748b;font-size:11px;">views</div>'
+          +'</div>'
+        +'</div>'
+        +'<div style="background:#1e293b;border-radius:4px;height:6px;">'
+          +'<div style="background:linear-gradient(90deg,#0A2463,#00C2CB);width:'+pct+'%;height:100%;border-radius:4px;transition:width .5s;"></div>'
+        +'</div>'
+        +'<div style="margin-top:6px;text-align:right;">'
+          +'<a href="article.html?id='+item.article_id+'" target="_blank" style="color:#64748b;font-size:11px;text-decoration:none;">View Article ↗</a>'
+        +'</div>'
+      +'</div>';
+    }).join('');
+  }catch(e){
+    el.innerHTML='<div class="empty"><p>Error loading views: '+e.message+'</p></div>';
+  }
 }
 
 // ═══════════════ TOAST ═══════════════

@@ -228,7 +228,7 @@ function renderArticle(a){
         '<div class="meta-avatar">'+ini+'</div>'+
         '<div>'+
           '<div class="meta-author" onclick="window.location.href=\'articles.html?author=\'+encodeURIComponent(\''+( a.author||'SD Team').replace(/'/g,"\\'")+'\')" >By '+(a.author||'SD Team')+'</div>'+
-          '<div class="meta-date">'+date+rt+'</div>'+
+          '<div class="meta-date">'+date+rt+'<span id="article-view-count" style="margin-left:8px;"></span></div>'+
         '</div>'+
         '<div class="meta-share">'+
           '<button class="share-btn" onclick="shareArticle()">🔗 Share</button>'+
@@ -262,6 +262,41 @@ function renderArticle(a){
   safeMeta('#tw-image',imgUrl,'content');
   safeMeta('link[rel="canonical"]',pageUrl,'href');
   try{var sc=document.getElementById('article-schema');if(sc)sc.textContent=JSON.stringify({'@context':'https://schema.org','@type':'Article','headline':a.title,'author':{'@type':'Person','name':a.author||'Startup Decoding'},'publisher':{'@type':'Organization','name':'Startup Decoding'},'datePublished':a.created_at||new Date().toISOString()});}catch(e){}
+}
+
+
+// ═══ VIEW TRACKING ═══
+async function trackView(article){
+  try{
+    var today=new Date().toISOString().slice(0,10);
+    var viewRef=fsdb.collection('article_views').doc(article.id+'_'+today);
+    var doc=await viewRef.get();
+    if(doc.exists){
+      await viewRef.update({views:(doc.data().views||0)+1,updated_at:new Date().toISOString()});
+    } else {
+      await viewRef.set({
+        article_id:article.id,title:article.title,
+        category:article.category||'',author:article.author||'',
+        date:article.date||'',image:article.image||article.image_url||'',
+        views:1,day:today,
+        created_at:new Date().toISOString(),updated_at:new Date().toISOString()
+      });
+    }
+    // Load and show total views across all days
+    loadTotalViews(article.id);
+  }catch(e){console.log('View tracking error:',e);}
+}
+
+async function loadTotalViews(articleId){
+  try{
+    var snap=await fsdb.collection('article_views').where('article_id','==',articleId).get();
+    var total=snap.docs.reduce(function(sum,d){return sum+(d.data().views||0);},0);
+    var el=document.getElementById('article-view-count');
+    if(el&&total>0){
+      el.textContent='· 👁 '+total.toLocaleString('en-IN')+' views';
+      el.style.color='#6b7280';
+    }
+  }catch(e){}
 }
 
 function goToNext(el){window.location.href="article.html?id="+el.dataset.id;}
