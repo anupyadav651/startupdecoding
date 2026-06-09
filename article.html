@@ -323,18 +323,23 @@ window.addEventListener('load',async function(){
     return;
   }
   try{
-    var arts=await fbQuery('articles','status','published');
-    // Match by document id OR by id field
-    var found=arts.filter(function(a){return String(a.id)===String(id);});
+    // Try direct Firebase document fetch first (fastest)
+    var found=[];
+    try{
+      const d=await fsdb.collection('articles').doc(id).get();
+      if(d.exists){found=[{...d.data(),id:d.id}];}
+    }catch(e){}
+    // Fallback: search all published articles
     if(!found.length){
-      // Try direct document fetch by Firebase doc ID
-      try{
-        const d=await fsdb.collection('articles').doc(id).get();
-        if(d.exists){found=[{...d.data(),id:d.id}];}
-      }catch(e){}
+      var arts=await fbQuery('articles','status','published');
+      found=arts.filter(function(a){return String(a.id)===String(id);});
     }
-    arts=found;
-    if(!arts||!arts.length){
+    // Last resort: get ALL articles regardless of status
+    if(!found.length){
+      var allArts=await fbGet('articles');
+      found=allArts.filter(function(a){return String(a.id)===String(id);});
+    }
+    if(!found.length){
       document.getElementById('article-box').innerHTML='<div class="loader"><h3>Article not found</h3><p><a href="/articles.html" style="color:#00C2CB;">Browse all articles →</a></p></div>';
       return;
     }
