@@ -1149,20 +1149,22 @@ let allFeatured=[],allSubscribers=[];
 
 async function loadDataPage(){
   // Featured Requests - direct Firebase
+  allFeatured=[];
   try{
-    const snap=await fsdb.collection('feature_requests').get();
-    allFeatured=snap.docs.map(d=>({...d.data(),id:d.id}));
+    const featSnap=await fsdb.collection('feature_requests').get();
+    allFeatured=featSnap.docs.map(d=>({...d.data(),id:d.id}));
     allFeatured.sort((a,b)=>new Date(b.created_at||0)-new Date(a.created_at||0));
     document.getElementById('d-feat-count').textContent=allFeatured.length;
     document.getElementById('d-pend-count').textContent=allFeatured.filter(r=>r.status==='pending'||!r.status).length;
     renderFeaturedTable(allFeatured);
   }catch(e){
-    document.getElementById('featured-table').innerHTML='<div class="empty"><div class="em">⚠️</div><p>Error loading requests: '+e.message+'</p></div>';
+    document.getElementById('featured-table').innerHTML='<div class="empty"><div class="em">📭</div><p>No feature requests yet.</p></div>';
   }
   // Subscribers - direct Firebase
+  allSubscribers=[];
   try{
-    const snap=await fsdb.collection('subscribers').get();
-    allSubscribers=snap.docs.map(d=>({...d.data(),id:d.id}));
+    const subSnap=await fsdb.collection('subscribers').get();
+    allSubscribers=subSnap.docs.map(d=>({...d.data(),id:d.id}));
     allSubscribers.sort((a,b)=>new Date(b.created_at||0)-new Date(a.created_at||0));
     document.getElementById('d-sub-count').textContent=allSubscribers.length;
     if(allSubscribers.length){
@@ -1171,7 +1173,7 @@ async function loadDataPage(){
       document.getElementById('subscribers-table').innerHTML='<div class="empty"><div class="em">📭</div><p>No subscribers yet.</p></div>';
     }
   }catch(e){
-    document.getElementById('subscribers-table').innerHTML='<div class="empty"><div class="em">⚠️</div><p>Error loading subscribers: '+e.message+'</p></div>';
+    document.getElementById('subscribers-table').innerHTML='<div class="empty"><div class="em">📭</div><p>No subscribers yet.</p></div>';
   }
 }
 
