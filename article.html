@@ -249,33 +249,19 @@ function renderArticle(a){
   var imgUrl=a.image||a.image_url||'https://startupdecoding.in/og-image.png';
   var desc=a.summary||a.title;
 
-  document.querySelector('meta[name="description"]').content=desc;
-  document.querySelector('meta[name="author"]').content=a.author||'Startup Decoding';
-  document.getElementById('og-title').content=a.title+' — Startup Decoding';
-  document.getElementById('og-desc').content=desc;
-  document.getElementById('og-url').content=pageUrl;
-  document.getElementById('og-image').content=imgUrl;
-  document.getElementById('tw-title').content=a.title;
-  document.getElementById('tw-desc').content=desc;
-  document.getElementById('tw-image').content=imgUrl;
-  document.getElementById('canonical').href=pageUrl;
-
-  // Update structured data
-  var schema={
-    '@context':'https://schema.org',
-    '@type':'Article',
-    'headline':a.title,
-    'description':desc,
-    'image':imgUrl,
-    'author':{'@type':'Person','name':a.author||'Startup Decoding'},
-    'publisher':{'@type':'Organization','name':'Startup Decoding','url':'https://startupdecoding.in','logo':'https://startupdecoding.in/favicon-32x32.png'},
-    'datePublished':a.created_at||new Date().toISOString(),
-    'dateModified':a.updated_at||a.created_at||new Date().toISOString(),
-    'mainEntityOfPage':{'@type':'WebPage','@id':pageUrl},
-    'articleSection':a.category||'Startup News',
-    'keywords':a.tags||'startup, India, entrepreneur'
-  };
-  document.getElementById('article-schema').textContent=JSON.stringify(schema);
+  // Safe meta update - only update if elements exist
+  function safeMeta(sel,val,attr){try{var el=document.querySelector(sel);if(el)el[attr||'content']=val;}catch(e){}}
+  safeMeta('meta[name="description"]',desc);
+  safeMeta('meta[name="author"]',a.author||'Startup Decoding');
+  safeMeta('#og-title','content',a.title+' — Startup Decoding');
+  safeMeta('#og-desc','content',desc);
+  safeMeta('#og-url','content',pageUrl);
+  safeMeta('#og-image','content',imgUrl);
+  safeMeta('#tw-title','content',a.title);
+  safeMeta('#tw-desc','content',desc);
+  safeMeta('#tw-image','content',imgUrl);
+  safeMeta('link[rel="canonical"]',pageUrl,'href');
+  try{var sc=document.getElementById('article-schema');if(sc)sc.textContent=JSON.stringify({'@context':'https://schema.org','@type':'Article','headline':a.title,'author':{'@type':'Person','name':a.author||'Startup Decoding'},'publisher':{'@type':'Organization','name':'Startup Decoding'},'datePublished':a.created_at||new Date().toISOString()});}catch(e){}
 }
 
 function shareArticle(){
