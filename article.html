@@ -253,13 +253,13 @@ function renderArticle(a){
   function safeMeta(sel,val,attr){try{var el=document.querySelector(sel);if(el)el[attr||'content']=val;}catch(e){}}
   safeMeta('meta[name="description"]',desc);
   safeMeta('meta[name="author"]',a.author||'Startup Decoding');
-  safeMeta('#og-title','content',a.title+' — Startup Decoding');
-  safeMeta('#og-desc','content',desc);
-  safeMeta('#og-url','content',pageUrl);
-  safeMeta('#og-image','content',imgUrl);
-  safeMeta('#tw-title','content',a.title);
-  safeMeta('#tw-desc','content',desc);
-  safeMeta('#tw-image','content',imgUrl);
+  safeMeta('#og-title',a.title+' — Startup Decoding','content');
+  safeMeta('#og-desc',desc,'content');
+  safeMeta('#og-url',pageUrl,'content');
+  safeMeta('#og-image',imgUrl,'content');
+  safeMeta('#tw-title',a.title,'content');
+  safeMeta('#tw-desc',desc,'content');
+  safeMeta('#tw-image',imgUrl,'content');
   safeMeta('link[rel="canonical"]',pageUrl,'href');
   try{var sc=document.getElementById('article-schema');if(sc)sc.textContent=JSON.stringify({'@context':'https://schema.org','@type':'Article','headline':a.title,'author':{'@type':'Person','name':a.author||'Startup Decoding'},'publisher':{'@type':'Organization','name':'Startup Decoding'},'datePublished':a.created_at||new Date().toISOString()});}catch(e){}
 }
@@ -329,11 +329,14 @@ window.addEventListener('load',async function(){
       document.getElementById('article-box').innerHTML='<div class="loader"><h3>Article not found</h3><p><a href="/articles.html" style="color:#00C2CB;">Browse all articles →</a></p></div>';
       return;
     }
+    console.log('Article found:', found[0].title);
     renderArticle(found[0]);
+    console.log('renderArticle done');
     loadPopular(id);
     initInfiniteScroll(id);
   }catch(e){
-    document.getElementById('article-box').innerHTML='<div class="loader"><h3>Error loading article</h3><p>Please try again. <a href="/articles.html" style="color:#00C2CB;">Browse all articles →</a></p></div>';
+    console.error('ARTICLE ERROR:', e.message, e.stack);
+    document.getElementById('article-box').innerHTML='<div class="loader"><h3>Error: '+e.message+'</h3><p>Please try again. <a href="/articles.html" style="color:#00C2CB;">Browse all articles →</a></p></div>';
   }
 });
 </script>
