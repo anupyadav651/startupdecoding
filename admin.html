@@ -1150,8 +1150,11 @@ let allFeatured=[],allSubscribers=[];
 async function loadDataPage(){
   // Featured Requests - direct Firebase
   allFeatured=[];
+  console.log('loadDataPage started, fsdb:', typeof fsdb);
   try{
+    console.log('Fetching feature_requests...');
     const featSnap=await fsdb.collection('feature_requests').get();
+    console.log('feature_requests docs:', featSnap.docs.length);
     allFeatured=featSnap.docs.map(d=>({...d.data(),id:d.id}));
     allFeatured.sort((a,b)=>new Date(b.created_at||0)-new Date(a.created_at||0));
     document.getElementById('d-feat-count').textContent=allFeatured.length;
@@ -1163,7 +1166,9 @@ async function loadDataPage(){
   // Subscribers - direct Firebase
   allSubscribers=[];
   try{
+    console.log('Fetching subscribers...');
     const subSnap=await fsdb.collection('subscribers').get();
+    console.log('subscribers docs:', subSnap.docs.length);
     allSubscribers=subSnap.docs.map(d=>({...d.data(),id:d.id}));
     allSubscribers.sort((a,b)=>new Date(b.created_at||0)-new Date(a.created_at||0));
     document.getElementById('d-sub-count').textContent=allSubscribers.length;
