@@ -1148,24 +1148,30 @@ async function deleteTeamMember(id){
 let allFeatured=[],allSubscribers=[];
 
 async function loadDataPage(){
-  // Featured
+  // Featured Requests - direct Firebase
   try{
-    allFeatured=await db('feature_requests?order=created_at.desc');
+    const snap=await fsdb.collection('feature_requests').get();
+    allFeatured=snap.docs.map(d=>({...d.data(),id:d.id}));
+    allFeatured.sort((a,b)=>new Date(b.created_at||0)-new Date(a.created_at||0));
     document.getElementById('d-feat-count').textContent=allFeatured.length;
     document.getElementById('d-pend-count').textContent=allFeatured.filter(r=>r.status==='pending'||!r.status).length;
     renderFeaturedTable(allFeatured);
-  }catch(e){document.getElementById('featured-table').innerHTML='<div class="empty"><div class="em">⚠️</div><p>Could not load. Check Supabase.</p></div>';}
-  // Subscribers
-  try{
-    allSubscribers=await db('subscribers?order=created_at.desc');
-    document.getElementById('d-sub-count').textContent=allSubscribers.length;
-    renderSubscribersTable(allSubscribers);
   }catch(e){
-    const local=JSON.parse(localStorage.getItem('sd_subscribers')||'[]');
-    allSubscribers=local.map(s=>({email:s.email,source:'newsletter',created_at:s.date}));
+    document.getElementById('featured-table').innerHTML='<div class="empty"><div class="em">⚠️</div><p>Error loading requests: '+e.message+'</p></div>';
+  }
+  // Subscribers - direct Firebase
+  try{
+    const snap=await fsdb.collection('subscribers').get();
+    allSubscribers=snap.docs.map(d=>({...d.data(),id:d.id}));
+    allSubscribers.sort((a,b)=>new Date(b.created_at||0)-new Date(a.created_at||0));
     document.getElementById('d-sub-count').textContent=allSubscribers.length;
-    if(allSubscribers.length)renderSubscribersTable(allSubscribers);
-    else document.getElementById('subscribers-table').innerHTML='<div class="empty"><div class="em">📭</div><p>No subscribers yet. Create a "subscribers" table in Supabase.</p></div>';
+    if(allSubscribers.length){
+      renderSubscribersTable(allSubscribers);
+    } else {
+      document.getElementById('subscribers-table').innerHTML='<div class="empty"><div class="em">📭</div><p>No subscribers yet.</p></div>';
+    }
+  }catch(e){
+    document.getElementById('subscribers-table').innerHTML='<div class="empty"><div class="em">⚠️</div><p>Error loading subscribers: '+e.message+'</p></div>';
   }
 }
 
