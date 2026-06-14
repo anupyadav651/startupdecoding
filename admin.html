@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -757,7 +756,7 @@ async function getArts(){
 // FIX: editingId tracks which article we're editing
 let editingId=null;
 
-async // ═══ SANITIZE INPUT ═══
+// ═══ SANITIZE INPUT ═══
 function sanitize(str){
   if(!str)return '';
   return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#x27;').replace(/\//g,'&#x2F;');
@@ -1146,7 +1145,7 @@ async function deleteTeamMember(id){
 }
 
 // ═══════════════ DATA PAGE ═══════════════
-let allFeatured=[],allSubscribers=[];
+var allFeatured=[],allSubscribers=[];
 
 async function loadDataPage(){
   // Featured Requests - direct Firebase
