@@ -230,7 +230,8 @@ function renderGrid(){
     return;
   }
   grid.innerHTML=page.map(function(a){
-    var img=a.image_url?'<img class="card-img" src="'+a.image_url+'" loading="lazy" onerror="this.style.display=\'none\'">'
+    var imgSrc=a.image||a.image_url||'';
+    var img=imgSrc?'<img class="card-img" src="'+imgSrc+'" loading="lazy" onerror="this.outerHTML=\'<div class=\\\"card-img-placeholder\\\">📰</div>\'">'
       :'<div class="card-img-placeholder">📰</div>';
     var rt=a.hide_read_time?'':' · '+(a.read_time||Math.max(1,Math.ceil((a.content||'').split(' ').length/200)))+' min read';
     return '<div class="card" style="cursor:pointer;" onclick="goToArticle(\'' + a.id + '\')">'
@@ -283,7 +284,7 @@ function openModal(id){
       +'<div><div style="font-size:14px;font-weight:700;color:#0A2463;">By '+(a.author||'SD Team')+'</div>'
       +'<div style="font-size:12px;color:#6b7280;">'+(a.date||'')+rt+'</div></div>'
     +'</div>'
-    +(a.image_url?'<img class="modal-img" src="'+a.image_url+'" onerror="this.style.display=\'none\'">':'')
+    +(( a.image||a.image_url)?'<img class="modal-img" src="'+(a.image||a.image_url)+'" onerror="this.style.display=\'none\'">':'')
     +'<div class="modal-content">'+(a.content||'No content available.')+'</div>';
   document.getElementById('modal-body').innerHTML=body;
   document.getElementById('modal').classList.add('open');
