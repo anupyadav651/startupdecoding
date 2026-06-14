@@ -128,7 +128,7 @@
     <option>Her Story</option>
     <option>Tech & Innovation</option>
     <option>Gov Schemes</option>
-    <option>Trending</option>
+    <option>Trending News</option>
   </select>
   <select id="sort-filter" onchange="filterArticles()">
     <option value="newest">Newest First</option>
@@ -160,6 +160,17 @@
 <script>
 firebase.initializeApp({apiKey:'AIzaSyDpB7BMUeGidRxVDP_5S9Xru4eVmdVYSWI',authDomain:'startupdecoding-7b53a.firebaseapp.com',projectId:'startupdecoding-7b53a'});
 const fsdb=firebase.firestore();
+
+// ── Read URL params ──
+var urlParams=new URLSearchParams(window.location.search);
+var catParam=urlParams.get('cat')||'';
+var catDecoded=catParam?decodeURIComponent(catParam.replace(/\+/g,' ')):'';
+var authorParam=urlParams.get('author')||'';
+var authorFilter=authorParam?decodeURIComponent(authorParam.replace(/\+/g,' ')):'';
+var allArticles=[];
+var filteredArticles=[];
+var currentPage=1;
+var perPage=9;
 async function fbGet(col){try{const s=await fsdb.collection(col).get();return s.docs.map(d=>({...d.data(),id:d.id}));}catch(e){return[];}}
 async function fbQuery(col,field,value){try{const s=await fsdb.collection(col).where(field,'==',value).get();return s.docs.map(d=>({...d.data(),id:d.id}));}catch(e){return[];}}
 async function fbAdd(col,obj){try{const r=await fsdb.collection(col).add({...obj,created_at:new Date().toISOString()});return{id:r.id,...obj};}catch(e){}}
