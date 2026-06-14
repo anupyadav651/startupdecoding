@@ -56,6 +56,7 @@
     .article-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;}
     .card{background:white;border-radius:12px;border:1px solid var(--border);overflow:hidden;cursor:pointer;transition:transform .2s,box-shadow .2s;}
     .card:hover{transform:translateY(-4px);box-shadow:0 12px 32px rgba(0,0,0,0.09);}
+    .card-img-wrap{width:100%;height:180px;overflow:hidden;}
     .card-img{width:100%;height:180px;object-fit:cover;display:block;}
     .card-img-placeholder{width:100%;height:180px;background:linear-gradient(135deg,var(--blue),#1a3a7a);display:flex;align-items:center;justify-content:center;font-size:42px;}
     .card-body{padding:16px;}
@@ -231,14 +232,16 @@ function renderGrid(){
   }
   grid.innerHTML=page.map(function(a){
     var imgSrc=a.image||a.image_url||'';
-    var img=imgSrc?'<img class="card-img" src="'+imgSrc+'" loading="lazy" onerror="this.outerHTML=\'<div class=\\\"card-img-placeholder\\\">📰</div>\'">'
+    var imgHtml=imgSrc
+      ?'<img class="card-img" src="'+imgSrc+'" loading="lazy" onerror="this.parentNode.innerHTML=\'<div class=&quot;card-img-placeholder&quot;>📰</div>\'">'
       :'<div class="card-img-placeholder">📰</div>';
     var rt=a.hide_read_time?'':' · '+(a.read_time||Math.max(1,Math.ceil((a.content||'').split(' ').length/200)))+' min read';
-    return '<div class="card" style="cursor:pointer;" onclick="goToArticle(\'' + a.id + '\')">'
-      +img
+    // Strip markdown bold/italic from title
+    var title=(a.title||'Untitled').replace(/\*\*([^*]+)\*\*/g,'$1').replace(/\*([^*]+)\*/g,'$1');
+    return '<div class="card" style="cursor:pointer;" onclick="goToArticle(\''+a.id+'\')"><div class="card-img-wrap">'+imgHtml+'</div>'
       +'<div class="card-body">'
         +'<span class="card-badge">'+(a.category||'Article')+'</span>'
-        +'<h3>'+(a.title||'Untitled')+'</h3>'
+        +'<h3>'+title+'</h3>'
         +'<div class="card-meta">'
           +'<span class="author" onclick="event.stopPropagation();filterByAuthor(\''+encodeURIComponent(a.author||'')+'\')">'+(a.author||'SD Team')+'</span>'
           +'<span class="dot">•</span>'
