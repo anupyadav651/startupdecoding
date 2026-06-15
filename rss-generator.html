@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <title>RSS Feed — Startup Decoding</title>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  <style>
+    body{font-family:monospace;background:#111;color:#f90;padding:20px;}
+    button{background:#f90;color:#111;border:none;padding:10px 24px;border-radius:6px;cursor:pointer;font-size:14px;font-weight:700;margin:8px 4px;}
+    textarea{width:100%;height:400px;background:#1a1a1a;color:#f90;border:1px solid #333;padding:12px;font-family:monospace;font-size:12px;border-radius:6px;}
+    .status{color:#f90;margin:10px 0;}
+  </style>
+</head>
+<body>
+<h2 style="color:#f90;">📡 RSS Feed Generator</h2>
+<p style="color:#aaa;margin-bottom:16px;">Generates RSS 2.0 feed XML. Save as <strong>rss.xml</strong> in your Netlify root. Re-generate and re-upload whenever you publish new articles.</p>
+<button onclick="generate()">⚡ Generate RSS Feed</button>
+<button onclick="copyXML()">📋 Copy XML</button>
+<p class="status" id="status">Click Generate to start...</p>
+<textarea id="output" readonly placeholder="RSS XML will appear here..."></textarea>
+
+<script>
+firebase.initializeApp({apiKey:'AIzaSyDpB7BMUeGidRxVDP_5S9Xru4eVmdVYSWI',authDomain:'startupdecoding-7b53a.firebaseapp.com',projectId:'startupdecoding-7b53a'});
+const db=firebase.firestore();
+
+function esc(s){return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+async function generate(){
+  document.getElementById('status').textContent='Fetching articles...';
+  try{
+    var snap=await db.collection('articles').where('status','==','published').orderBy('created_at','desc').limit(50).get();
+    var articles=[];
+    snap.forEach(function(doc){articles.push(Object.assign({id:doc.id},doc.data()));});
+    document.getElementById('status').textContent='Found '+articles.length+' articles. Generating RSS...';
+
+    var items=articles.map(function(a){
+      var pubDate=a.created_at?new Date(a.created_at).toUTCString():new Date().toUTCString();
+      var url='https://startupdecoding.in/article.html?id='+a.id;
+      var img=a.image||a.image_url||'';
+      var imgTag=img?'\n    <enclosure url="'+esc(img)+'" type="image/jpeg"/>':'';
+      var desc=esc(a.summary||a.title||'');
+      var cat=esc(a.category||'Startup News');
+      return '  <item>\n'
+        +'    <title>'+esc(a.title||'Untitled')+'</title>\n'
+        +'    <link>'+url+'</link>\n'
+        +'    <guid isPermaLink="true">'+url+'</guid>\n'
+        +'    <description>'+desc+'</description>\n'
+        +'    <author>'+esc(a.author||'Startup Decoding')+' (yadavgourav634@gmail.com)</author>\n'
+        +'    <category>'+cat+'</category>\n'
+        +'    <pubDate>'+pubDate+'</pubDate>'+imgTag+'\n'
+        +'  </item>';
+    }).join('\n');
+
+    var xml='<?xml version="1.0" encoding="UTF-8"?>\n'
+      +'<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:media="http://search.yahoo.com/mrss/">\n'
+      +'  <channel>\n'
+      +'    <title>Startup Decoding — India\'s Premier Startup Media</title>\n'
+      +'    <link>https://startupdecoding.in</link>\n'
+      +'    <description>Startup stories, founder journeys, funding news and more from across India.</description>\n'
+      +'    <language>en-in</language>\n'
+      +'    <copyright>© 2026 Startup Decoding</copyright>\n'
+      +'    <managingEditor>yadavgourav634@gmail.com (Gourav Yadav)</managingEditor>\n'
+      +'    <webMaster>yadavgourav634@gmail.com (Gourav Yadav)</webMaster>\n'
+      +'    <lastBuildDate>'+new Date().toUTCString()+'</lastBuildDate>\n'
+      +'    <category>Business/StartUps</category>\n'
+      +'    <ttl>60</ttl>\n'
+      +'    <image>\n'
+      +'      <url>https://startupdecoding.in/favicon-32x32.png</url>\n'
+      +'      <title>Startup Decoding</title>\n'
+      +'      <link>https://startupdecoding.in</link>\n'
+      +'    </image>\n'
+      +'    <atom:link href="https://startupdecoding.in/rss.xml" rel="self" type="application/rss+xml"/>\n\n'
+      +items+'\n\n'
+      +'  </channel>\n'
+      +'</rss>';
+
+    document.getElementById('output').value=xml;
+    document.getElementById('status').textContent='✅ Done! '+articles.length+' articles in feed. Save as rss.xml in Netlify root.';
+  }catch(e){
+    document.getElementById('status').textContent='❌ Error: '+e.message;
+  }
+}
+
+function copyXML(){
+  var ta=document.getElementById('output');
+  ta.select();
+  document.execCommand('copy');
+  document.getElementById('status').textContent='✅ Copied!';
+}
+</script>
+</body>
+</html>

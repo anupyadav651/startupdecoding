@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <title>News Sitemap Generator — Startup Decoding</title>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  <style>
+    body{font-family:monospace;background:#111;color:#0f0;padding:20px;}
+    button{background:#00C2CB;color:white;border:none;padding:10px 24px;border-radius:6px;cursor:pointer;font-size:14px;margin:8px 4px;}
+    textarea{width:100%;height:400px;background:#1a1a1a;color:#0f0;border:1px solid #333;padding:12px;font-family:monospace;font-size:12px;border-radius:6px;}
+    .status{color:#00C2CB;margin:10px 0;}
+  </style>
+</head>
+<body>
+<h2 style="color:#00C2CB;">📰 News Sitemap Generator</h2>
+<p style="color:#aaa;margin-bottom:16px;">Generates Google News sitemap XML from your Firebase articles. Download and upload to your Netlify root.</p>
+<button onclick="generate()">⚡ Generate News Sitemap</button>
+<button onclick="copyXML()">📋 Copy XML</button>
+<p class="status" id="status">Click Generate to start...</p>
+<textarea id="output" readonly placeholder="XML will appear here..."></textarea>
+
+<script>
+firebase.initializeApp({apiKey:'AIzaSyDpB7BMUeGidRxVDP_5S9Xru4eVmdVYSWI',authDomain:'startupdecoding-7b53a.firebaseapp.com',projectId:'startupdecoding-7b53a'});
+const db=firebase.firestore();
+
+async function generate(){
+  document.getElementById('status').textContent='Fetching articles from Firebase...';
+  try{
+    var snap=await db.collection('articles').where('status','==','published').orderBy('created_at','desc').limit(1000).get();
+    var articles=[];
+    snap.forEach(function(doc){articles.push(Object.assign({id:doc.id},doc.data()));});
+    document.getElementById('status').textContent='Found '+articles.length+' published articles. Generating XML...';
+
+    // News sitemap only includes articles from last 2 days for Google News
+    // But we include all for general sitemap
+    var now=new Date();
+    var twoDaysAgo=new Date(now-2*24*60*60*1000);
+
+    var newsItems=articles.map(function(a){
+      var pubDate=a.created_at?new Date(a.created_at):new Date();
+      var isoDate=pubDate.toISOString();
+      var url='https://startupdecoding.in/article.html?id='+a.id;
+      var title=(a.title||'Untitled').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+      var cat=(a.category||'Startup News').replace(/&/g,'&amp;');
+      return '<url>\n'
+        +'  <loc>'+url+'</loc>\n'
+        +'  <news:news>\n'
+        +'    <news:publication>\n'
+        +'      <news:name>Startup Decoding</news:name>\n'
+        +'      <news:language>en</news:language>\n'
+        +'    </news:publication>\n'
+        +'    <news:publication_date>'+isoDate+'</news:publication_date>\n'
+        +'    <news:title>'+title+'</news:title>\n'
+        +'    <news:keywords>'+cat+', India startup, startup news</news:keywords>\n'
+        +'  </news:news>\n'
+        +'  <lastmod>'+isoDate+'</lastmod>\n'
+        +'  <changefreq>never</changefreq>\n'
+        +'  <priority>0.8</priority>\n'
+        +'</url>';
+    }).join('\n');
+
+    var xml='<?xml version="1.0" encoding="UTF-8"?>\n'
+      +'<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"\n'
+      +'        xmlns:news="http://www.google.com/schemas/sitemap-news/0.9"\n'
+      +'        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">\n\n'
+      +'<!-- Static pages -->\n'
+      +'<url><loc>https://startupdecoding.in/</loc><changefreq>daily</changefreq><priority>1.0</priority></url>\n'
+      +'<url><loc>https://startupdecoding.in/articles.html</loc><changefreq>daily</changefreq><priority>0.9</priority></url>\n'
+      +'<url><loc>https://startupdecoding.in/about.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>\n'
+      +'<url><loc>https://startupdecoding.in/privacy-policy.html</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>\n'
+      +'<url><loc>https://startupdecoding.in/terms.html</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>\n\n'
+      +'<!-- Articles ('+articles.length+') -->\n'
+      +newsItems+'\n\n'
+      +'</urlset>';
+
+    document.getElementById('output').value=xml;
+    document.getElementById('status').textContent='✅ Done! '+articles.length+' articles included. Copy XML and save as news-sitemap.xml in your Netlify root.';
+  }catch(e){
+    document.getElementById('status').textContent='❌ Error: '+e.message;
+  }
+}
+
+function copyXML(){
+  var ta=document.getElementById('output');
+  ta.select();
+  document.execCommand('copy');
+  document.getElementById('status').textContent='✅ Copied to clipboard!';
+}
+</script>
+</body>
+</html>
