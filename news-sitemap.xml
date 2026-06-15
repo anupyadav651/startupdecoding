@@ -1,0 +1,360 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:news="http://www.google.com/schemas/sitemap-news/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+
+<!-- Static pages -->
+<url><loc>https://startupdecoding.in/</loc><changefreq>daily</changefreq><priority>1.0</priority></url>
+<url><loc>https://startupdecoding.in/articles.html</loc><changefreq>daily</changefreq><priority>0.9</priority></url>
+<url><loc>https://startupdecoding.in/about.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+<url><loc>https://startupdecoding.in/privacy-policy.html</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
+<url><loc>https://startupdecoding.in/terms.html</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
+
+<!-- Articles (23) -->
+<url>
+  <loc>https://startupdecoding.in/article.html?id=ujKWxN7bIEP8WTKN7aGX</loc>
+  <news:news>
+    <news:publication>
+      <news:name>Startup Decoding</news:name>
+      <news:language>en</news:language>
+    </news:publication>
+    <news:publication_date>2026-06-14T15:53:03.022Z</news:publication_date>
+    <news:title>BazaarNow Raises ₹72 Crore Led by Peak XV — Quick Commerce Is Not Done Growing</news:title>
+    <news:keywords>Startup News, India startup, startup news</news:keywords>
+  </news:news>
+  <lastmod>2026-06-14T15:53:03.022Z</lastmod>
+  <changefreq>never</changefreq>
+  <priority>0.8</priority>
+</url>
+<url>
+  <loc>https://startupdecoding.in/article.html?id=S2oRyhsXTNObBVwIm3ce</loc>
+  <news:news>
+    <news:publication>
+      <news:name>Startup Decoding</news:name>
+      <news:language>en</news:language>
+    </news:publication>
+    <news:publication_date>2026-06-14T15:52:07.311Z</news:publication_date>
+    <news:title>Zepto Files Updated DRHP — India's Quick Commerce Giant Is Ready for Dalal Street</news:title>
+    <news:keywords>Startup News, India startup, startup news</news:keywords>
+  </news:news>
+  <lastmod>2026-06-14T15:52:07.311Z</lastmod>
+  <changefreq>never</changefreq>
+  <priority>0.8</priority>
+</url>
+<url>
+  <loc>https://startupdecoding.in/article.html?id=yyQkXY6zs81jMNwXIPu6</loc>
+  <news:news>
+    <news:publication>
+      <news:name>Startup Decoding</news:name>
+      <news:language>en</news:language>
+    </news:publication>
+    <news:publication_date>2026-06-14T15:47:52.456Z</news:publication_date>
+    <news:title>Richa Kar Broke a Taboo — And Built a ₹500 Crore Business Doing It</news:title>
+    <news:keywords>Her Story, India startup, startup news</news:keywords>
+  </news:news>
+  <lastmod>2026-06-14T15:47:52.456Z</lastmod>
+  <changefreq>never</changefreq>
+  <priority>0.8</priority>
+</url>
+<url>
+  <loc>https://startupdecoding.in/article.html?id=qjh1QfZSC8C8FajSr5dz</loc>
+  <news:news>
+    <news:publication>
+      <news:name>Startup Decoding</news:name>
+      <news:language>en</news:language>
+    </news:publication>
+    <news:publication_date>2026-06-14T15:45:24.909Z</news:publication_date>
+    <news:title>Vineeta Singh Built SUGAR Cosmetics by Saying No to a ₹1 Crore Job — And Won</news:title>
+    <news:keywords>Her Story, India startup, startup news</news:keywords>
+  </news:news>
+  <lastmod>2026-06-14T15:45:24.909Z</lastmod>
+  <changefreq>never</changefreq>
+  <priority>0.8</priority>
+</url>
+<url>
+  <loc>https://startupdecoding.in/article.html?id=SG7Mk17XRVZlnT9eunfm</loc>
+  <news:news>
+    <news:publication>
+      <news:name>Startup Decoding</news:name>
+      <news:language>en</news:language>
+    </news:publication>
+    <news:publication_date>2026-06-14T15:39:43.116Z</news:publication_date>
+    <news:title>DPIIT Recognition — The First Step Every Indian Startup Must Take</news:title>
+    <news:keywords>Gov Schemes, India startup, startup news</news:keywords>
+  </news:news>
+  <lastmod>2026-06-14T15:39:43.116Z</lastmod>
+  <changefreq>never</changefreq>
+  <priority>0.8</priority>
+</url>
+<url>
+  <loc>https://startupdecoding.in/article.html?id=fv0SXnqm2VSvlkUPKoAD</loc>
+  <news:news>
+    <news:publication>
+      <news:name>Startup Decoding</news:name>
+      <news:language>en</news:language>
+    </news:publication>
+    <news:publication_date>2026-06-14T15:38:40.745Z</news:publication_date>
+    <news:title>Atal Innovation Mission — How India Is Building a Culture of Innovation from School Onwards</news:title>
+    <news:keywords>Gov Schemes, India startup, startup news</news:keywords>
+  </news:news>
+  <lastmod>2026-06-14T15:38:40.745Z</lastmod>
+  <changefreq>never</changefreq>
+  <priority>0.8</priority>
+</url>
+<url>
+  <loc>https://startupdecoding.in/article.html?id=FqXOcxJkMdQoIvxFZNrq</loc>
+  <news:news>
+    <news:publication>
+      <news:name>Startup Decoding</news:name>
+      <news:language>en</news:language>
+    </news:publication>
+    <news:publication_date>2026-06-14T15:36:45.294Z</news:publication_date>
+    <news:title>Credit Guarantee Scheme for Startups — Get Loans Without the Collateral Headache</news:title>
+    <news:keywords>Gov Schemes, India startup, startup news</news:keywords>
+  </news:news>
+  <lastmod>2026-06-14T15:36:45.294Z</lastmod>
+  <changefreq>never</changefreq>
+  <priority>0.8</priority>
+</url>
+<url>
+  <loc>https://startupdecoding.in/article.html?id=s7uzaTkc0HKYSNr8X4Sw</loc>
+  <news:news>
+    <news:publication>
+      <news:name>Startup Decoding</news:name>
+      <news:language>en</news:language>
+    </news:publication>
+    <news:publication_date>2026-06-14T15:35:14.585Z</news:publication_date>
+    <news:title>Startup India Fund of Funds 2.0 — The Government Just Put ₹10,000 Crore on the Table</news:title>
+    <news:keywords>Gov Schemes, India startup, startup news</news:keywords>
+  </news:news>
+  <lastmod>2026-06-14T15:35:14.585Z</lastmod>
+  <changefreq>never</changefreq>
+  <priority>0.8</priority>
+</url>
+<url>
+  <loc>https://startupdecoding.in/article.html?id=7EdGruqRU5WnUUraDR2U</loc>
+  <news:news>
+    <news:publication>
+      <news:name>Startup Decoding</news:name>
+      <news:language>en</news:language>
+    </news:publication>
+    <news:publication_date>2026-06-14T14:50:44.670Z</news:publication_date>
+    <news:title>Razorpay's 58,000 Crore Journey — How Two IIT Roorkee Friends Solved India's Payment Problem for Businesses</news:title>
+    <news:keywords>Tech &amp; Innovation, India startup, startup news</news:keywords>
+  </news:news>
+  <lastmod>2026-06-14T14:50:44.670Z</lastmod>
+  <changefreq>never</changefreq>
+  <priority>0.8</priority>
+</url>
+<url>
+  <loc>https://startupdecoding.in/article.html?id=11lHQEzqGFHMzEcUm6hL</loc>
+  <news:news>
+    <news:publication>
+      <news:name>Startup Decoding</news:name>
+      <news:language>en</news:language>
+    </news:publication>
+    <news:publication_date>2026-06-14T14:47:49.071Z</news:publication_date>
+    <news:title>Ola Electric's IPO Story — Bhavish Aggarwal's Bold 50,000 Crore Bet on Making India the EV Capital of the World</news:title>
+    <news:keywords>Tech &amp; Innovation, India startup, startup news</news:keywords>
+  </news:news>
+  <lastmod>2026-06-14T14:47:49.071Z</lastmod>
+  <changefreq>never</changefreq>
+  <priority>0.8</priority>
+</url>
+<url>
+  <loc>https://startupdecoding.in/article.html?id=yDtu6lAAxY76vgzgUKEm</loc>
+  <news:news>
+    <news:publication>
+      <news:name>Startup Decoding</news:name>
+      <news:language>en</news:language>
+    </news:publication>
+    <news:publication_date>2026-06-14T14:44:21.311Z</news:publication_date>
+    <news:title>Dream11 — How Harsh Jain Built India's Most Downloaded Sports App and a 65,000 Crore Empire From a College Idea **Category:** Startup Stories</news:title>
+    <news:keywords>Startup Stories, India startup, startup news</news:keywords>
+  </news:news>
+  <lastmod>2026-06-14T14:44:21.311Z</lastmod>
+  <changefreq>never</changefreq>
+  <priority>0.8</priority>
+</url>
+<url>
+  <loc>https://startupdecoding.in/article.html?id=vfP72w604AtnvlszVfzm</loc>
+  <news:news>
+    <news:publication>
+      <news:name>Startup Decoding</news:name>
+      <news:language>en</news:language>
+    </news:publication>
+    <news:publication_date>2026-06-14T14:40:00.690Z</news:publication_date>
+    <news:title>Startup India Seed Fund — The Government Is Giving 20 Lakh Grants to Early Stage Startups. Here's How to Apply</news:title>
+    <news:keywords>Gov Schemes, India startup, startup news</news:keywords>
+  </news:news>
+  <lastmod>2026-06-14T14:40:00.690Z</lastmod>
+  <changefreq>never</changefreq>
+  <priority>0.8</priority>
+</url>
+<url>
+  <loc>https://startupdecoding.in/article.html?id=rhKoqmh3NODVJiOI83Lh</loc>
+  <news:news>
+    <news:publication>
+      <news:name>Startup Decoding</news:name>
+      <news:language>en</news:language>
+    </news:publication>
+    <news:publication_date>2026-06-14T14:35:07.973Z</news:publication_date>
+    <news:title>MUDRA Yojana Has Given 27 Lakh Crore to Small Businesses. Here Is Your Complete Guide to Getting a Loan</news:title>
+    <news:keywords>Gov Schemes, India startup, startup news</news:keywords>
+  </news:news>
+  <lastmod>2026-06-14T14:35:07.973Z</lastmod>
+  <changefreq>never</changefreq>
+  <priority>0.8</priority>
+</url>
+<url>
+  <loc>https://startupdecoding.in/article.html?id=30TZ4ryOgo2R02t2E61L</loc>
+  <news:news>
+    <news:publication>
+      <news:name>Startup Decoding</news:name>
+      <news:language>en</news:language>
+    </news:publication>
+    <news:publication_date>2026-06-03T19:46:02.887Z</news:publication_date>
+    <news:title>Zerodha's 70,000 Crore Secret — How Nithin Kamath Built India's Biggest Stockbroker Without a Single Rupee of Venture Capital</news:title>
+    <news:keywords>Startup Stories, India startup, startup news</news:keywords>
+  </news:news>
+  <lastmod>2026-06-03T19:46:02.887Z</lastmod>
+  <changefreq>never</changefreq>
+  <priority>0.8</priority>
+</url>
+<url>
+  <loc>https://startupdecoding.in/article.html?id=twvOXj0UAQI31xXh1KJE</loc>
+  <news:news>
+    <news:publication>
+      <news:name>Startup Decoding</news:name>
+      <news:language>en</news:language>
+    </news:publication>
+    <news:publication_date>2026-06-03T19:43:47.120Z</news:publication_date>
+    <news:title>How Physics Wallah Became India's Most Affordable EdTech Unicorn — Alakh Pandey's 9,000 Crore Mission</news:title>
+    <news:keywords>Startup Stories, India startup, startup news</news:keywords>
+  </news:news>
+  <lastmod>2026-06-03T19:43:47.120Z</lastmod>
+  <changefreq>never</changefreq>
+  <priority>0.8</priority>
+</url>
+<url>
+  <loc>https://startupdecoding.in/article.html?id=eKHOhHeSJUHwHncOImRY</loc>
+  <news:news>
+    <news:publication>
+      <news:name>Startup Decoding</news:name>
+      <news:language>en</news:language>
+    </news:publication>
+    <news:publication_date>2026-06-03T19:41:31.172Z</news:publication_date>
+    <news:title>OYO's 35,000 Crore Comeback — Ritesh Agarwal's Lesson in Resilience That Every Founder Needs to Hear</news:title>
+    <news:keywords>Startup Stories, India startup, startup news</news:keywords>
+  </news:news>
+  <lastmod>2026-06-03T19:41:31.172Z</lastmod>
+  <changefreq>never</changefreq>
+  <priority>0.8</priority>
+</url>
+<url>
+  <loc>https://startupdecoding.in/article.html?id=IzWQInXkVLcydhE2PTtk</loc>
+  <news:news>
+    <news:publication>
+      <news:name>Startup Decoding</news:name>
+      <news:language>en</news:language>
+    </news:publication>
+    <news:publication_date>2026-06-03T19:39:47.260Z</news:publication_date>
+    <news:title>Lenskart's 33,000 Crore Disruption — Peyush Bansal Fixed an Industry Nobody Thought Was Broken</news:title>
+    <news:keywords>Tech &amp; Innovation, India startup, startup news</news:keywords>
+  </news:news>
+  <lastmod>2026-06-03T19:39:47.260Z</lastmod>
+  <changefreq>never</changefreq>
+  <priority>0.8</priority>
+</url>
+<url>
+  <loc>https://startupdecoding.in/article.html?id=E6keAFbspxC5PsgqbHtX</loc>
+  <news:news>
+    <news:publication>
+      <news:name>Startup Decoding</news:name>
+      <news:language>en</news:language>
+    </news:publication>
+    <news:publication_date>2026-06-03T19:38:33.006Z</news:publication_date>
+    <news:title>Nykaa — The Story of Falguni Nayar, a 49-Year-Old Banker Who Became India's Richest Self-Made Woman</news:title>
+    <news:keywords>Her Story, India startup, startup news</news:keywords>
+  </news:news>
+  <lastmod>2026-06-03T19:38:33.006Z</lastmod>
+  <changefreq>never</changefreq>
+  <priority>0.8</priority>
+</url>
+<url>
+  <loc>https://startupdecoding.in/article.html?id=XMyzYSRDQjy3AspafqBh</loc>
+  <news:news>
+    <news:publication>
+      <news:name>Startup Decoding</news:name>
+      <news:language>en</news:language>
+    </news:publication>
+    <news:publication_date>2026-06-03T19:36:13.049Z</news:publication_date>
+    <news:title>PhonePe's 14,500 Crore Story — How Sameer Nigam Saw What Everyone Else Missed in UPI.</news:title>
+    <news:keywords>Startup News, India startup, startup news</news:keywords>
+  </news:news>
+  <lastmod>2026-06-03T19:36:13.049Z</lastmod>
+  <changefreq>never</changefreq>
+  <priority>0.8</priority>
+</url>
+<url>
+  <loc>https://startupdecoding.in/article.html?id=bwSzSf1vOfkAT5wxQKTS</loc>
+  <news:news>
+    <news:publication>
+      <news:name>Startup Decoding</news:name>
+      <news:language>en</news:language>
+    </news:publication>
+    <news:publication_date>2026-06-03T19:29:05.506Z</news:publication_date>
+    <news:title>Meesho's 32,000 Crore Bet on India's Small Towns — Why Everyone Else Got Bharat Wrong.</news:title>
+    <news:keywords>Startup News, India startup, startup news</news:keywords>
+  </news:news>
+  <lastmod>2026-06-03T19:29:05.506Z</lastmod>
+  <changefreq>never</changefreq>
+  <priority>0.8</priority>
+</url>
+<url>
+  <loc>https://startupdecoding.in/article.html?id=Bn5aK4UoJtlHEX9t1nQa</loc>
+  <news:news>
+    <news:publication>
+      <news:name>Startup Decoding</news:name>
+      <news:language>en</news:language>
+    </news:publication>
+    <news:publication_date>2026-06-03T19:25:54.130Z</news:publication_date>
+    <news:title>Mamaearth — How Varun and Ghazal Alagh Turned a Baby Product Problem into a 10,000 Crore Listed Company</news:title>
+    <news:keywords>Startup Stories, India startup, startup news</news:keywords>
+  </news:news>
+  <lastmod>2026-06-03T19:25:54.130Z</lastmod>
+  <changefreq>never</changefreq>
+  <priority>0.8</priority>
+</url>
+<url>
+  <loc>https://startupdecoding.in/article.html?id=Y72FQyCAjiDBngIyYnj6</loc>
+  <news:news>
+    <news:publication>
+      <news:name>Startup Decoding</news:name>
+      <news:language>en</news:language>
+    </news:publication>
+    <news:publication_date>2026-06-03T19:23:20.831Z</news:publication_date>
+    <news:title>CRED's Unusual Strategy — How Kunal Shah Built a 20,000 Crore Startup by Rejecting Millions of Indians.</news:title>
+    <news:keywords>Startup Stories, India startup, startup news</news:keywords>
+  </news:news>
+  <lastmod>2026-06-03T19:23:20.831Z</lastmod>
+  <changefreq>never</changefreq>
+  <priority>0.8</priority>
+</url>
+<url>
+  <loc>https://startupdecoding.in/article.html?id=pMxcrFNRBgLgkC9a8SGG</loc>
+  <news:news>
+    <news:publication>
+      <news:name>Startup Decoding</news:name>
+      <news:language>en</news:language>
+    </news:publication>
+    <news:publication_date>2026-06-03T19:21:47.086Z</news:publication_date>
+    <news:title>How Two Teenagers Built Zepto — India's Fastest Grocery Delivery Startup Now Worth $7 Billion</news:title>
+    <news:keywords>Startup Stories, India startup, startup news</news:keywords>
+  </news:news>
+  <lastmod>2026-06-03T19:21:47.086Z</lastmod>
+  <changefreq>never</changefreq>
+  <priority>0.8</priority>
+</url>
+
+</urlset>
