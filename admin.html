@@ -562,7 +562,7 @@ const SEC={
 // ═══ SECURE LOGIN SYSTEM ═══
 // Passwords stored as hashes only — never plain text in code
 const USERS=[
-  {username:'founder',hash:SEC.hash('decoding@2026'),name:'Founder',role:'founder',access:['dashboard','write','articles','topstories','requests','searches','views','users','data','about','settings']},
+  {username:'founder',hash:SEC.hash('decoding@2026'),name:'Founder',role:'founder',access:['dashboard','write','articles','topstories','requests','contacts','searches','views','users','data','about','settings']},
   {username:'editor',hash:SEC.hash('edit123'),name:'Editor',role:'editor',access:['dashboard','write','articles']},
   {username:'writer',hash:SEC.hash('write123'),name:'Writer',role:'writer',access:['dashboard','write']}
 ];
@@ -694,8 +694,9 @@ function setupUI(){
   ALL_PAGES.forEach(pg=>{
     const nav=document.getElementById('n-'+pg);if(!nav)return;
     const founderOnly=['data','users'];
-    if(founderOnly.includes(pg)){nav.style.display=role==='founder'?'flex':'none';}
-    else{nav.style.display=(role==='founder'||access.includes(pg))?'flex':'none';}
+    if(role==='founder'){nav.style.display='flex';}
+    else if(founderOnly.includes(pg)){nav.style.display='none';}
+    else{nav.style.display=access.includes(pg)?'flex':'none';}
   });
   // Always show Edit About Us for founder
   var navAbout=document.getElementById('n-about');
