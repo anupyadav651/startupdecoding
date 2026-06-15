@@ -19,6 +19,12 @@
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZDSH0FZJR3"></script>
   <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-ZDSH0FZJR3');</script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  <script>
+    firebase.initializeApp({apiKey:'AIzaSyDpB7BMUeGidRxVDP_5S9Xru4eVmdVYSWI',authDomain:'startupdecoding-7b53a.firebaseapp.com',projectId:'startupdecoding-7b53a'});
+    const fsdb=firebase.firestore();
+  </script>
   <style>
     :root{--blue:#0A2463;--cyan:#00C2CB;--red:#E63946;--light:#F8F9FB;--white:#ffffff;--gray:#6B7280;--dark:#111827;--border:#E5E7EB;}
     *{margin:0;padding:0;box-sizing:border-box;}
@@ -347,8 +353,7 @@
     }
   }
 
-  // ── Supabase helper ──
-  // Firebase is loaded via scripts above
+  // Firebase initialized in head
 
   function applyAbout(about){
     if(!about||!Object.keys(about).length)return;
