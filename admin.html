@@ -25,7 +25,7 @@
     .lockout-msg{color:#f59e0b;font-size:13px;text-align:center;margin-top:12px;display:none;background:#451a03;padding:10px;border-radius:6px;}
     .admin-wrap{display:none;}
     .admin-layout{display:flex;min-height:100vh;}
-    .sidebar{width:240px;background:#1e293b;border-right:1px solid #334155;padding:24px 0 80px;flex-shrink:0;position:fixed;height:100vh;overflow-y:auto;}
+    .sidebar{width:240px;background:#1e293b;border-right:1px solid #334155;padding:24px 0 24px;flex-shrink:0;position:fixed;height:100vh;overflow-y:auto;display:flex;flex-direction:column;}
     .sidebar-logo{padding:0 20px 20px;border-bottom:1px solid #334155;margin-bottom:8px;}
     .sidebar-logo .s1{color:white;font-size:16px;font-weight:600;}
     .sidebar-logo .s2{color:#00C2CB;font-size:16px;font-weight:700;}
@@ -39,7 +39,7 @@
     .nav-item:hover{background:#0f172a;color:#f1f5f9;}
     .nav-item.active{background:#0f172a;color:#00C2CB;border-left-color:#00C2CB;}
     .nav-item .icon{width:20px;text-align:center;}
-    .sidebar-footer{position:absolute;bottom:0;width:240px;padding:16px 20px;border-top:1px solid #334155;background:#1e293b;}
+    .sidebar-footer{margin-top:auto;width:100%;padding:16px 20px 0;border-top:1px solid #334155;background:#1e293b;}
     .session-info{font-size:11px;color:#475569;margin-bottom:10px;}
     .logout-btn{width:100%;background:#0f172a;color:#ef4444;border:1px solid #334155;padding:9px;border-radius:7px;font-size:13px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s;}
     .logout-btn:hover{background:#ef4444;color:white;}
@@ -707,7 +707,6 @@ function go(page,el){
   const allowed=role==='founder'||(page==='about'?false:(!founderOnly.includes(page)&&(access.includes(page)||page==='dashboard')));
   // about is always allowed for founder
   const finalAllowed=page==='about'?role==='founder':allowed;
-  console.log('go()',page,'role:',role,'allowed:',finalAllowed);
   if(!finalAllowed){showDenied();return;}
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
