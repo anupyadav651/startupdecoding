@@ -1251,26 +1251,33 @@ function previewPhoto(who){
   }
 }
 
-function loadAboutSettings(){
-  const s=JSON.parse(localStorage.getItem('sd_about_settings')||'{}');
-  if(s.stories)document.getElementById('ab-stories').value=s.stories;
-  if(s.readers)document.getElementById('ab-readers').value=s.readers;
-  if(s.startups)document.getElementById('ab-startups').value=s.startups;
-  if(s.cities)document.getElementById('ab-cities').value=s.cities;
-  if(s.mission)document.getElementById('ab-mission').value=s.mission;
-  if(s.cf1photo){document.getElementById('cf1-photo').value=s.cf1photo;previewPhoto('cf1');}
-  if(s.cf2photo){document.getElementById('cf2-photo').value=s.cf2photo;previewPhoto('cf2');}
-  if(s.cf1name)document.getElementById('cf1-name').value=s.cf1name;
-  if(s.cf1role)document.getElementById('cf1-role').value=s.cf1role;
-  if(s.cf1bio)document.getElementById('cf1-bio').value=s.cf1bio;
-  if(s.cf2name)document.getElementById('cf2-name').value=s.cf2name;
-  if(s.cf2role)document.getElementById('cf2-role').value=s.cf2role;
-  if(s.cf2bio)document.getElementById('cf2-bio').value=s.cf2bio;
-  if(s.email)document.getElementById('ab-email').value=s.email;
-  if(s.partner)document.getElementById('ab-partner').value=s.partner;
+async function loadAboutSettings(){
+  try{
+    const snap=await fsdb.collection('site_settings').where('key','==','about_settings').get();
+    var s={};
+    if(!snap.empty){
+      const raw=snap.docs[0].data().value;
+      s=typeof raw==='string'?JSON.parse(raw):raw;
+    }
+    if(s.stories)document.getElementById('ab-stories').value=s.stories;
+    if(s.readers)document.getElementById('ab-readers').value=s.readers;
+    if(s.startups)document.getElementById('ab-startups').value=s.startups;
+    if(s.cities)document.getElementById('ab-cities').value=s.cities;
+    if(s.mission)document.getElementById('ab-mission').value=s.mission;
+    if(s.cf1photo){document.getElementById('cf1-photo').value=s.cf1photo;previewPhoto('cf1');}
+    if(s.cf2photo){document.getElementById('cf2-photo').value=s.cf2photo;previewPhoto('cf2');}
+    if(s.cf1name)document.getElementById('cf1-name').value=s.cf1name;
+    if(s.cf1role)document.getElementById('cf1-role').value=s.cf1role;
+    if(s.cf1bio)document.getElementById('cf1-bio').value=s.cf1bio;
+    if(s.cf2name)document.getElementById('cf2-name').value=s.cf2name;
+    if(s.cf2role)document.getElementById('cf2-role').value=s.cf2role;
+    if(s.cf2bio)document.getElementById('cf2-bio').value=s.cf2bio;
+    if(s.email)document.getElementById('ab-email').value=s.email;
+    if(s.partner)document.getElementById('ab-partner').value=s.partner;
+  }catch(e){console.error('loadAboutSettings error:',e);}
 }
 
-function saveAboutSettings(){
+async function saveAboutSettings(){
   const s={
     stories:document.getElementById('ab-stories').value,
     readers:document.getElementById('ab-readers').value,
@@ -1289,15 +1296,28 @@ function saveAboutSettings(){
     partner:document.getElementById('ab-partner').value,
     updated:new Date().toISOString()
   };
-  localStorage.setItem('sd_about_settings',JSON.stringify(s));
-  // Save to about_settings key
-  db('site_settings',{method:'POST',prefer:'return=minimal',body:JSON.stringify({key:'about_settings',value:JSON.stringify(s)})}).catch(()=>{});
-  // Also sync stats to 'settings' key so homepage picks them up too
-  const currentSettings=JSON.parse(localStorage.getItem('sd_settings')||'{}');
-  const mergedSettings={...currentSettings,stories:s.stories,readers:s.readers,startups:s.startups,cities:s.cities};
-  localStorage.setItem('sd_settings',JSON.stringify(mergedSettings));
-  db('site_settings',{method:'POST',prefer:'return=minimal',body:JSON.stringify({key:'settings',value:JSON.stringify(mergedSettings)})}).catch(()=>{});
-  toast('✅ About Us settings saved! Stats synced to homepage too.');
+  try{
+    // Save about_settings to Firebase
+    const snap=await fsdb.collection('site_settings').where('key','==','about_settings').get();
+    if(!snap.empty){
+      await fsdb.collection('site_settings').doc(snap.docs[0].id).update({key:'about_settings',value:JSON.stringify(s),updated_at:new Date().toISOString()});
+    }else{
+      await fsdb.collection('site_settings').add({key:'about_settings',value:JSON.stringify(s),created_at:new Date().toISOString()});
+    }
+    // Also sync stats to 'settings' key so homepage picks them up
+    const settingsSnap=await fsdb.collection('site_settings').where('key','==','settings').get();
+    const currentSettings=settingsSnap.empty?{}:JSON.parse(settingsSnap.docs[0].data().value||'{}');
+    const mergedSettings={...currentSettings,stories:s.stories,readers:s.readers,startups:s.startups,cities:s.cities};
+    if(!settingsSnap.empty){
+      await fsdb.collection('site_settings').doc(settingsSnap.docs[0].id).update({value:JSON.stringify(mergedSettings),updated_at:new Date().toISOString()});
+    }else{
+      await fsdb.collection('site_settings').add({key:'settings',value:JSON.stringify(mergedSettings),created_at:new Date().toISOString()});
+    }
+    toast('✅ About Us settings saved! Stats synced to homepage too.');
+  }catch(e){
+    toast('❌ Error saving: '+e.message);
+    console.error('saveAboutSettings error:',e);
+  }
 }
 
 // ═══════════════ SITE SETTINGS ═══════════════
