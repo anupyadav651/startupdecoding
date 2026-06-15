@@ -323,18 +323,28 @@
   }
 
   // ── Contact Form ──
-  function sendMessage() {
+  async function sendMessage() {
     var name = document.getElementById('c-name').value.trim();
     var email = document.getElementById('c-email').value.trim();
+    var subject = document.getElementById('c-subject').value;
     var message = document.getElementById('c-message').value.trim();
     if (!name || !email || !message) { alert('Please fill in your name, email and message!'); return; }
-    var messages = JSON.parse(localStorage.getItem('sd_contact') || '[]');
-    messages.push({ name: name, email: email, subject: document.getElementById('c-subject').value, message: message, date: new Date().toISOString() });
-    localStorage.setItem('sd_contact', JSON.stringify(messages));
-    document.getElementById('successMsg').style.display = 'block';
-    document.getElementById('c-name').value = '';
-    document.getElementById('c-email').value = '';
-    document.getElementById('c-message').value = '';
+    var btn = document.querySelector('.submit-btn');
+    if(btn){btn.textContent='Sending...';btn.disabled=true;}
+    try{
+      await fsdb.collection('contact_messages').add({
+        name:name, email:email, subject:subject, message:message,
+        status:'unread', created_at:new Date().toISOString()
+      });
+      document.getElementById('successMsg').style.display = 'block';
+      document.getElementById('c-name').value = '';
+      document.getElementById('c-email').value = '';
+      document.getElementById('c-message').value = '';
+      if(btn){btn.textContent='Send Message 🚀';btn.disabled=false;}
+    }catch(e){
+      alert('Something went wrong. Please try again.');
+      if(btn){btn.textContent='Send Message 🚀';btn.disabled=false;}
+    }
   }
 
   // ── Supabase helper ──
