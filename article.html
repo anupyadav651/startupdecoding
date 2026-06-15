@@ -26,6 +26,9 @@
   {"@context":"https://schema.org","@type":"Article","publisher":{"@type":"Organization","name":"Startup Decoding","url":"https://startupdecoding.in","logo":"https://startupdecoding.in/favicon-32x32.png"}}
   </script>
   <link rel="icon" type="image/x-icon" href="/favicon.ico"/>
+  <!-- Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZDSH0FZJR3"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-ZDSH0FZJR3',{send_page_view:false});</script>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
   <style>
@@ -262,6 +265,17 @@ function renderArticle(a){
   safeMeta('#tw-image',imgUrl,'content');
   safeMeta('link[rel="canonical"]',pageUrl,'href');
   try{var sc=document.getElementById('article-schema');if(sc)sc.textContent=JSON.stringify({'@context':'https://schema.org','@type':'Article','headline':a.title,'author':{'@type':'Person','name':a.author||'Startup Decoding'},'publisher':{'@type':'Organization','name':'Startup Decoding'},'datePublished':a.created_at||new Date().toISOString()});}catch(e){}
+
+  // Fire GA page_view with article title & URL
+  try{
+    if(typeof gtag==='function'){
+      gtag('event','page_view',{
+        page_title:a.title+' — Startup Decoding',
+        page_location:pageUrl,
+        page_path:'/article.html?id='+a.id
+      });
+    }
+  }catch(e){}
 }
 
 
