@@ -703,6 +703,7 @@ function go(page,el){
   const role=currentUser?.role,access=currentUser?.access||[];
   const founderOnly=['data','about','users'];
   const allowed=role==='founder'||(!founderOnly.includes(page)&&(access.includes(page)||page==='dashboard'));
+  console.log('go()',page,'role:',role,'allowed:',allowed);
   if(!allowed){showDenied();return;}
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
