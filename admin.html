@@ -369,15 +369,17 @@
     <!-- DATA & SUBSCRIBERS (Founder only) -->
     <div class="page" id="page-data">
       <div class="page-title">📊 Data & Subscribers</div>
-      <div class="page-sub">All Get Featured requests and newsletter subscribers in one place.</div>
-      <div class="stat-cards" style="grid-template-columns:repeat(3,1fr);">
+      <div class="page-sub">All Get Featured requests, newsletter subscribers and contact messages in one place.</div>
+      <div class="stat-cards" style="grid-template-columns:repeat(4,1fr);">
         <div class="stat-card"><div class="lbl">Featured Requests</div><div class="val" id="d-feat-count">—</div><div class="sub">Total submissions</div></div>
         <div class="stat-card"><div class="lbl">Pending Review</div><div class="val" id="d-pend-count" style="color:#eab308;">—</div><div class="sub">Awaiting action</div></div>
         <div class="stat-card"><div class="lbl">Subscribers</div><div class="val" id="d-sub-count">—</div><div class="sub">Newsletter + signups</div></div>
+        <div class="stat-card"><div class="lbl">Contact Messages</div><div class="val" id="d-contact-count" style="color:#f59e0b;">—</div><div class="sub">Unread messages</div></div>
       </div>
       <div class="data-tabs">
         <button class="data-tab active" onclick="switchDataTab('featured',this)">🚀 Get Featured</button>
         <button class="data-tab" onclick="switchDataTab('subscribers',this)">📧 Subscribers</button>
+        <button class="data-tab" onclick="switchDataTab('contacts',this)">📩 Contact Messages</button>
       </div>
       <div id="data-featured">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
@@ -392,6 +394,14 @@
           <button class="export-btn-sm" onclick="exportCSV('subscribers')">⬇ Export CSV</button>
         </div>
         <div class="data-table-wrap" id="subscribers-table"><div class="empty"><div class="em">⏳</div><p>Loading...</p></div></div>
+      </div>
+      <div id="data-contacts" style="display:none;">
+        <div style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;">
+          <button class="export-btn-sm" onclick="loadContactsData('all')" id="dc-all" style="background:#00C2CB;color:white;border:none;">All</button>
+          <button class="export-btn-sm" onclick="loadContactsData('unread')" id="dc-unread">Unread</button>
+          <button class="export-btn-sm" onclick="loadContactsData('read')" id="dc-read">Read</button>
+        </div>
+        <div id="contacts-data-list"><div class="empty"><div class="em">⏳</div><p>Loading...</p></div></div>
       </div>
     </div>
 
@@ -1270,6 +1280,65 @@ async function loadDataPage(){
   }catch(e){
     document.getElementById('subscribers-table').innerHTML='<div class="empty"><div class="em">📭</div><p>No subscribers yet.</p></div>';
   }
+  // Contact Messages unread count
+  try{
+    const cSnap=await fsdb.collection('contact_messages').get();
+    const allContacts=cSnap.docs.map(d=>({...d.data(),id:d.id}));
+    const unread=allContacts.filter(m=>m.status==='unread').length;
+    document.getElementById('d-contact-count').textContent=unread;
+  }catch(e){document.getElementById('d-contact-count').textContent='0';}
+}
+
+var currentContactFilter='all';
+async function loadContactsData(filter){
+  currentContactFilter=filter||'all';
+  ['all','unread','read'].forEach(function(f){
+    var btn=document.getElementById('dc-'+f);
+    if(btn){btn.style.background=filter===f?'#00C2CB':'transparent';btn.style.color=filter===f?'white':'#94a3b8';btn.style.border=filter===f?'none':'1.5px solid #334155';}
+  });
+  var el=document.getElementById('contacts-data-list');
+  el.innerHTML='<div class="empty"><p>Loading...</p></div>';
+  try{
+    var snap=await fsdb.collection('contact_messages').orderBy('created_at','desc').get();
+    var msgs=snap.docs.map(d=>Object.assign({id:d.id},d.data()));
+    if(filter==='unread')msgs=msgs.filter(function(m){return m.status==='unread';});
+    if(filter==='read')msgs=msgs.filter(function(m){return m.status==='read';});
+    if(!msgs.length){el.innerHTML='<div class="empty"><div class="em">📭</div><p>No '+(filter==='all'?'':filter+' ')+'messages yet.</p></div>';return;}
+    el.innerHTML=msgs.map(function(m){
+      var d=m.created_at?new Date(m.created_at).toLocaleString('en-IN',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}):'—';
+      var isUnread=m.status==='unread';
+      return '<div class="req-card" style="border-left:3px solid '+(isUnread?'#00C2CB':'#334155')+';">'
+        +'<div class="req-info" style="flex:1;">'
+          +'<h4 style="display:flex;align-items:center;gap:8px;">'
+            +(isUnread?'<span style="width:8px;height:8px;background:#00C2CB;border-radius:50%;display:inline-block;"></span>':'')
+            +escH(m.name||'Unknown')
+            +' <span style="font-size:11px;font-weight:400;color:#64748b;background:#0f172a;padding:2px 8px;border-radius:10px;">'+escH(m.subject||'General')+'</span>'
+          +'</h4>'
+          +'<p style="margin:8px 0 6px;color:#cbd5e1;font-size:14px;line-height:1.6;">'+escH(m.message||'')+'</p>'
+          +'<div class="req-meta">📧 <a href="mailto:'+escH(m.email||'')+'" style="color:#00C2CB;">'+escH(m.email||'—')+'</a> &nbsp;|&nbsp; 🕐 '+d+'</div>'
+        +'</div>'
+        +'<div class="req-acts">'
+          +(isUnread
+            ?'<button class="btn-app" onclick="markContactMsg(\''+m.id+'\',\'read\')">✅ Mark Read</button>'
+            :'<button class="btn-sec" style="font-size:12px;padding:6px 12px;" onclick="markContactMsg(\''+m.id+'\',\'unread\')">↩ Unread</button>')
+          +'<button class="btn-rej" onclick="deleteContactMsg(\''+m.id+'\')">🗑️</button>'
+        +'</div>'
+      +'</div>';
+    }).join('');
+  }catch(e){
+    el.innerHTML='<div class="empty"><p>Error: '+e.message+'</p></div>';
+  }
+}
+
+async function markContactMsg(id,status){
+  try{await fsdb.collection('contact_messages').doc(id).update({status:status,updated_at:new Date().toISOString()});loadContactsData(currentContactFilter);toast(status==='read'?'✅ Marked as read':'↩ Marked as unread');}
+  catch(e){toast('❌ Error: '+e.message);}
+}
+
+async function deleteContactMsg(id){
+  if(!confirm('Delete this message?'))return;
+  try{await fsdb.collection('contact_messages').doc(id).delete();loadContactsData(currentContactFilter);toast('🗑️ Message deleted');}
+  catch(e){toast('❌ Error: '+e.message);}
 }
 
 function renderFeaturedTable(data){
@@ -1308,6 +1377,8 @@ function switchDataTab(tab,btn){
   btn.classList.add('active');
   document.getElementById('data-featured').style.display=tab==='featured'?'block':'none';
   document.getElementById('data-subscribers').style.display=tab==='subscribers'?'block':'none';
+  document.getElementById('data-contacts').style.display=tab==='contacts'?'block':'none';
+  if(tab==='contacts')loadContactsData('all');
 }
 
 function exportCSV(type){
