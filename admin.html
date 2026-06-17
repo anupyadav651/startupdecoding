@@ -162,19 +162,13 @@
       <div><span class="s1">startup</span><span class="s2">decoding</span></div>
       <p>🔐 Secure Admin Access</p>
     </div>
-    <label class="field-label">Username</label>
-    <input class="field-input" type="text" id="lu" autocomplete="off" placeholder="Enter username" onkeydown="if(event.key==='Enter')doLogin()"/>
+    <label class="field-label">Email</label>
+    <input class="field-input" type="email" id="lu" autocomplete="off" placeholder="you@example.com" onkeydown="if(event.key==='Enter')doLogin()"/>
     <label class="field-label">Password</label>
     <input class="field-input" type="password" id="lp" autocomplete="new-password" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"/>
-    <div id="capRow" style="display:none;margin-bottom:16px;">
-      <label class="field-label" id="capQ"></label>
-      <input class="field-input" type="text" id="capA" placeholder="Your answer" style="margin-bottom:0;"/>
-    </div>
     <button class="login-btn" id="loginBtn" onclick="doLogin()">Login →</button>
     <div class="login-error" id="loginError"></div>
-    <div style="text-align:center;margin-top:16px;"><button onclick="localStorage.clear();sessionStorage.clear();location.reload();" style="background:none;border:none;color:#475569;font-size:12px;cursor:pointer;text-decoration:underline;">Having trouble? Click here to reset</button></div>
-    <div class="lockout-msg" id="lockoutMsg"></div>
-    <p style="color:#1e3a5f;font-size:11px;text-align:center;margin-top:16px;">🔒 Secured · Session expires after 30 min inactivity</p>
+    <p style="color:#1e3a5f;font-size:11px;text-align:center;margin-top:16px;">🔒 Secured by Firebase Authentication</p>
   </div>
 </div>
 
@@ -344,7 +338,7 @@
         <h3>➕ Add Team Member</h3>
         <div class="grid2">
           <div class="f"><label>Full Name</label><input type="text" id="n-name" placeholder="e.g. Priya Sharma"/></div>
-          <div class="f"><label>Username</label><input type="text" id="n-user" placeholder="e.g. priya" autocomplete="off"/></div>
+          <div class="f"><label>Email</label><input type="email" id="n-user" placeholder="e.g. priya@gmail.com" autocomplete="off"/></div>
           <div class="f"><label>Password (min 8 chars)</label><input type="password" id="n-pass" autocomplete="new-password" placeholder="Strong password"/></div>
           <div class="f"><label>Role</label>
             <select id="n-role">
@@ -554,6 +548,7 @@
 
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
 <script>
 // ═══════════════ SECURITY ═══════════════
 const SEC={
@@ -569,124 +564,84 @@ const SEC={
   clearSession(){sessionStorage.removeItem('_sd_sess');}
 };
 
-// ═══ SECURE LOGIN SYSTEM ═══
-// Passwords stored as hashes only — never plain text in code
-const USERS=[
-  {username:'founder',hash:SEC.hash('decoding@2026'),name:'Founder',role:'founder',access:['dashboard','write','articles','topstories','requests','contacts','searches','views','users','data','about','settings']},
-  {username:'editor',hash:SEC.hash('edit123'),name:'Editor',role:'editor',access:['dashboard','write','articles']},
-  {username:'writer',hash:SEC.hash('write123'),name:'Writer',role:'writer',access:['dashboard','write']}
-];
+// ═══ FIREBASE AUTH LOGIN SYSTEM ═══
+// Roles/access are stored in Firestore 'admin_users' collection, keyed by email
+// Founder accounts are seeded here on first login if missing
+const FOUNDER_EMAILS=['yadavgourav634@gmail.com','anupyadav651@gmail.com'];
+const FOUNDER_NAMES={'yadavgourav634@gmail.com':'Gourav Yadav','anupyadav651@gmail.com':'Anup Yadav'};
 
-// Captcha
-let capAnswer=null;
-function genCaptcha(){
-  const a=Math.floor(Math.random()*9)+1,b=Math.floor(Math.random()*9)+1;
-  capAnswer=a+b;
-  document.getElementById('capQ').textContent='Security check: What is '+a+' + '+b+' ?';
-  document.getElementById('capRow').style.display='block';
-  document.getElementById('capA').value='';
-}
-function checkShowCaptcha(){
-  const atm=JSON.parse(sessionStorage.getItem('_sd_atm')||'{"count":0}');
-  if(atm.count>=2&&document.getElementById('capRow').style.display==='none') genCaptcha();
-}
-
-function getUsers(){return USERS;}
+function getUsers(){return [];}
 function saveUsers(){}
 
-let currentUser=null;
-let loginAttempts=parseInt(sessionStorage.getItem('_sd_atm_count')||'0');
-let lockoutUntil=parseInt(sessionStorage.getItem('_sd_lockout')||'0');
+// (captcha removed — Firebase Auth handles rate limiting)
 
-function doLogin(){
+let currentUser=null;
+
+async function doLogin(){
   var errEl=document.getElementById('loginError');
   errEl.style.display='none';
 
-  // Check lockout
-  if(Date.now()<lockoutUntil){
-    var mins=Math.ceil((lockoutUntil-Date.now())/60000);
-    errEl.textContent='🔒 Too many failed attempts. Try again in '+mins+' minute(s).';
+  var email=document.getElementById('lu').value.trim();
+  var p=document.getElementById('lp').value;
+  if(!email||!p){errEl.textContent='Please enter email and password.';errEl.style.display='block';return;}
+
+  var btn=document.getElementById('loginBtn');
+  btn.disabled=true;btn.textContent='Logging in...';
+
+  try{
+    await firebase.auth().signInWithEmailAndPassword(email,p);
+    // onAuthStateChanged below handles loading the dashboard
+  }catch(err){
+    btn.disabled=false;btn.textContent='Login →';
+    var msg='❌ Login failed. Please try again.';
+    if(err.code==='auth/invalid-email')msg='❌ Please enter a valid email address.';
+    else if(err.code==='auth/user-not-found'||err.code==='auth/invalid-credential')msg='❌ No account found with this email.';
+    else if(err.code==='auth/wrong-password'||err.code==='auth/invalid-credential')msg='❌ Wrong password.';
+    else if(err.code==='auth/too-many-requests')msg='🔒 Too many attempts. Try again later.';
+    errEl.textContent=msg;
     errEl.style.display='block';
-    document.getElementById('loginBtn').disabled=true;
-    return;
-  }
-
-  var u=document.getElementById('lu').value.trim();
-  var p=document.getElementById('lp').value.trim();
-  if(!u||!p){errEl.textContent='Please enter username and password.';errEl.style.display='block';return;}
-
-  // Check captcha if showing
-  if(document.getElementById('capRow').style.display!=='none'){
-    var ans=parseInt(document.getElementById('capA').value);
-    if(ans!==capAnswer){
-      errEl.textContent='❌ Wrong security answer. Try again.';
-      errEl.style.display='block';
-      genCaptcha();
-      return;
-    }
-  }
-
-  // Match user by hashed password
-  var match=USERS.find(function(x){return x.username===u&&x.hash===SEC.hash(p);});
-
-  if(match){
-    // Success — reset attempts
-    loginAttempts=0;
-    sessionStorage.removeItem('_sd_atm_count');
-    sessionStorage.removeItem('_sd_lockout');
-    document.getElementById('loginBtn').disabled=false;
-    document.getElementById('capRow').style.display='none';
-    currentUser={username:match.username,name:match.name,role:match.role,access:match.access};
-    try{
-      sessionStorage.setItem('_sd_sess',JSON.stringify({username:currentUser.username,name:currentUser.name,role:currentUser.role,access:currentUser.access,ts:Date.now()}));
-      document.getElementById('loginScreen').style.display='none';
-      document.getElementById('adminWrap').style.display='block';
-      setupUI();loadDashboard();startSessionTimer();
-    }catch(err){
-      errEl.textContent='❌ Error: '+err.message;
-      errEl.style.display='block';
-      document.getElementById('loginScreen').style.display='flex';
-      document.getElementById('adminWrap').style.display='none';
-    }
-  } else {
-    // Failed attempt
-    loginAttempts++;
-    sessionStorage.setItem('_sd_atm_count',loginAttempts);
     document.getElementById('lp').value='';
-    var remaining=3-loginAttempts;
-    if(loginAttempts>=3){
-      // Lockout for 15 minutes
-      lockoutUntil=Date.now()+15*60*1000;
-      sessionStorage.setItem('_sd_lockout',lockoutUntil);
-      errEl.textContent='🔒 Too many failed attempts. Locked for 15 minutes.';
-      document.getElementById('loginBtn').disabled=true;
-      setTimeout(function(){
-        document.getElementById('loginBtn').disabled=false;
-        loginAttempts=0;
-        lockoutUntil=0;
-        sessionStorage.removeItem('_sd_atm_count');
-        sessionStorage.removeItem('_sd_lockout');
-        errEl.style.display='none';
-        document.getElementById('capRow').style.display='none';
-      },15*60*1000);
-    } else {
-      errEl.textContent='❌ Wrong username or password. '+remaining+' attempt(s) remaining.';
-      checkShowCaptcha();
-    }
-    errEl.style.display='block';
   }
 }
 
-function logout(){sessionStorage.removeItem('_sd_sess');currentUser=null;document.getElementById('adminWrap').style.display='none';document.getElementById('loginScreen').style.display='flex';}
+// Fetch role/access from Firestore admin_users collection, seeding founders if missing
+async function loadUserProfile(fbUser){
+  var email=fbUser.email.toLowerCase();
+  try{
+    var doc=await fsdb.collection('admin_users').doc(email).get();
+    if(doc.exists){
+      var d=doc.data();
+      return {email:email,username:email,name:d.name,role:d.role,access:d.access||[]};
+    }
+    // Not in Firestore yet — if it's a known founder email, seed it
+    if(FOUNDER_EMAILS.includes(email)){
+      var profile={
+        name:FOUNDER_NAMES[email]||'Founder',
+        role:'founder',
+        access:['dashboard','write','articles','topstories','requests','contacts','searches','views','users','data','about','settings'],
+        email:email
+      };
+      await fsdb.collection('admin_users').doc(email).set(profile);
+      return {email:email,username:email,name:profile.name,role:profile.role,access:profile.access};
+    }
+    // Unknown user with Firebase Auth account but no admin_users doc — minimal default
+    return {email:email,username:email,name:fbUser.displayName||email,role:'writer',access:['dashboard','write']};
+  }catch(e){
+    return {email:email,username:email,name:fbUser.displayName||email,role:'writer',access:['dashboard','write']};
+  }
+}
+
+function logout(){firebase.auth().signOut();currentUser=null;document.getElementById('adminWrap').style.display='none';document.getElementById('loginScreen').style.display='flex';}
 
 let sessionInterval;
+var sessionStartTime=null;
 function startSessionTimer(){
   clearInterval(sessionInterval);
+  sessionStartTime=Date.now();
   sessionInterval=setInterval(()=>{
-    const s=JSON.parse(sessionStorage.getItem('_sd_sess')||'null');
-    if(!s||Date.now()-s.ts>30*60*1000){toast('⏰ Session expired. Please login again.','#7f1d1d','#fca5a5');logout();return;}
-    const mins=Math.floor((30*60*1000-(Date.now()-s.ts))/60000);
-    document.getElementById('sessionTimer').textContent=`Session: ${mins}m remaining`;
+    const mins=Math.floor((Date.now()-sessionStartTime)/60000);
+    var el=document.getElementById('sessionTimer');
+    if(el)el.textContent='Session active: '+mins+'m';
   },30000);
 }
 // session keep-alive removed - using simple session
@@ -1126,41 +1081,81 @@ function loadSearches(){
 }
 
 // ═══════════════ USERS ═══════════════
-function loadUsers(){
-  const users=getUsers();
+async function loadUsers(){
   const el=document.getElementById('users-list');
-  const rMap={founder:'rp-founder',editor:'rp-editor',writer:'rp-writer'};
-  const rLabel={founder:'👑 Founder',editor:'✏️ Editor',writer:'📝 Writer'};
-  el.innerHTML=users.map((u,i)=>`
-    <div class="user-row">
-      <div><h4>${u.name} &nbsp;<span class="role-pill ${rMap[u.role]||''}">${rLabel[u.role]||u.role}</span></h4>
-      <p>@${u.username} &nbsp;|&nbsp; Access: ${(u.access||[]).join(', ')||'dashboard only'}</p></div>
-      ${u.role!=='founder'?`<div style="display:flex;gap:8px;">
-        <button class="btn-xs bx-toggle" onclick="resetPw(${i})">🔑 Reset PW</button>
-        <button class="btn-xs bx-del" onclick="removeUser(${i})">Remove</button>
-      </div>`:'<span style="font-size:11px;color:#475569;">Protected</span>'}
-    </div>`).join('');
+  el.innerHTML='<div class="empty"><p>Loading team members...</p></div>';
+  try{
+    const snap=await fsdb.collection('admin_users').get();
+    const users=snap.docs.map(d=>Object.assign({email:d.id},d.data()));
+    const rMap={founder:'rp-founder',editor:'rp-editor',writer:'rp-writer'};
+    const rLabel={founder:'👑 Founder',editor:'✏️ Editor',writer:'📝 Writer'};
+    if(!users.length){el.innerHTML='<div class="empty"><p>No team members yet.</p></div>';return;}
+    el.innerHTML=users.map((u)=>`
+      <div class="user-row">
+        <div><h4>${u.name} &nbsp;<span class="role-pill ${rMap[u.role]||''}">${rLabel[u.role]||u.role}</span></h4>
+        <p>${u.email} &nbsp;|&nbsp; Access: ${(u.access||[]).join(', ')||'dashboard only'}</p></div>
+        ${u.role!=='founder'?`<div style="display:flex;gap:8px;">
+          <button class="btn-xs bx-toggle" onclick="resetPw('${u.email}')">🔑 Reset PW</button>
+          <button class="btn-xs bx-del" onclick="removeUser('${u.email}')">Remove</button>
+        </div>`:'<span style="font-size:11px;color:#475569;">Protected</span>'}
+      </div>`).join('');
+  }catch(e){
+    el.innerHTML='<div class="empty"><p>Error loading team: '+e.message+'</p></div>';
+  }
 }
 
-function addUser(){
-  const name=document.getElementById('n-name').value.trim(),uname=document.getElementById('n-user').value.trim().toLowerCase(),pass=document.getElementById('n-pass').value,role=document.getElementById('n-role').value;
-  if(!name||!uname||!pass){toast('⚠️ Fill all fields','#7f1d1d','#fca5a5');return;}
+async function addUser(){
+  const name=document.getElementById('n-name').value.trim();
+  const email=document.getElementById('n-user').value.trim().toLowerCase();
+  const pass=document.getElementById('n-pass').value;
+  const role=document.getElementById('n-role').value;
+  if(!name||!email||!pass){toast('⚠️ Fill all fields','#7f1d1d','#fca5a5');return;}
   if(pass.length<8){toast('⚠️ Password must be 8+ characters','#7f1d1d','#fca5a5');return;}
-  if(!/^[a-z0-9_]+$/.test(uname)){toast('⚠️ Username: lowercase, numbers, underscore only','#7f1d1d','#fca5a5');return;}
-  const users=getUsers();
-  if(users.find(u=>u.username===uname)){toast('⚠️ Username already exists','#7f1d1d','#fca5a5');return;}
+  if(!email.includes('@')){toast('⚠️ Please enter a valid email address','#7f1d1d','#fca5a5');return;}
   const access=['dashboard'];
   if(document.getElementById('ac-write').checked)access.push('write');
   if(document.getElementById('ac-articles').checked)access.push('articles');
   if(document.getElementById('ac-requests').checked)access.push('requests');
   if(document.getElementById('ac-searches').checked)access.push('searches');
-  users.push({name,username:uname,passwordHash:SEC.hash(pass),role,access});
-  saveUsers(users);loadUsers();
-  ['n-name','n-user','n-pass'].forEach(id=>document.getElementById(id).value='');
-  toast('✅ Team member added!');
+
+  const btn=document.querySelector('#page-users .btn-pub');
+  if(btn){btn.disabled=true;btn.textContent='Adding...';}
+
+  // Use a secondary, temporary Firebase app instance so creating this user
+  // does NOT sign out the currently logged-in founder.
+  const tempAppName='secondary-'+Date.now();
+  const secondaryApp=firebase.initializeApp(firebase.app().options,tempAppName);
+  try{
+    const cred=await secondaryApp.auth().createUserWithEmailAndPassword(email,pass);
+    await cred.user.updateProfile({displayName:name});
+    await fsdb.collection('admin_users').doc(email).set({name:name,role:role,access:access,email:email,created_at:new Date().toISOString()});
+    await secondaryApp.auth().signOut();
+    await secondaryApp.delete();
+    loadUsers();
+    ['n-name','n-user','n-pass'].forEach(id=>document.getElementById(id).value='');
+    toast('✅ Team member added! They can now login with this email & password.');
+  }catch(e){
+    var msg='❌ Error: '+e.message;
+    if(e.code==='auth/email-already-in-use')msg='⚠️ This email already has an account.';
+    toast(msg,'#7f1d1d','#fca5a5');
+    try{await secondaryApp.delete();}catch(_){}
+  }finally{
+    if(btn){btn.disabled=false;btn.textContent='➕ Add Team Member';}
+  }
 }
-function removeUser(i){if(!confirm('Remove?'))return;const u=getUsers();u.splice(i,1);saveUsers(u);loadUsers();toast('🗑️ Removed');}
-function resetPw(i){const np=prompt('New password (min 8 chars):');if(!np)return;if(np.length<8){toast('⚠️ Too short','#7f1d1d','#fca5a5');return;}const u=getUsers();u[i].passwordHash=SEC.hash(np);saveUsers(u);toast('🔑 Password reset!');}
+
+async function removeUser(email){
+  if(!confirm('Remove this team member\'s access? (Their login account stays in Firebase Auth, but they will lose admin panel access.)'))return;
+  try{
+    await fsdb.collection('admin_users').doc(email).delete();
+    loadUsers();
+    toast('🗑️ Access removed. To fully delete their login, remove them in Firebase Console → Authentication.');
+  }catch(e){toast('❌ Error: '+e.message,'#7f1d1d','#fca5a5');}
+}
+
+function resetPw(email){
+  alert('Password resets must be done by the team member themselves using "Forgot Password" on the login screen, or by editing their account directly in Firebase Console → Authentication.');
+}
 
 // ═══════════════ SECTION MANAGEMENT ═══════════════
 var ALL_SECTIONS=[
@@ -1613,16 +1608,23 @@ function toast(msg,bg='#064e3b',color='#34d399'){
 }
 
 // ═══════════════ INIT ═══════════════
-window.addEventListener('load',()=>{
-  try{
-    const s=JSON.parse(sessionStorage.getItem('_sd_sess')||'null');
-    if(s&&s.username&&(Date.now()-s.ts)<30*60*1000){
-      currentUser={username:s.username,name:s.name,role:s.role,access:s.access};
+firebase.auth().onAuthStateChanged(async function(fbUser){
+  if(fbUser){
+    try{
+      currentUser=await loadUserProfile(fbUser);
       document.getElementById('loginScreen').style.display='none';
       document.getElementById('adminWrap').style.display='block';
       setupUI();loadDashboard();startSessionTimer();
+      var btn=document.getElementById('loginBtn');
+      if(btn){btn.disabled=false;btn.textContent='Login →';}
+    }catch(e){
+      console.error('Profile load error:',e);
     }
-  }catch(e){}
+  }else{
+    currentUser=null;
+    document.getElementById('adminWrap').style.display='none';
+    document.getElementById('loginScreen').style.display='flex';
+  }
 });
 document.getElementById('loginScreen').addEventListener('contextmenu',e=>e.preventDefault());
 </script>
