@@ -313,6 +313,8 @@
         <a onclick="goTo('her-story-section');return false;">Her Story</a>
         <a onclick="goTo('smb-section');return false;">SMB's</a>
         <a onclick="goTo('farming-section');return false;">Farming</a>
+        <a onclick="goTo('healthcare-section');return false;">Healthcare</a>
+        <a onclick="goTo('hard-truth-section');return false;">Hard Truth</a>
       </div>
     </li>
     <li><a onclick="goTo('startup-news-section');return false;">Startups</a></li>
@@ -332,6 +334,8 @@
   <a onclick="goTo('her-story-section');toggleMobile();">👩 Her Story</a>
   <a onclick="goTo('tech-section');toggleMobile();">💡 Tech &amp; Innovation</a>
   <a onclick="goTo('gov-schemes-section');toggleMobile();">🏛️ Gov Schemes</a>
+  <a onclick="goTo('healthcare-section');toggleMobile();">🏥 Healthcare</a>
+  <a onclick="goTo('hard-truth-section');toggleMobile();">💀 Hard Truth</a>
   <a onclick="goTo('trending-news-section');toggleMobile();">📈 Trending News</a>
   <a href="about.html">ℹ️ About Us</a>
   <a href="about.html#contact">📧 Contact</a>
@@ -496,6 +500,24 @@
       </div>
     </div>
 
+    <!-- 6b. HEALTHCARE -->
+    <div class="section" id="healthcare-section">
+      <div class="sec-head">
+        <h2>🏥 Healthcare</h2><div class="line"></div>
+        <a href="articles.html?cat=Healthcare" class="see-all">See All →</a>
+      </div>
+      <div class="card-grid" id="grid-healthcare"></div>
+    </div>
+
+    <!-- 6c. HARD TRUTH -->
+    <div class="section" id="hard-truth-section">
+      <div class="sec-head">
+        <h2>💀 Hard Truth</h2><div class="line"></div>
+        <a href="articles.html?cat=Hard+Truth" class="see-all">See All →</a>
+      </div>
+      <div class="card-grid" id="grid-hard-truth"></div>
+    </div>
+
     <!-- 7. TRENDING NEWS (moved to bottom) -->
     <div class="section" id="trending-news-section">
       <div class="sec-head">
@@ -631,7 +653,7 @@
     <div class="form-row"><label>Your Name *</label><input type="text" id="f-name" placeholder="Founder / Co-founder name"/></div>
     <div class="form-row"><label>Email Address *</label><input type="email" id="f-email" placeholder="you@yourstartup.com"/></div>
     <div class="form-row"><label>Mobile Number <span style="color:var(--gray);font-weight:400;">(Optional)</span></label><input type="tel" id="f-mobile" placeholder="+91 98765 43210"/></div>
-    <div class="form-row"><label>Category</label><select id="f-category"><option>Startup News</option><option>Startup Stories</option><option>Young Entrepreneur</option><option>Her Story</option><option>Tech &amp; Innovation</option><option>SMB's</option><option>Farming</option><option>Podcast</option></select></div>
+    <div class="form-row"><label>Category</label><select id="f-category"><option>Startup News</option><option>Startup Stories</option><option>Young Entrepreneur</option><option>Her Story</option><option>Tech &amp; Innovation</option><option>SMB's</option><option>Farming</option><option>Healthcare</option><option>Hard Truth</option><option>Podcast</option></select></div>
     <div class="form-row"><label>About Your Startup</label><textarea id="f-about" placeholder="Tell us your story in 2-3 lines..."></textarea></div>
     <button class="form-submit" onclick="submitFeatured()">Submit Request 🚀</button>
   </div>
@@ -719,8 +741,8 @@ async function fbDelete(col,id){try{await fsdb.collection(col).doc(id).delete();
   }
 
 
-  var secGridMap={'Startup News':'grid-startup-news','Startup Stories':'grid-startup-stories','Young Entrepreneur':'grid-young-entrepreneur','Her Story':'grid-her-story','Tech & Innovation':'grid-tech','Gov Schemes':'grid-gov-schemes','Trending News':'liveNewsGrid'};
-  var secSectionMap={'Startup News':'startup-news-section','Startup Stories':'startup-stories-section','Young Entrepreneur':'young-entrepreneur-section','Her Story':'her-story-section','Tech & Innovation':'tech-section','Gov Schemes':'gov-schemes-section'};
+  var secGridMap={'Startup News':'grid-startup-news','Startup Stories':'grid-startup-stories','Young Entrepreneur':'grid-young-entrepreneur','Her Story':'grid-her-story','Tech & Innovation':'grid-tech','Gov Schemes':'grid-gov-schemes','Healthcare':'grid-healthcare','Hard Truth':'grid-hard-truth','Trending News':'liveNewsGrid'};
+  var secSectionMap={'Startup News':'startup-news-section','Startup Stories':'startup-stories-section','Young Entrepreneur':'young-entrepreneur-section','Her Story':'her-story-section','Tech & Innovation':'tech-section','Gov Schemes':'gov-schemes-section','Healthcare':'healthcare-section','Hard Truth':'hard-truth-section'};
   var secLimits={'Startup Stories':6};
   var DEFAULT_LIMIT=3;
 
@@ -1187,7 +1209,7 @@ async function fbDelete(col,id){try{await fsdb.collection(col).doc(id).delete();
       container.innerHTML=stories.map(function(a){
         var img=a.image||a.image_url||'';
         var date=a.created_at?new Date(a.created_at).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'}).toUpperCase():a.date||'';
-        var secMap={'Startup News':'startup-news-section','Startup Stories':'startup-stories-section','Young Entrepreneur':'young-entrepreneur-section','Her Story':'her-story-section','Tech & Innovation':'tech-section','Gov Schemes':'gov-schemes-section','Trending News':'trending-news-section'};
+        var secMap={'Startup News':'startup-news-section','Startup Stories':'startup-stories-section','Young Entrepreneur':'young-entrepreneur-section','Her Story':'her-story-section','Tech & Innovation':'tech-section','Gov Schemes':'gov-schemes-section','Healthcare':'healthcare-section','Hard Truth':'hard-truth-section','Trending News':'trending-news-section'};
         var sec=secMap[a.category]||'startup-news-section';
         return '<div class="side-story" onclick="goTo(\''+sec+'\')">'+'<div class="side-img">'+(img?'<img src="'+img+'" style="width:100%;height:100%;object-fit:cover;border-radius:6px;" onerror="this.style.display=\'none\'"/>':'')+'</div>'+'<div><h4>'+a.title+'</h4><span>🕐 '+date+'</span></div>'+'</div>';
       }).join('');
